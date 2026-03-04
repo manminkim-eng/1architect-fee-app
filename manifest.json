@@ -1,0 +1,15 @@
+{
+  "name": "공공기관 건축사 업무대가 산출서",
+  "short_name": "업무대가 산출",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#333333",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

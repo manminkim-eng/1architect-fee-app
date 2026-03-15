@@ -1,969 +1,1347 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>공공기관 건축사 업무대가 산출서</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>공공기관 건축사 업무대가 산출기 [MANMIN-Ver3.0]</title>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#1d4ed8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="대가산출"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 
-    <!-- ═══ PWA 설정 ═══ -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1E40AF">
-    <meta name="description" content="공공기관 건축사 업무대가 산출기 - 건축사법 시행령 별표3 기준">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif!important;}
+body{background:#f0f4f9;color:#1a2744;min-height:100vh;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:#f0f4f9;}
+::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:10px;}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input[type="number"]{-moz-appearance:textfield;}
+.mono{font-family:'JetBrains Mono','Courier New',monospace!important;}
 
-    <!-- iOS (Safari) 지원 -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="대가산출">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+/* ── HEADER ── */
+.app-header{background:#dbeafe;position:sticky;top:0;z-index:40;box-shadow:0 2px 16px rgba(147,197,253,.45);}
+.header-inner{max-width:1300px;margin:0 auto;padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.brand-logo{display:flex;align-items:center;gap:12px;min-width:0;flex:1;}
+.brand-icon{width:40px;height:40px;background:#1d4ed8;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(29,78,216,.38);flex-shrink:0;}
+.brand-icon svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.brand-texts{min-width:0;}
+.brand-title{font-size:16px;font-weight:900;color:#1e3a8a;letter-spacing:-.02em;line-height:1.25;white-space:nowrap;}
+.brand-sub{font-size:10px;color:#3b82f6;margin-top:2px;white-space:nowrap;font-weight:600;}
+.hdr-btns{display:flex;gap:8px;flex-shrink:0;}
+.btn-red{background:#e63312;color:#fff;border:none;padding:9px 16px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;transition:all .15s;box-shadow:0 2px 10px rgba(230,51,18,.35);white-space:nowrap;}
+.btn-red:hover{background:#c62a0c;}
+.btn-red:active{transform:scale(.97);}
+.btn-blue{background:#1d4ed8;color:#fff;border:none;padding:9px 14px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;transition:all .15s;box-shadow:0 2px 10px rgba(29,78,216,.3);white-space:nowrap;}
+.btn-blue:hover{background:#1e40af;}
+.btn-blue:active{transform:scale(.97);}
+.btn-ghost{background:#fff;color:#374151;border:1.5px solid #d1d5db;padding:9px 14px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;transition:all .15s;}
+.btn-ghost:hover{border-color:#1d4ed8;color:#1d4ed8;background:#eff6ff;}
+.btn-ghost:active{transform:scale(.97);}
 
-    <!-- 파비콘 -->
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
-    
-    <!-- React 및 기능 구동을 위한 외부 라이브러리 (CDN) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <!-- html-to-image: PNG 출력 품질 향상용 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+/* ── TAB BAR ── */
+.tab-bar{background:#bfdbfe;border-top:1px solid rgba(147,197,253,.35);overflow-x:auto;scrollbar-width:none;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-bar-inner{max-width:1300px;margin:0 auto;padding:0 8px;display:flex;}
+.tab-btn{background:none;border:none;cursor:pointer;color:#1e40af;font-family:inherit;padding:11px 16px;font-size:12px;font-weight:700;position:relative;transition:color .15s,background .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;letter-spacing:.02em;}
+.tab-btn:hover{color:#1e3a8a;background:rgba(30,58,138,.07);}
+.tab-btn.active{color:#1e3a8a;}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:#f97316;border-radius:2px 2px 0 0;}
+.tab-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+/* ── MAIN LAYOUT ── */
+.main-wrap{max-width:1300px;margin:0 auto;padding:18px 16px 100px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
 
-    <style>
-        * {
-            font-family: 'Noto Sans KR', sans-serif !important;
-        }
-        body { 
-            background-color: #f8fafc;
-        }
-        .animate-fadeIn { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(-5px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 4px rgba(15,23,42,.06);overflow:hidden;}
+.card-head{display:flex;align-items:center;gap:9px;padding:14px 16px 13px;border-bottom:1px solid #eef1f6;}
+.card-icon{width:28px;height:28px;border-radius:7px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-icon svg{width:13px;height:13px;stroke:#1d4ed8;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.card-title{font-size:12px;font-weight:800;color:#1a2744;letter-spacing:.04em;}
+.card-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;white-space:nowrap;}
+.card-badge-em{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;white-space:nowrap;}
+.card-body{padding:14px 16px;}
 
-        .report-table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        .report-table td {
-            vertical-align: middle !important;
-            word-break: keep-all;
-            line-height: 1.4;
-        }
-        .print-area {
-            background: white;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
+/* ── FORM FIELDS ── */
+.flbl{font-size:10px;font-weight:700;color:#6b7a99;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;display:block;}
+.finput{width:100%;padding:9px 12px;background:#f8fafd;border:1.5px solid #dde3ed;border-radius:8px;color:#1a2744;font-size:13px;font-weight:600;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+.finput:focus{border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.1);background:#fff;}
+.fselect{width:100%;padding:9px 28px 9px 11px;background:#f8fafd;border:1.5px solid #dde3ed;border-radius:8px;color:#1a2744;font-size:12px;font-weight:700;font-family:inherit;outline:none;cursor:pointer;transition:border-color .15s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231d4ed8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+.fselect:focus{border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.1);background-color:#fff;}
+.fselect:disabled{opacity:.45;cursor:not-allowed;background:#f1f4f9;}
 
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-            html, body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
-                background: white !important;
-            }
-            body > * {
-                display: none !important;
-            }
-            .print-area {
-                display: flex !important;
-                flex-direction: column;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 210mm !important;
-                height: 297mm !important;
-                padding: 16mm 18mm !important;
-                box-sizing: border-box !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                overflow: hidden !important;
-                page-break-after: avoid !important;
-            }
-        }
+/* ── TASK TYPE TOGGLE ── */
+.task-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafd;cursor:pointer;transition:all .15s;gap:6px;font-family:inherit;}
+.task-btn.active{border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;}
+.task-btn:not(.active){color:#94a3b8;}
+.task-btn:hover:not(.active){border-color:#bfdbfe;background:#f0f9ff;}
+.task-btn svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;}
+.task-btn span{font-size:12px;font-weight:800;letter-spacing:.02em;}
+.task-btn small{font-size:9px;font-weight:600;opacity:.7;}
 
-        /* PWA 설치 배너 */
-        .pwa-install-banner {
-            background: linear-gradient(135deg, #1E40AF 0%, #312E81 100%);
-            border: 1px solid rgba(255,255,255,0.15);
-            animation: slideUp 0.4s ease-out;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to   { transform: translateY(0);    opacity: 1; }
-        }
-    </style>
+/* ── DOC LEVEL PILLS ── */
+.doc-pill{flex:1;padding:9px 6px;border-radius:8px;border:1.5px solid #e2e8f0;background:#f8fafd;text-align:center;cursor:pointer;font-size:11px;font-weight:800;color:#94a3b8;transition:all .15s;font-family:inherit;}
+.doc-pill.active{border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;}
+.doc-pill:hover:not(.active){border-color:#bfdbfe;}
+
+/* ── CHECKBOX ITEM ── */
+.chk-item{display:flex;align-items:center;gap:9px;padding:10px 12px;background:#f8fafd;border:1.5px solid #e2e8f0;border-radius:9px;cursor:pointer;transition:all .15s;}
+.chk-item:hover{border-color:#bfdbfe;background:#f0f9ff;}
+.chk-item input[type=checkbox]{width:16px;height:16px;accent-color:#1d4ed8;cursor:pointer;flex-shrink:0;}
+.chk-item-label{font-size:12px;font-weight:700;color:#374151;cursor:pointer;line-height:1.3;}
+.chk-item-sub{font-size:10px;color:#6b7a99;font-weight:600;margin-top:1px;}
+
+/* ── RESULT DISPLAY ── */
+.result-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(15,23,42,.06);}
+.result-amount-box{background:linear-gradient(135deg,#1e3a8a,#1d4ed8);padding:20px 22px;text-align:center;}
+.vc{border-radius:10px;padding:13px;text-align:center;}
+.vc-n{background:#f8fafd;border:1.5px solid #e2e8f0;}
+.vc-a{background:#fefce8;border:1.5px solid #fde047;}
+.vc-p{background:#f0fdf4;border:1.5px solid #86efac;}
+
+/* ── RESULT TABLE ── */
+.rtbl{width:100%;border-collapse:collapse;}
+.rtbl th{background:#eff6ff;color:#1e40af;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:9px 11px;border-bottom:2px solid #bfdbfe;}
+.rtbl td{padding:9px 11px;border-bottom:1px solid #e2e8f0;font-size:12px;vertical-align:middle!important;}
+.rtbl tr:last-child td{border-bottom:none;}
+.rtbl tfoot td{background:#eff6ff;border-top:2px solid #93c5fd;font-weight:900;}
+
+/* ── INFO STRIP ── */
+.info-strip{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:10px 13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;}
+.info-strip svg{width:13px;height:13px;stroke:#1d4ed8;fill:none;stroke-width:2;flex-shrink:0;margin-top:2px;}
+.info-strip p{font-size:11px;color:#1e40af;font-weight:600;line-height:1.7;}
+
+/* ── FULL PANEL ── */
+.full-panel{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 4px rgba(15,23,42,.06);}
+.preview-bg{background:#e2e8f0;border-radius:0 0 14px 14px;padding:24px;display:flex;justify-content:center;overflow-x:auto;min-height:360px;}
+
+/* ── FAB ── */
+.fab-pill{position:fixed;bottom:22px;right:18px;z-index:50;background:linear-gradient(135deg,#0c4da2,#1d4ed8);color:#fff;border:none;border-radius:16px;padding:11px 18px;cursor:pointer;box-shadow:0 4px 22px rgba(12,77,162,.55);display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;font-family:inherit;line-height:1.3;transition:transform .15s,box-shadow .15s;white-space:nowrap;}
+.fab-pill:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(12,77,162,.72);}
+.fab-pill:active{transform:translateY(0) scale(.97);}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;animation:mFade .2s ease-out;}
+@keyframes mFade{from{opacity:0}to{opacity:1}}
+.modal-box{background:#fff;border-radius:20px;width:100%;max-width:820px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:mUp .25s cubic-bezier(.34,1.5,.64,1);}
+@keyframes mUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mhd{background:linear-gradient(135deg,#081e44,#0c4da2,#1565c0);color:#fff;padding:18px 20px 0;flex-shrink:0;}
+.mhd-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:10px;}
+.mclose{background:rgba(255,255,255,.13);border:none;color:#fff;border-radius:50%;width:32px;height:32px;flex-shrink:0;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;font-family:inherit;}
+.mclose:hover{background:rgba(255,255,255,.28);}
+.mitabs{display:flex;overflow-x:auto;scrollbar-width:none;}
+.mitabs::-webkit-scrollbar{display:none;}
+.mitab{padding:10px 16px;border:none;background:transparent;color:rgba(255,255,255,.6);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s;flex-shrink:0;}
+.mitab:hover:not(.on){color:rgba(255,255,255,.88);}
+.mitab.on{color:#fff;border-bottom-color:#f97316;}
+.mbd{overflow-y:auto;padding:20px;flex:1;}
+.mbd::-webkit-scrollbar{width:4px;}
+.mbd::-webkit-scrollbar-thumb{background:#bfdbfe;border-radius:3px;}
+.mpanel{display:none;}
+.mpanel.on{display:block;}
+.msec{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;margin:16px 0 8px;display:flex;align-items:center;gap:7px;border-left:3px solid #1d4ed8;padding-left:9px;color:#1a2744;}
+.msec:first-child{margin-top:0;}
+.mcard{background:#f8fafc;border:1px solid #e4e9f0;border-radius:10px;padding:12px 13px;margin-bottom:8px;}
+.meq{display:block;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#1d4ed8;background:#eff6ff;border-radius:8px;padding:10px 13px;margin:6px 0;word-break:break-all;line-height:1.75;}
+.meq.amber{background:#fff7ed;color:#b45309;}
+.mhi{border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:10px;padding:12px 13px;margin-bottom:8px;font-size:11px;line-height:1.8;color:#1e3a8a;}
+.mhi.amber{border-color:#fde68a;background:#fefce8;color:#854d0e;}
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+.mtbl{width:100%;border-collapse:collapse;font-size:11px;border-radius:8px;overflow:hidden;}
+.mtbl th{background:#0c4da2;color:#fff;padding:7px 10px;text-align:center;font-weight:700;font-size:10px;}
+.mtbl td{padding:7px 10px;border-bottom:1px solid #e4e9f0;}
+.mtbl tr:last-child td{border-bottom:none;}
+.mtbl tr:nth-child(even) td{background:#f8fafc;}
+.mtbl td:first-child{font-weight:700;color:#1a2744;text-align:left;padding-left:12px;}
+.note{font-size:10px;color:#64748b;margin-top:4px;line-height:1.8;}
+
+/* ── PRINT ── */
+@page{size:A4 portrait;margin:0mm;}
+@media print{
+  *,*::before,*::after{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  .no-print{display:none!important;}
+  html,body{margin:0!important;padding:0!important;width:210mm!important;height:297mm!important;background:#fff!important;overflow:hidden!important;}
+  #a4-print-area{position:relative!important;left:0!important;top:0!important;display:flex!important;flex-direction:column!important;visibility:visible!important;background:#fff!important;box-shadow:none!important;width:210mm!important;height:297mm!important;padding:16mm 18mm!important;}
+  #root>*:not(#a4-print-area){display:none!important;}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .brand-title{font-size:13px;}
+  .brand-sub{display:none;}
+  .tab-btn{padding:10px 11px;font-size:11px;}
+  .main-wrap{padding:12px 10px 100px;}
+  .modal-bg{padding:0;align-items:flex-end;}
+  .modal-box{border-radius:20px 20px 0 0;max-height:92vh;}
+  .mg2{grid-template-columns:1fr;}
+  .hdr-btns .btn-ghost{display:none;}
+}
+@media(max-width:480px){
+  .hdr-btns .btn-blue span{display:none;}
+}
+table td,table th{vertical-align:middle!important;line-height:1.2!important;}
+</style>
+</head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+<script type="text/babel">
+const {useState,useEffect,useRef,useMemo}=React;
+const VER="3.0";
 
-        // 아이콘 컴포넌트
-        const Calculator = ({size=24, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><line x1="16" y1="10" x2="16.01" y2="10"></line><line x1="12" y1="10" x2="12.01" y2="10"></line><line x1="8" y1="10" x2="8.01" y2="10"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="12" y1="18" x2="12.01" y2="18"></line><line x1="8" y1="18" x2="8.01" y2="18"></line></svg>;
-        const Settings = ({className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>;
-        const Download = ({className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
-        const CheckCircle2 = ({className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>;
-        const FileText = ({className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>;
-        const Smartphone = ({className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
-        const PlusCircle = ({className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>;
+/* ══════════ DATA (unchanged logic) ══════════ */
+const USAGES=[
+  {type:'type1',name:'가설건축물'},
+  {type:'type1',name:'창고시설(하역장)'},
+  {type:'type1',name:'자동차관련시설(정비공장,운전학원·정비학원 제외)'},
+  {type:'type1',name:'동물 및 식물관련시설(가축용 창고,관리사,가축시장,버섯재배사)'},
+  {type:'type1',name:'기타 제1종 용도와 유사한 것'},
+  {type:'type2',name:'공작물(굴뚝·옹벽·고가수조 등)'},
+  {type:'type2',name:'단독주택'},
+  {type:'type2',name:'공동주택'},
+  {type:'type2',name:'제1종 근린생활시설'},
+  {type:'type2',name:'제2종 근린생활시설'},
+  {type:'type2',name:'판매시설'},
+  {type:'type2',name:'장례식장'},
+  {type:'type2',name:'교육연구시설(도서관 제외)'},
+  {type:'type2',name:'노유자시설'},
+  {type:'type2',name:'수련시설'},
+  {type:'type2',name:'업무시설'},
+  {type:'type2',name:'숙박시설(관광숙박시설 제외)'},
+  {type:'type2',name:'위락시설'},
+  {type:'type2',name:'공장'},
+  {type:'type2',name:'창고시설(냉장·냉동창고 포함)'},
+  {type:'type2',name:'위험물저장 및 처리시설'},
+  {type:'type2',name:'자동차 관련시설(정비공장,운전학원,정비학원)'},
+  {type:'type2',name:'동물 및 식물관련시설'},
+  {type:'type2',name:'분뇨 및 쓰레기처리시설'},
+  {type:'type2',name:'교정 및 군사시설'},
+  {type:'type2',name:'묘지관련시설(화장장 제외)'},
+  {type:'type2',name:'관광휴게시설(관망탑 제외)'},
+  {type:'type2',name:'기타 제2종 용도와 유사한 것'},
+  {type:'type3',name:'문화 및 집회시설'},
+  {type:'type3',name:'운수시설(철도시설,공항시설,항만시설,종합여객시설 등)'},
+  {type:'type3',name:'의료시설'},
+  {type:'type3',name:'교육연구시설 중 도서관'},
+  {type:'type3',name:'운동시설'},
+  {type:'type3',name:'숙박시설 중 관광숙박시설'},
+  {type:'type3',name:'발전시설(발전소,집단에너지 공급시설 포함)'},
+  {type:'type3',name:'방송통신시설(방송·통신시설,촬영시설)'},
+  {type:'type3',name:'묘지관련시설 중 화장장'},
+  {type:'type3',name:'관광휴게시설 중 관망탑'},
+  {type:'type3',name:'기타 제3종 용도와 유사한 것'},
+];
 
-        // --- 법정 요율 데이터 테이블 ---
-        const ARCHITECT_USAGES = [
-          { type: 'type1', name: '가설건축물' },
-          { type: 'type1', name: '창고시설(하역장)' },
-          { type: 'type1', name: '자동차관련시설(정비공장, 운전학원·정비학원 제외)' },
-          { type: 'type1', name: '동물 및 식물관련시설(가축용 창고, 관리사, 가축시장, 버섯재배사)' },
-          { type: 'type1', name: '기타 제1종 용도와 유사한 것' },
-          { type: 'type2', name: '공작물(굴뚝·옹벽·고가수조 등)' },
-          { type: 'type2', name: '단독주택' },
-          { type: 'type2', name: '공동주택' },
-          { type: 'type2', name: '제1종 근린생활시설' },
-          { type: 'type2', name: '제2종 근린생활시설' },
-          { type: 'type2', name: '판매시설' },
-          { type: 'type2', name: '장례식장' },
-          { type: 'type2', name: '교육연구시설(도서관 제외)' },
-          { type: 'type2', name: '노유자시설' },
-          { type: 'type2', name: '수련시설' },
-          { type: 'type2', name: '업무시설' },
-          { type: 'type2', name: '숙박시설(관광숙박시설 제외)' },
-          { type: 'type2', name: '위락시설' },
-          { type: 'type2', name: '공장' },
-          { type: 'type2', name: '창고시설(냉장·냉동창고 포함)' },
-          { type: 'type2', name: '위험물저장 및 처리시설' },
-          { type: 'type2', name: '자동차 관련시설(정비공장, 운전학원, 정비학원)' },
-          { type: 'type2', name: '동물 및 식물관련시설' },
-          { type: 'type2', name: '분뇨 및 쓰레기처리시설' },
-          { type: 'type2', name: '교정 및 군사시설' },
-          { type: 'type2', name: '묘지관련시설(화장장 제외)' },
-          { type: 'type2', name: '관광휴게시설(관망탑 제외)' },
-          { type: 'type2', name: '기타 제2종 용도와 유사한 것' },
-          { type: 'type3', name: '문화 및 집회시설' },
-          { type: 'type3', name: '운수시설(철도시설, 공항시설, 항만시설, 종합여객 시설 등)' },
-          { type: 'type3', name: '의료시설' },
-          { type: 'type3', name: '교육연구시설 중 도서관' },
-          { type: 'type3', name: '운동시설' },
-          { type: 'type3', name: '숙박시설 중 관광숙박시설' },
-          { type: 'type3', name: '발전시설(발전소, 집단에너지 공급시설 포함)' },
-          { type: 'type3', name: '방송통신시설(방송․통신시설, 촬영시설)' },
-          { type: 'type3', name: '묘지관련시설 중 화장장' },
-          { type: 'type3', name: '관광휴게시설 중 관망탑' },
-          { type: 'type3', name: '기타 제3종 용도와 유사한 것' }
-        ];
+const SUPERVISION_TABLE=[
+  {cost:50000000,type1:2.02,type2:2.24,type3:2.46},
+  {cost:100000000,type1:1.90,type2:2.11,type3:2.32},
+  {cost:200000000,type1:1.51,type2:1.68,type3:1.85},
+  {cost:300000000,type1:1.39,type2:1.54,type3:1.70},
+  {cost:500000000,type1:1.29,type2:1.43,type3:1.57},
+  {cost:1000000000,type1:1.11,type2:1.23,type3:1.35},
+  {cost:2000000000,type1:1.02,type2:1.13,type3:1.24},
+  {cost:3000000000,type1:0.98,type2:1.09,type3:1.20},
+  {cost:5000000000,type1:0.96,type2:1.07,type3:1.18},
+  {cost:10000000000,type1:0.94,type2:1.04,type3:1.14},
+  {cost:20000000000,type1:0.91,type2:1.01,type3:1.11},
+  {cost:30000000000,type1:0.90,type2:1.00,type3:1.10},
+  {cost:50000000000,type1:0.88,type2:0.98,type3:1.08},
+  {cost:100000000000,type1:0.87,type2:0.97,type3:1.07},
+  {cost:200000000000,type1:0.86,type2:0.95,type3:1.05},
+  {cost:300000000000,type1:0.85,type2:0.94,type3:1.03},
+  {cost:500000000000,type1:0.84,type2:0.93,type3:1.02},
+];
 
-        const ARCHITECT_SUPERVISION = [
-          { cost: 50000000, type1: 2.02, type2: 2.24, type3: 2.46 },
-          { cost: 100000000, type1: 1.90, type2: 2.11, type3: 2.32 },
-          { cost: 200000000, type1: 1.51, type2: 1.68, type3: 1.85 },
-          { cost: 300000000, type1: 1.39, type2: 1.54, type3: 1.70 },
-          { cost: 500000000, type1: 1.29, type2: 1.43, type3: 1.57 },
-          { cost: 1000000000, type1: 1.11, type2: 1.23, type3: 1.35 },
-          { cost: 2000000000, type1: 1.02, type2: 1.13, type3: 1.24 },
-          { cost: 3000000000, type1: 0.98, type2: 1.09, type3: 1.20 },
-          { cost: 5000000000, type1: 0.96, type2: 1.07, type3: 1.18 },
-          { cost: 10000000000, type1: 0.94, type2: 1.04, type3: 1.14 },
-          { cost: 20000000000, type1: 0.91, type2: 1.01, type3: 1.11 },
-          { cost: 30000000000, type1: 0.90, type2: 1.00, type3: 1.10 },
-          { cost: 50000000000, type1: 0.88, type2: 0.98, type3: 1.08 },
-          { cost: 100000000000, type1: 0.87, type2: 0.97, type3: 1.07 },
-          { cost: 200000000000, type1: 0.86, type2: 0.95, type3: 1.05 },
-          { cost: 300000000000, type1: 0.85, type2: 0.94, type3: 1.03 },
-          { cost: 500000000000, type1: 0.84, type2: 0.93, type3: 1.02 }
-        ];
+const DESIGN_TABLE=[
+  {cost:50000000,type1:[6.81,8.51,10.22],type2:[7.61,9.51,11.41],type3:[8.36,10.46,12.55]},
+  {cost:100000000,type1:[6.25,7.82,9.38],type2:[6.95,8.69,10.43],type3:[7.65,9.56,11.48]},
+  {cost:200000000,type1:[5.44,6.80,8.16],type2:[6.05,7.57,9.08],type3:[6.66,8.33,9.99]},
+  {cost:300000000,type1:[4.72,5.90,7.08],type2:[5.26,6.57,7.88],type3:[5.78,7.23,8.68]},
+  {cost:500000000,type1:[4.30,5.38,6.46],type2:[4.79,5.98,7.18],type3:[5.26,6.58,7.90]},
+  {cost:1000000000,type1:[3.83,4.79,5.75],type2:[4.26,5.32,6.39],type3:[4.68,5.86,7.03]},
+  {cost:2000000000,type1:[3.40,4.24,5.09],type2:[3.77,4.72,5.66],type3:[4.15,5.19,6.22]},
+  {cost:3000000000,type1:[3.23,4.03,4.84],type2:[3.58,4.48,5.38],type3:[3.94,4.93,5.91]},
+  {cost:5000000000,type1:[3.12,3.90,4.68],type2:[3.46,4.33,5.20],type3:[3.81,4.76,5.72]},
+  {cost:10000000000,type1:[3.04,3.80,4.56],type2:[3.38,4.22,5.07],type3:[3.72,4.65,5.58]},
+  {cost:20000000000,type1:[2.96,3.69,4.43],type2:[3.28,4.10,4.92],type3:[3.61,4.51,5.42]},
+  {cost:30000000000,type1:[2.91,3.63,4.36],type2:[3.23,4.03,4.84],type3:[3.55,4.44,5.32]},
+  {cost:50000000000,type1:[2.87,3.58,4.30],type2:[3.18,3.98,4.77],type3:[3.50,4.38,5.25]},
+  {cost:100000000000,type1:[2.80,3.50,4.21],type2:[3.12,3.90,4.68],type3:[3.43,4.29,5.14]},
+  {cost:200000000000,type1:[2.76,3.45,4.14],type2:[3.07,3.84,4.60],type3:[3.38,4.22,5.06]},
+  {cost:300000000000,type1:[2.73,3.42,4.10],type2:[3.03,3.79,4.55],type3:[3.34,4.17,5.01]},
+  {cost:500000000000,type1:[2.69,3.36,4.03],type2:[2.99,3.73,4.48],type3:[3.28,4.11,4.93]},
+];
 
-        const ARCHITECT_DESIGN = [
-          { cost: 50000000, type1: [6.81, 8.51, 10.22], type2: [7.61, 9.51, 11.41], type3: [8.36, 10.46, 12.55] },
-          { cost: 100000000, type1: [6.25, 7.82, 9.38], type2: [6.95, 8.69, 10.43], type3: [7.65, 9.56, 11.48] },
-          { cost: 200000000, type1: [5.44, 6.80, 8.16], type2: [6.05, 7.57, 9.08], type3: [6.66, 8.33, 9.99] },
-          { cost: 300000000, type1: [4.72, 5.90, 7.08], type2: [5.26, 6.57, 7.88], type3: [5.78, 7.23, 8.68] },
-          { cost: 500000000, type1: [4.30, 5.38, 6.46], type2: [4.79, 5.98, 7.18], type3: [5.26, 6.58, 7.90] },
-          { cost: 1000000000, type1: [3.83, 4.79, 5.75], type2: [4.26, 5.32, 6.39], type3: [4.68, 5.86, 7.03] },
-          { cost: 2000000000, type1: [3.40, 4.24, 5.09], type2: [3.77, 4.72, 5.66], type3: [4.15, 5.19, 6.22] },
-          { cost: 3000000000, type1: [3.23, 4.03, 4.84], type2: [3.58, 4.48, 5.38], type3: [3.94, 4.93, 5.91] },
-          { cost: 5000000000, type1: [3.12, 3.90, 4.68], type2: [3.46, 4.33, 5.20], type3: [3.81, 4.76, 5.72] },
-          { cost: 10000000000, type1: [3.04, 3.80, 4.56], type2: [3.38, 4.22, 5.07], type3: [3.72, 4.65, 5.58] },
-          { cost: 20000000000, type1: [2.96, 3.69, 4.43], type2: [3.28, 4.10, 4.92], type3: [3.61, 4.51, 5.42] },
-          { cost: 30000000000, type1: [2.91, 3.63, 4.36], type2: [3.23, 4.03, 4.84], type3: [3.55, 4.44, 5.32] },
-          { cost: 50000000000, type1: [2.87, 3.58, 4.30], type2: [3.18, 3.98, 4.77], type3: [3.50, 4.38, 5.25] },
-          { cost: 100000000000, type1: [2.80, 3.50, 4.21], type2: [3.12, 3.90, 4.68], type3: [3.43, 4.29, 5.14] },
-          { cost: 200000000000, type1: [2.76, 3.45, 4.14], type2: [3.07, 3.84, 4.60], type3: [3.38, 4.22, 5.06] },
-          { cost: 300000000000, type1: [2.73, 3.42, 4.10], type2: [3.03, 3.79, 4.55], type3: [3.34, 4.17, 5.01] },
-          { cost: 500000000000, type1: [2.69, 3.36, 4.03], type2: [2.99, 3.73, 4.48], type3: [3.28, 4.11, 4.93] }
-        ];
+const GREEN_OPTS=[{label:'미적용',value:0},{label:'최우수 (9.5%)',value:9.5},{label:'우수 (9.0%)',value:9.0},{label:'우량 (8.5%)',value:8.5},{label:'일반 (8.0%)',value:8.0}];
+const IBS_OPTS=[{label:'미적용',value:0},{label:'1등급 (7.0%)',value:7.0},{label:'2등급 (6.5%)',value:6.5},{label:'3등급 (6.0%)',value:6.0},{label:'4등급 (5.5%)',value:5.5},{label:'5등급 (5.0%)',value:5.0}];
+const ENERGY_OPTS=[{label:'미적용',value:0},{label:'1+++~1++ (7.5%)',value:7.5},{label:'1+~1 (7.0%)',value:7.0},{label:'2~3등급 (6.5%)',value:6.5},{label:'4~5등급 (6.0%)',value:6.0},{label:'6~7등급 (5.5%)',value:5.5}];
+const ZERO_OPTS=[{label:'미적용',value:0},{label:'1등급 (10.0%)',value:10.0},{label:'2등급 (9.5%)',value:9.5},{label:'3등급 (9.0%)',value:9.0},{label:'4등급 (8.5%)',value:8.5},{label:'5등급 (8.0%)',value:8.0}];
 
-        // --- 인증별 세부 등급 정의 ---
-        const GREEN_OPTIONS = [
-          { label: '미적용', value: 0 },
-          { label: '최우수 (9.5%)', value: 9.5 },
-          { label: '우수 (9.0%)', value: 9.0 },
-          { label: '우량 (8.5%)', value: 8.5 },
-          { label: '일반 (8.0%)', value: 8.0 },
-        ];
-        const IBS_OPTIONS = [
-          { label: '미적용', value: 0 },
-          { label: '1등급 (7.0%)', value: 7.0 },
-          { label: '2등급 (6.5%)', value: 6.5 },
-          { label: '3등급 (6.0%)', value: 6.0 },
-          { label: '4등급 (5.5%)', value: 5.5 },
-          { label: '5등급 (5.0%)', value: 5.0 },
-        ];
-        const ENERGY_OPTIONS = [
-          { label: '미적용', value: 0 },
-          { label: '1+++ ~ 1++등급 (7.5%)', value: 7.5 },
-          { label: '1+ ~ 1등급 (7.0%)', value: 7.0 },
-          { label: '2~3등급 (6.5%)', value: 6.5 },
-          { label: '4~5등급 (6.0%)', value: 6.0 },
-          { label: '6~7등급 (5.5%)', value: 5.5 },
-        ];
-        const ZERO_OPTIONS = [
-          { label: '미적용', value: 0 },
-          { label: '1등급 (10.0%)', value: 10.0 },
-          { label: '2등급 (9.5%)', value: 9.5 },
-          { label: '3등급 (9.0%)', value: 9.0 },
-          { label: '4등급 (8.5%)', value: 8.5 },
-          { label: '5등급 (8.0%)', value: 8.0 },
-        ];
+const fmt=n=>n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
-        function App() {
-          const reportRef = useRef(null);
+/* ══════════ MODAL ══════════ */
+const InfoModal=({onClose})=>{
+  const [itab,setItab]=useState('intro');
+  return(
+    <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div className="modal-box">
+        <div className="mhd">
+          <div className="mhd-row">
+            <div>
+              <div style={{fontSize:'17px',fontWeight:900,letterSpacing:'-.01em'}}>📐 산출 안내</div>
+              <div style={{fontSize:'10px',color:'rgba(255,255,255,.6)',marginTop:'3px',fontWeight:600}}>공공발주사업에 대한 건축사의 업무범위와 대가기준 · 국토교통부고시 제2020-635호</div>
+            </div>
+            <button className="mclose" onClick={onClose}>✕</button>
+          </div>
+          <div className="mitabs">
+            {[['intro','📋 개요'],['design','✏️ 설계대가'],['supervision','🏗️ 감리대가'],['formula','📐 보간법'],['cert','🏅 인증할증'],['kind','🏢 건물종별']].map(([k,l])=>(
+              <button key={k} className={`mitab${itab===k?' on':''}`} onClick={()=>setItab(k)}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div className="mbd">
 
-          const [projectName, setProjectName] = useState('만민 건축사 신사옥 신축공사 설계용역');
-          const [costInput, setCostInput] = useState('1600000000');
-          const [taskType, setTaskType] = useState('design'); 
-          const [buildingUsage, setBuildingUsage] = useState(ARCHITECT_USAGES[7].name); 
-          const [docLevel, setDocLevel] = useState(1); 
-          const [layoutType, setLayoutType] = useState('MOBILE');
-          const [isSpecialEquipment, setIsSpecialEquipment] = useState(false);
-          const [isExporting, setIsExporting] = useState(false);
+          {/* 개요 */}
+          {itab==='intro'&&(
+            <div>
+              <div className="msec">적용 법령 및 범위</div>
+              <div className="mcard">
+                <div style={{fontWeight:800,fontSize:'12px',color:'#1a2744',marginBottom:'8px'}}>공공발주사업에 대한 건축사의 업무범위와 대가기준</div>
+                <div style={{fontSize:'11px',color:'#374151',lineHeight:1.9}}>
+                  · <strong>근거 법령:</strong> 건축사법 제19조의3<br/>
+                  · <strong>고시번호:</strong> 국토교통부고시 제2020-635호 (2020. 9. 14. 시행)<br/>
+                  · <strong>적용 대상:</strong> 공공기관이 건축사의 업무를 발주하는 경우<br/>
+                  · <strong>대가 방식:</strong> 공사비요율 또는 실비정액가산식 중 선택<br/>
+                  · <strong>부가가치세:</strong> 부가가치세법에 따라 별도 계상
+                </div>
+              </div>
+              <div className="msec">업무 범위 요약</div>
+              <div className="mg2">
+                {[
+                  {t:'설계업무',c:'#eff6ff',bc:'#bfdbfe',tc:'#1d4ed8',items:['기획업무 (설계대가의 3~8%)','계획설계 (일괄 20%)','중간설계 (일괄 30%)','실시설계 (일괄 50%)','사후설계관리업무 (실비정액)']},
+                  {t:'감리업무',c:'#f0fdf4',bc:'#a7f3d0',tc:'#059669',items:['공사시행 중 수시 감리','상주감리 (건축사보 배치)','다중이용건축물 감리','사후관리 매뉴얼 작성']},
+                ].map(({t,c,bc,tc,items})=>(
+                  <div key={t} style={{background:c,border:`1.5px solid ${bc}`,borderRadius:'10px',padding:'13px'}}>
+                    <div style={{fontSize:'13px',fontWeight:900,color:tc,marginBottom:'8px'}}>{t}</div>
+                    {items.map(i=><div key={i} style={{fontSize:'10px',color:'#374151',lineHeight:1.8}}>· {i}</div>)}
+                  </div>
+                ))}
+              </div>
+              <div className="msec">공사비 정의</div>
+              <div className="mhi">
+                <strong>공사비</strong> = 발주자의 공사비 총예정금액(자재대 포함)<br/>
+                <strong>제외 항목:</strong> 용지비, 보상비, 법률수속비, 부가가치세<br/>
+                · 공사비가 5,000만원 미만인 경우 → 5,000만원으로 간주 산출<br/>
+                · 공사비가 5,000억원 초과 시 → 별도 공식 적용
+              </div>
+            </div>
+          )}
 
-          // 추가 할증 인증 상태
-          const [isRemodel, setIsRemodel] = useState(false);
-          const [isBF, setIsBF] = useState(false);
-          const [certGreen, setCertGreen] = useState(0);
-          const [certIntelligent, setCertIntelligent] = useState(0);
-          const [certZero, setCertZero] = useState(0);
-          const [certEnergy, setCertEnergy] = useState(0);
+          {/* 설계대가 */}
+          {itab==='design'&&(
+            <div>
+              <div className="msec">설계대가 산정 방법 (별표 4)</div>
+              <div className="mcard">
+                <div style={{fontSize:'12px',fontWeight:800,color:'#1a2744',marginBottom:'8px'}}>대가 = 공사비 × 요율(%)</div>
+                <div style={{fontSize:'11px',color:'#374151',lineHeight:1.9}}>
+                  · 종별(난이도) × 도서작성 구분(기본/중급/상급) 조합으로 요율 결정<br/>
+                  · 공사비가 구간 사이에 있는 경우 → <strong>직선보간법</strong> 적용<br/>
+                  · 할증 인증이 있는 경우 → 기본 대가에 추가 가산
+                </div>
+              </div>
+              <div className="msec">도서작성 구분 (제10조)</div>
+              <div className="mg2">
+                {[
+                  {g:'기본',c:'#f8fafc',bc:'#e4e9f0',desc:'인·허가 관련 최소한의 설계도서'},
+                  {g:'중급',c:'#eff6ff',bc:'#bfdbfe',desc:'공종별 공사비 산정을 위한 설계도서'},
+                  {g:'상급',c:'#fefce8',bc:'#fde047',desc:'세부 공사비 산정을 위한 구체적 도서'},
+                ].map(({g,c,bc,desc})=>(
+                  <div key={g} style={{background:c,border:`1.5px solid ${bc}`,borderRadius:'9px',padding:'11px',textAlign:'center'}}>
+                    <div style={{fontSize:'15px',fontWeight:900,color:'#1a2744',marginBottom:'5px'}}>{g}</div>
+                    <div style={{fontSize:'10px',color:'#475569',lineHeight:1.6}}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="msec">설계 단계별 업무비율 (분리발주)</div>
+              <table className="mtbl">
+                <thead><tr><th>구분</th><th>일괄수행</th><th>발주자 요청 분리수행</th></tr></thead>
+                <tbody>
+                  {[['계획설계','20%','25%'],['중간설계','30%','35%'],['실시설계','50%','60%'],['계','100%','120%']].map(([g,a,b])=>(
+                    <tr key={g}><td>{g}</td><td style={{textAlign:'center',fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>{a}</td><td style={{textAlign:'center',fontFamily:'JetBrains Mono,monospace',fontWeight:700,color:'#1d4ed8'}}>{b}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="note" style={{marginTop:'8px'}}>※ 분리수행 시 합계가 120%인 이유: 단계 간 조정 업무 등 추가 비용 포함</div>
+              <div className="msec">추가 업무 대가 (제11조)</div>
+              <div className="mhi amber">
+                · 리모델링·인테리어 설계: 기본 대가의 <strong>1.5배</strong><br/>
+                · 전통양식 설계: 기본 대가의 <strong>1.5배</strong> (건물종별 제3종 중급 적용)<br/>
+                · 공사비 200억 이상 혁신디자인: 총 설계비의 <strong>10% 이내</strong> 추가 가능<br/>
+                · BF 인증: 인증 심의 대응비용 <strong>실비정액가산식</strong>으로 별도 산정
+              </div>
+            </div>
+          )}
 
-          const [result, setResult] = useState(null);
+          {/* 감리대가 */}
+          {itab==='supervision'&&(
+            <div>
+              <div className="msec">감리대가 산정 방법 (별표 5)</div>
+              <div className="mcard">
+                <div style={{fontSize:'12px',fontWeight:800,color:'#1a2744',marginBottom:'8px'}}>대가 = 공사비 × 요율(%)</div>
+                <div style={{fontSize:'11px',color:'#374151',lineHeight:1.9}}>
+                  · 건물 종별(제1종/2종/3종)에 따른 요율 적용<br/>
+                  · 공사비 구간 사이 → 직선보간법 적용<br/>
+                  · <strong>상주감리(나목)</strong>: 건축사보 배치 기간 전체 실비정액가산식
+                </div>
+              </div>
+              <div className="msec">감리 유형 (제5조 제2호)</div>
+              {[
+                {t:'가목 — 비상주 감리',d:'수시 또는 필요한 때 공사현장 감리 · 별표5 요율 적용'},
+                {t:'나목 — 상주 감리',d:'건축사보 1인 이상 공사기간 전체 상주 · 실비정액가산식'},
+                {t:'다목 — 다중이용건축물 등',d:'아파트·다중이용건축물 등 발주자 요청 시 · 실비정액가산식'},
+              ].map(({t,d})=>(
+                <div key={t} className="mcard" style={{marginBottom:'6px'}}>
+                  <div style={{fontSize:'11px',fontWeight:800,color:'#1d4ed8',marginBottom:'4px'}}>{t}</div>
+                  <div style={{fontSize:'11px',color:'#475569',lineHeight:1.6}}>{d}</div>
+                </div>
+              ))}
+              <div className="msec">별표5 요율 구간 예시 (제2종 보통)</div>
+              <table className="mtbl">
+                <thead><tr><th>공사비</th><th>제1종(단순)</th><th>제2종(보통)</th><th>제3종(복잡)</th></tr></thead>
+                <tbody>
+                  {[['5천만원이하','2.02','2.24','2.46'],['1억원','1.90','2.11','2.32'],['5억원','1.29','1.43','1.57'],['10억원','1.11','1.23','1.35'],['50억원','0.96','1.07','1.18'],['100억원','0.94','1.04','1.14'],['500억원','0.88','0.98','1.08']].map(([c,t1,t2,t3])=>(
+                    <tr key={c}><td>{c}</td><td style={{textAlign:'center'}}>{t1}</td><td style={{textAlign:'center',color:'#1d4ed8',fontWeight:700}}>{t2}</td><td style={{textAlign:'center'}}>{t3}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-          // ═══ PWA 설치 프롬프트 ═══
-          const [installPrompt, setInstallPrompt] = useState(null);
-          const [showInstallBanner, setShowInstallBanner] = useState(false);
+          {/* 보간법 */}
+          {itab==='formula'&&(
+            <div>
+              <div className="msec">직선보간법 산출식 (제16조)</div>
+              <div style={{background:'linear-gradient(135deg,#eff6ff,#f0fdf4)',border:'1px solid #bfdbfe',borderRadius:'12px',padding:'16px 20px',textAlign:'center',marginBottom:'12px'}}>
+                <div style={{fontSize:'12px',color:'#6b7a99',marginBottom:'8px',fontWeight:600}}>공사비 요율 산출식</div>
+                <div style={{fontSize:'16px',fontWeight:900,color:'#1d4ed8',fontFamily:'JetBrains Mono,monospace',lineHeight:1.6}}>
+                  Y = y1 − (X − x2) × (y1 − y2) ÷ (x1 − x2)
+                </div>
+              </div>
+              <table className="mtbl" style={{marginBottom:'12px'}}>
+                <thead><tr><th>기호</th><th>설명</th><th>비고</th></tr></thead>
+                <tbody>
+                  {[['Y','당해 공사비 요율 (%)','보간법으로 산출되는 값'],['X','당해 공사비 (원)','실제 입력 공사비'],['x1','큰 금액 구간','요율표 상위 구간'],['x2','작은 금액 구간','요율표 하위 구간'],['y1','작은 금액의 요율 (%)','하위 구간 요율'],['y2','큰 금액의 요율 (%)','상위 구간 요율']].map(([s,n,d])=>(
+                    <tr key={s}><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700,color:'#1d4ed8'}}>{s}</td><td>{n}</td><td style={{color:'#6b7a99',fontSize:'10px'}}>{d}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mhi">
+                <strong>💡 적용 예시</strong><br/>
+                공사비 16억원, 제2종(보통), 중급 설계의 경우:<br/>
+                x2 = 10억(요율 5.32%), x1 = 20억(요율 4.72%)<br/>
+                Y = 5.32 − (16억 − 10억) × (5.32 − 4.72) ÷ (20억 − 10억)<br/>
+                Y = 5.32 − 0.36 = <strong>4.960%</strong>
+              </div>
+              <div className="msec">특수 구간 처리</div>
+              <div className="mhi amber">
+                · 공사비 5,000만원 미만 → <strong>5,000만원으로 간주</strong> 산출<br/>
+                · 공사비 5,000억원 초과 → 별도 공식 적용 (평균급여액 × 소요인원 방식)<br/>
+                · 공사비가 구간 경계값과 일치 → 보간법 미적용, 해당 요율 직접 사용
+              </div>
+            </div>
+          )}
 
-          useEffect(() => {
-              const handler = (e) => {
-                  e.preventDefault();
-                  setInstallPrompt(e);
-                  if (!window.matchMedia('(display-mode: standalone)').matches) {
-                      setShowInstallBanner(true);
-                  }
-              };
-              window.addEventListener('beforeinstallprompt', handler);
-              return () => window.removeEventListener('beforeinstallprompt', handler);
-          }, []);
-
-          const handleInstall = async () => {
-              if (!installPrompt) return;
-              installPrompt.prompt();
-              const choice = await installPrompt.userChoice;
-              if (choice.outcome === 'accepted') console.log('[PWA] 설치 완료');
-              setInstallPrompt(null);
-              setShowInstallBanner(false);
-          };
-
-          const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-          const handleCostChange = (e) => {
-            const value = e.target.value.replace(/[^0-9]/g, '');
-            setCostInput(value);
-          };
-
-          const currentUsageObj = ARCHITECT_USAGES.find(u => u.name === buildingUsage);
-          const currentType = currentUsageObj ? currentUsageObj.type : 'type2';
-
-          const calculateFees = () => {
-            let rawCost = parseFloat(costInput);
-            if (isNaN(rawCost) || rawCost <= 0) { setResult(null); return; }
-
-            let targetCost = rawCost;
-            let currentTable = taskType === 'design' ? ARCHITECT_DESIGN : ARCHITECT_SUPERVISION;
-            let currentTypeKey = 'type2'; 
-            let selectedLevelName = '보통(제2종)';
-            let getRate;
-
-            if (currentUsageObj) {
-              currentTypeKey = currentUsageObj.type;
-              let isUpgraded = false;
-              if (isSpecialEquipment) {
-                if (currentTypeKey === 'type1') { currentTypeKey = 'type2'; isUpgraded = true; }
-                else if (currentTypeKey === 'type2') { currentTypeKey = 'type3'; isUpgraded = true; }
-              }
-              selectedLevelName = currentTypeKey === 'type1' ? '단순(제1종)' : currentTypeKey === 'type2' ? '보통(제2종)' : '복잡(제3종)';
-              if (isUpgraded) selectedLevelName += ' (특수설비 상향적용)';
-            }
-            
-            if (taskType === 'design') {
-              getRate = (entry) => entry[currentTypeKey][docLevel];
-              const docLevelText = docLevel === 0 ? '기본' : docLevel === 1 ? '중급' : '상급';
-              selectedLevelName += ` (${docLevelText} 도서)`;
-            } else {
-              getRate = (entry) => entry[currentTypeKey];
-            }
-
-            // 요율 구간 직선보간법 산출
-            let r_y1 = 0, r_y2 = 0, r_x2 = 0, r_x1 = 0, finalRate = 0;
-            let isInterpolated = false;
-
-            if (targetCost <= currentTable[0].cost) {
-              finalRate = getRate(currentTable[0]);
-              r_x2 = currentTable[0].cost; r_x1 = currentTable[0].cost;
-              r_y1 = finalRate; r_y2 = finalRate;
-            } else if (targetCost >= currentTable[currentTable.length - 1].cost) {
-              finalRate = getRate(currentTable[currentTable.length - 1]);
-              r_x2 = currentTable[currentTable.length - 1].cost; r_x1 = currentTable[currentTable.length - 1].cost;
-              r_y1 = finalRate; r_y2 = finalRate;
-            } else {
-              for (let i = 0; i < currentTable.length - 1; i++) {
-                const c1 = currentTable[i].cost;
-                const c2 = currentTable[i + 1].cost;
-                if (targetCost > c1 && targetCost <= c2) {
-                  const r1 = getRate(currentTable[i]);
-                  const r2 = getRate(currentTable[i + 1]);
-                  r_x2 = c1; r_x1 = c2; r_y1 = r1; r_y2 = r2;
-                  if (targetCost === c2) {
-                    finalRate = r2;
-                  } else {
-                    const interpolated = r1 - ((targetCost - c1) * (r1 - r2)) / (c2 - c1);
-                    finalRate = Math.round(interpolated * 1000) / 1000;
-                    isInterpolated = true;
-                  }
-                  break;
-                }
-              }
-            }
-
-            // 설계 세부 조정 합산 (체감 공식 및 실비정액)
-            let totalAdjustmentRate = 0;
-            let appliedAdjustmentNames = [];
-            let bfNote = '';
-
-            if (taskType === 'design') {
-              // 리모델링 등 일반 비율 적용 (중복 체감 미대상인 경우 합산)
-              if (isRemodel) {
-                totalAdjustmentRate += 50;
-                appliedAdjustmentNames.push(`리모델링(인테리어)(+50%)`);
-              }
-
-              // 인증별 복합 요율 처리 (체감 공식 적용 대상: 녹색, 지능형, 에너지/제로)
-              let certRates = [];
-              if (certGreen > 0) certRates.push({ name: '녹색건축', rate: certGreen });
-              if (certIntelligent > 0) certRates.push({ name: '지능형', rate: certIntelligent });
-              if (certZero > 0) {
-                certRates.push({ name: '제로에너지', rate: certZero });
-              } else if (certEnergy > 0) {
-                certRates.push({ name: '에너지효율', rate: certEnergy });
-              }
-
-              if (certRates.length > 0) {
-                // 내림차순 정렬 (최상위값 A, 차상위값 B, 최하위값 C)
-                certRates.sort((a, b) => b.rate - a.rate);
-                
-                let combinedRate = 0;
-                let certNoteParts = [];
-
-                certRates.forEach((cert, idx) => {
-                  let denominator = idx === 0 ? 1 : (idx === 1 ? 2 : 3);
-                  // 체감공식 산식 적용 및 소수점 2째 자리 반올림
-                  let appliedRate = Math.round((cert.rate / denominator) * 100) / 100; 
-                  combinedRate += appliedRate;
-                  certNoteParts.push(`${cert.name}(+${appliedRate}%)`);
-                });
-
-                totalAdjustmentRate += combinedRate;
-                appliedAdjustmentNames.push(`인증체감합산[${certNoteParts.join(', ')}]`);
-              }
-
-              // BF 인증 실비정액가산 안내 (요율에 미합산)
-              if (isBF) {
-                bfNote = '장애물 없는 생활환경(BF) 인증비용은 실비정액가산식으로 별도 산정(본 대가에 미포함)';
-              }
-            }
-
-            // 부동소수점 오류 방지
-            totalAdjustmentRate = Math.round(totalAdjustmentRate * 100) / 100;
-
-            const rawBaseFee = targetCost * (finalRate / 100);
-            const baseFee = Math.floor(rawBaseFee / 1000) * 1000;
-            const adjustmentAmount = Math.floor((baseFee * (totalAdjustmentRate / 100)) / 1000) * 1000;
-            const finalFee = baseFee + adjustmentAmount;
-            let basisSource = `건축사의 업무범위와 대가기준 [별표${taskType === 'design' ? '4' : '5'}]`;
-
-            setResult({
-              targetCost, finalRate: finalRate.toFixed(3),
-              r_x2, r_x1, r_y1, r_y2,
-              isInterpolated, baseFee,
-              adjustmentRate: totalAdjustmentRate,
-              adjustmentAmount, appliedAdjustmentNames, bfNote,
-              finalFee, basisSource, selectedLevelName
-            });
-          };
-
-          // 의존성 배열에 세부 인증 상태 모두 추가
-          useEffect(() => { 
-            calculateFees(); 
-          }, [costInput, taskType, buildingUsage, docLevel, isSpecialEquipment, isRemodel, isBF, certGreen, certIntelligent, certZero, certEnergy]);
-
-          // 감리로 변경 시 설계 추가 조건 리셋
-          useEffect(() => { 
-            if (taskType === 'supervision') {
-              setIsRemodel(false);
-              setIsBF(false);
-              setCertGreen(0);
-              setCertIntelligent(0);
-              setCertZero(0);
-              setCertEnergy(0);
-            }
-          }, [taskType]);
-
-          const exportToImage = async (format) => {
-            if (!reportRef.current) return;
-            setIsExporting(true);
-            try {
-              await document.fonts.ready;
-              await new Promise(r => setTimeout(r, 150));
-
-              const node = reportRef.current;
-              const scale = 3;
-
-              let dataUrl;
-              if (format === 'png') {
-                dataUrl = await window.domtoimage.toPng(node, {
-                  width: node.offsetWidth * scale,
-                  height: node.offsetHeight * scale,
-                  style: {
-                    transform: `scale(${scale})`,
-                    transformOrigin: 'top left',
-                    width: node.offsetWidth + 'px',
-                    height: node.offsetHeight + 'px',
-                  },
-                  fontFamily: "'Noto Sans KR', sans-serif",
-                });
-              } else {
-                const canvas = await window.html2canvas(node, {
-                  scale: scale,
-                  useCORS: true,
-                  allowTaint: true,
-                  backgroundColor: layoutType === 'MOBILE' ? '#0f172a' : '#ffffff',
-                  logging: false,
-                  imageTimeout: 0,
-                  onclone: (clonedDoc) => {
-                    const allElements = clonedDoc.querySelectorAll('*');
-                    allElements.forEach(el => {
-                      el.style.fontFamily = "'Noto Sans KR', sans-serif";
-                    });
-                  }
-                });
-                dataUrl = canvas.toDataURL('image/jpeg', 1.0);
-              }
-
-              const link = document.createElement('a');
-              link.href = dataUrl;
-              link.download = `산출내역_${projectName}_${layoutType}.${format}`;
-              link.click();
-            } catch (err) {
-              console.error("이미지 저장 실패:", err);
-              alert("저장 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
-            } finally {
-              setIsExporting(false);
-            }
-          };
-
-          return (
-            <>
-            <div className="min-h-screen bg-slate-50 p-4 md:p-8 text-slate-800">
-              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                {/* === 왼쪽: 설정 패널 === */}
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 space-y-7">
-                    <h2 className="text-xl font-extrabold flex items-center text-slate-800 border-b border-slate-100 pb-4">
-                      <Settings className="w-6 h-6 mr-2 text-blue-600"/>
-                      공공기관 설계·감리비 산출
-                    </h2>
-
-                    <div className="space-y-3">
-                      <label className="block text-sm font-bold text-slate-700">출력물 양식 선택</label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => setLayoutType('A4')} className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${layoutType === 'A4' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-300'}`}>
-                          <FileText className="w-8 h-8 mb-2" />
-                          <span className="font-bold text-sm">A4 규격 (보고서용)</span>
-                        </button>
-                        <button onClick={() => setLayoutType('MOBILE')} className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${layoutType === 'MOBILE' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-white text-slate-500 hover:border-slate-300'}`}>
-                          <Smartphone className="w-8 h-8 mb-2" />
-                          <span className="font-bold text-sm">모바일 규격 (영상용)</span>
-                        </button>
+          {/* 인증할증 */}
+          {itab==='cert'&&(
+            <div>
+              <div className="msec">인증별 추가 요율 (제11조 제4항)</div>
+              <div className="mg2">
+                {[
+                  {t:'녹색건축 인증',c:'#f0fdf4',bc:'#a7f3d0',tc:'#059669',rates:[['최우수','9.5%'],['우수','9.0%'],['우량','8.5%'],['일반','8.0%']]},
+                  {t:'지능형건축물(IBS)',c:'#eff6ff',bc:'#bfdbfe',tc:'#1d4ed8',rates:[['1등급','7.0%'],['2등급','6.5%'],['3등급','6.0%'],['4등급','5.5%'],['5등급','5.0%']]},
+                  {t:'에너지효율등급',c:'#fefce8',bc:'#fde047',tc:'#854d0e',rates:[['1+++~1++','7.5%'],['1+~1','7.0%'],['2~3','6.5%'],['4~5','6.0%'],['6~7','5.5%']]},
+                  {t:'제로에너지건축물',c:'#fff1f2',bc:'#fecdd3',tc:'#be123c',rates:[['1등급','10.0%'],['2등급','9.5%'],['3등급','9.0%'],['4등급','8.5%'],['5등급','8.0%']]},
+                ].map(({t,c,bc,tc,rates})=>(
+                  <div key={t} style={{background:c,border:`1.5px solid ${bc}`,borderRadius:'10px',padding:'12px'}}>
+                    <div style={{fontSize:'11px',fontWeight:800,color:tc,marginBottom:'8px'}}>{t}</div>
+                    {rates.map(([g,r])=>(
+                      <div key={g} style={{display:'flex',justifyContent:'space-between',fontSize:'10px',padding:'3px 0',borderBottom:`1px solid ${bc}`,color:'#374151'}}>
+                        <span>{g}</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700,color:tc}}>{r}</span>
                       </div>
-                    </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <div className="msec">복합 인증 체감 공식 (제11조 제4항 6호)</div>
+              <div className="meq">추가요율 = A + B/2 + C/3</div>
+              <div style={{fontSize:'11px',color:'#374151',lineHeight:1.9,marginBottom:'10px'}}>
+                <strong>A</strong> = 최상위 인증 요율 &nbsp; <strong>B</strong> = 차상위 인증 요율 &nbsp; <strong>C</strong> = 최하위 인증 요율<br/>
+                ※ 제로에너지 인증 시 에너지효율등급 요율 중복 불가
+              </div>
+              <div className="mhi amber">
+                <strong>⚠ BF 인증 주의</strong><br/>
+                장애물 없는 생활환경(BF) 인증 관련 대가는 별도 계상 없이<br/>
+                <strong>실비정액가산식</strong>으로 인증 심의 대응비용만 산정합니다.
+              </div>
+            </div>
+          )}
 
-                    <div className="space-y-2">
-                      <label className="block text-sm font-bold text-slate-700">용역명 (프로젝트명)</label>
-                      <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)}
-                        className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700"/>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="block text-sm font-bold text-slate-700">예정 공사비 (원)</label>
-                      <div className="relative">
-                        <input type="text" value={formatNumber(costInput)} onChange={handleCostChange}
-                          className="w-full pl-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-right font-black text-xl text-blue-700" placeholder="0"/>
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">원</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="block text-sm font-bold text-slate-700">업무 종류</label>
-                      <div className="flex bg-slate-100 p-1.5 rounded-xl">
-                        <button onClick={() => setTaskType('design')} className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${taskType === 'design' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}>설계 (Design)</button>
-                        <button onClick={() => setTaskType('supervision')} className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${taskType === 'supervision' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}>공사감리 (Supervision)</button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 animate-fadeIn">
-                      <label className="block text-sm font-bold text-slate-700">건축물 용도 [별표 3]</label>
-                      <select value={buildingUsage} onChange={(e) => { setBuildingUsage(e.target.value); const selected = ARCHITECT_USAGES.find(u => u.name === e.target.value); if (selected && selected.type === 'type3') setIsSpecialEquipment(false); }}
-                        className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
-                        <optgroup label="■ 제1종 (단순)">{ARCHITECT_USAGES.filter(u => u.type === 'type1').map(u => <option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
-                        <optgroup label="■ 제2종 (보통)">{ARCHITECT_USAGES.filter(u => u.type === 'type2').map(u => <option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
-                        <optgroup label="■ 제3종 (복잡)">{ARCHITECT_USAGES.filter(u => u.type === 'type3').map(u => <option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
-                      </select>
-                      {currentType !== 'type3' && (
-                        <label className="flex items-start mt-3 cursor-pointer bg-amber-50 p-3 rounded-xl border border-amber-200 hover:bg-amber-100 transition-colors">
-                          <input type="checkbox" checked={isSpecialEquipment} onChange={(e) => setIsSpecialEquipment(e.target.checked)} className="mr-2 mt-0.5 w-4 h-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded shrink-0"/>
-                          <span className="text-[12px] font-bold text-amber-800 tracking-tight leading-snug">
-                            {currentType === 'type1' ? '※ 제1종 시설로서 공기조화 설비 등 특수설비를 요하는 시설은 제2종을 적용' : '※ 제2종 시설로서 특수구조 또는 공기조화 설비 등 특수설비를 요하는 시설은 제3종을 적용'}
-                          </span>
-                        </label>
-                      )}
-                    </div>
-
-                    {taskType === 'design' && (
-                      <>
-                        <div className="space-y-2 animate-fadeIn">
-                          <label className="block text-sm font-bold text-slate-700">도서작성 수준 [별표 4]</label>
-                          <div className="flex bg-slate-100 p-1.5 rounded-xl">
-                            {['기본', '중급', '상급'].map((level, idx) => (
-                              <button key={idx} onClick={() => setDocLevel(idx)} className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${docLevel === idx ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}>{level}</button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* ★ 세부 조정 및 다중 인증 처리 섹션 */}
-                        <div className="space-y-3 animate-fadeIn pt-4 border-t border-slate-100">
-                          <label className="block text-sm font-bold text-slate-700 flex items-center mb-3">
-                            <PlusCircle className="w-4 h-4 mr-1 text-indigo-500"/>
-                            설계 대가 세부 조정 및 인증 (가산요율)
-                          </label>
-                          
-                          {/* 1. 체크박스 영역 (리모델링 및 BF인증) */}
-                          <div className="flex flex-wrap gap-4 mb-4 pb-4 border-b border-slate-50">
-                            <label className="flex items-center cursor-pointer bg-white border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors">
-                              <input type="checkbox" checked={isRemodel} onChange={(e) => setIsRemodel(e.target.checked)} className="mr-2 w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"/>
-                              <span className="text-[13px] font-bold text-slate-700">리모델링 (인테리어) +50%</span>
-                            </label>
-                            <label className="flex items-center cursor-pointer bg-white border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors">
-                              <input type="checkbox" checked={isBF} onChange={(e) => setIsBF(e.target.checked)} className="mr-2 w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"/>
-                              <span className="text-[13px] font-bold text-slate-700">BF 인증 (실비정액가산)</span>
-                            </label>
-                          </div>
-
-                          {/* 2. 체감 공식 적용 인증 드롭다운 4종 */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-[11px] font-bold text-slate-500 mb-1">녹색건축 인증</label>
-                              <select value={certGreen} onChange={(e) => setCertGreen(Number(e.target.value))} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-[13px] font-medium text-slate-700">
-                                {GREEN_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-[11px] font-bold text-slate-500 mb-1">지능형건축물(IBS) 인증</label>
-                              <select value={certIntelligent} onChange={(e) => setCertIntelligent(Number(e.target.value))} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-[13px] font-medium text-slate-700">
-                                {IBS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-[11px] font-bold text-slate-500 mb-1">제로에너지 인증</label>
-                              <select value={certZero} onChange={(e) => {
-                                const val = Number(e.target.value);
-                                setCertZero(val);
-                                if (val > 0) setCertEnergy(0); // 제로에너지 선택 시 중복 방지
-                              }} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-[13px] font-medium text-slate-700">
-                                {ZERO_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-[11px] font-bold text-slate-500 mb-1 flex justify-between">
-                                에너지효율등급 인증 {certZero > 0 && <span className="text-red-500 font-bold ml-1">(제로에너지 중복불가)</span>}
-                              </label>
-                              <select value={certEnergy} onChange={(e) => setCertEnergy(Number(e.target.value))} disabled={certZero > 0} 
-                                className={`w-full p-2 border rounded-lg outline-none text-[13px] font-medium transition-colors ${certZero > 0 ? 'bg-red-50 border-red-200 text-red-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 text-slate-700 focus:ring-2 focus:ring-indigo-500'}`}>
-                                {certZero > 0 ? <option value="0">적용 불가 (제로에너지 우선적용)</option> : ENERGY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    
-                    {/* ★ 저장 버튼: PNG(고품질) */}
-                    <div className="flex gap-2 mt-6">
-                      <button onClick={() => exportToImage('png')} disabled={isExporting}
-                        className="flex-1 bg-slate-900 hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-4 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center transform hover:-translate-y-0.5">
-                        <Download className="w-5 h-5 mr-2" />
-                        {isExporting ? '저장 중...' : 'PNG 저장'}
-                      </button>
-                    </div>
+          {/* 건물종별 */}
+          {itab==='kind'&&(
+            <div>
+              <div className="msec">건축물의 종별 구분 (별표 3)</div>
+              {[
+                {k:'제1종 (단순)',c:'#f8fafc',bc:'#e4e9f0',tc:'#6b7a99',items:['가설건축물','창고시설(하역장)','자동차관련시설(정비·운전학원 제외)','동물·식물 관련시설(가축창고·관리사 등)','※ 특수설비 필요 시 제2종 상향 적용']},
+                {k:'제2종 (보통)',c:'#eff6ff',bc:'#bfdbfe',tc:'#1d4ed8',items:['단독주택·공동주택','근린생활시설(1종·2종)','판매·업무·숙박시설(관광숙박 제외)','교육연구시설(도서관 제외)','공장·창고·위험물·교정시설 등','※ 특수구조·특수설비 시 제3종 상향 적용']},
+                {k:'제3종 (복잡)',c:'#fff1f2',bc:'#fecdd3',tc:'#be123c',items:['문화 및 집회시설','운수시설(철도·공항·항만·여객 등)','의료시설','교육연구시설 중 도서관','운동시설','숙박시설 중 관광숙박시설','발전시설·방송통신시설']},
+              ].map(({k,c,bc,tc,items})=>(
+                <div key={k} style={{background:c,border:`1.5px solid ${bc}`,borderRadius:'12px',marginBottom:'10px',overflow:'hidden'}}>
+                  <div style={{background:bc,padding:'9px 14px',fontWeight:900,fontSize:'12px',color:tc}}>{k}</div>
+                  <div style={{padding:'11px 14px',display:'flex',flexWrap:'wrap',gap:'5px'}}>
+                    {items.map(i=>(
+                      <span key={i} style={{fontSize:'10px',color:i.startsWith('※')?tc:'#374151',fontWeight:i.startsWith('※')?700:500,background:'rgba(255,255,255,.7)',borderRadius:'5px',padding:'3px 8px',border:`1px solid ${bc}`}}>{i}</span>
+                    ))}
                   </div>
                 </div>
+              ))}
+              <div className="mhi">
+                <strong>ℹ 적용 원칙</strong><br/>
+                · 혼용 용도 건물: 가장 넓은 바닥면적의 용도 종별 적용<br/>
+                · 면적 동일 시: 더 높은 종별 적용<br/>
+                · 전통양식 설계: 제3종 중급을 기준으로 대가의 1.5배 적용
+              </div>
+            </div>
+          )}
 
-                {/* === 오른쪽: 출력물 미리보기 패널 === */}
-                <div className="lg:col-span-7 overflow-x-auto pb-12 flex justify-center items-start">
-                  {result && (
-                    layoutType === 'A4' ? (
-                      /* ===== A4 규격 출력물 ===== */
-                      <div ref={reportRef} className="print-area bg-white shadow-2xl flex flex-col overflow-hidden"
-                        style={{ width: '794px', height: '1123px', padding: '60px 70px', boxSizing: 'border-box', fontFamily: "'Noto Sans KR', sans-serif" }}>
-                        
-                        <div style={{ textAlign: 'left', marginBottom: '24px', borderBottom: '2px solid black', paddingBottom: '16px', paddingLeft: '8px' }}>
-                          <h1 style={{ fontSize: '28px', fontWeight: '800', color: 'black', letterSpacing: '-0.5px' }}>
-                            {taskType === 'design' ? '설계 용역비 산출서' : '감리 용역비 산출서'}
-                          </h1>
-                        </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-                        <div style={{ marginBottom: '20px', paddingLeft: '8px' }}>
-                          <h2 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '8px', display: 'flex', alignItems: 'center', color: 'black' }}>
-                            <span style={{ marginRight: '8px' }}>●</span> 예정 공사비
-                          </h2>
-                          <div style={{ paddingLeft: '24px', fontSize: '15px', fontWeight: '700', color: 'black' }}>
-                            {formatNumber(result.targetCost)} <span style={{ fontSize: '14px', fontWeight: '400', color: '#374151' }}>원 VAT(별도)</span>
-                          </div>
-                        </div>
+/* ══════════ MAIN APP ══════════ */
+function App(){
+  const reportRef=useRef(null);
+  const a4WrapRef=useRef(null);
 
-                        <div style={{ marginBottom: '20px', paddingLeft: '8px' }}>
-                          <h2 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '8px', display: 'flex', alignItems: 'flex-end', color: 'black', gap: '8px' }}>
-                            <span>●</span> 적용근거
-                            <span style={{ fontSize: '13px', color: '#6b7280', fontWeight: '400' }}>[국토교통부 고시 제 2020-635호, 2020.09.14 적용]</span>
-                          </h2>
-                          <div style={{ paddingLeft: '24px', color: 'black', fontWeight: '500', lineHeight: '1.8', fontSize: '14px' }}>
-                            {result.basisSource} 적용.<br/>
-                            <span style={{ color: '#374151' }}>- 적용 난이도 : {result.selectedLevelName} ({buildingUsage})</span>
-                            {result.appliedAdjustmentNames.length > 0 && (
-                              <span style={{ color: '#4338ca', fontWeight: '700', display: 'block', fontSize: '13px', marginTop: '4px' }}>
-                                - 세부 할증 적용 : {result.appliedAdjustmentNames.join(', ')} (총 +{result.adjustmentRate}%)
-                              </span>
-                            )}
-                          </div>
-                        </div>
+  const [tab,setTab]=useState('input');
+  const [showModal,setShowModal]=useState(false);
+  const [projectName,setProjectName]=useState('만민 건축사 신사옥 신축공사 설계용역');
+  const [costInput,setCostInput]=useState('1600000000');
+  const [taskType,setTaskType]=useState('design');
+  const [buildingUsage,setBuildingUsage]=useState(USAGES[7].name);
+  const [docLevel,setDocLevel]=useState(1);
+  const [isSpecialEquip,setIsSpecialEquip]=useState(false);
+  const [isRemodel,setIsRemodel]=useState(false);
+  const [isBF,setIsBF]=useState(false);
+  const [certGreen,setCertGreen]=useState(0);
+  const [certIBS,setCertIBS]=useState(0);
+  const [certZero,setCertZero]=useState(0);
+  const [certEnergy,setCertEnergy]=useState(0);
+  const [isExporting,setIsExporting]=useState(false);
+  const [installPrompt,setInstallPrompt]=useState(null);
+  const [showPWA,setShowPWA]=useState(false);
+  const [a4Scale,setA4Scale]=useState(0.55);
 
-                        <div style={{ marginBottom: '16px', paddingLeft: '8px', flex: 1 }}>
-                          <h2 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', color: 'black' }}>
-                            <span style={{ marginRight: '8px' }}>●</span> {taskType === 'design' ? '설계' : '감리'}용역비 산출내역
-                          </h2>
-                          <div style={{ paddingLeft: '24px' }}>
-                            {/* 최종 산출금액 */}
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', backgroundColor: '#f9fafb', border: '1px solid #d1d5db', padding: '12px', borderRadius: '2px', whiteSpace: 'nowrap' }}>
-                              <span style={{ color: 'black', fontWeight: '700', marginRight: '16px', fontSize: '14px' }}>최종 산출금액 : </span>
-                              <span style={{ fontSize: '20px', fontWeight: '800', color: '#1e40af', marginRight: '8px' }}>{formatNumber(result.finalFee)}</span>
-                              <span style={{ fontSize: '15px', fontWeight: '700', color: 'black' }}>원 <span style={{ fontSize: '13px', fontWeight: '400' }}>VAT(별도)</span></span>
-                            </div>
+  useEffect(()=>{
+    const h=e=>{e.preventDefault();setInstallPrompt(e);if(!window.matchMedia('(display-mode:standalone)').matches)setShowPWA(true);};
+    window.addEventListener('beforeinstallprompt',h);return()=>window.removeEventListener('beforeinstallprompt',h);
+  },[]);
 
-                            <table style={{ width: '100%', borderCollapse: 'collapse', border: '2px solid black', fontSize: '12px', color: 'black', tableLayout: 'fixed' }}>
-                              <colgroup>
-                                <col style={{ width: '20%' }} />
-                                <col style={{ width: '25%' }} />
-                                <col style={{ width: '55%' }} />
-                              </colgroup>
-                              <tbody>
-                                {/* 구분 영역 - 용역명 */}
-                                <tr style={{ borderBottom: '1px solid black' }}>
-                                  <td rowSpan={result.adjustmentRate > 0 ? 4 : 2} style={{ backgroundColor: '#f3f4f6', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>구 분</td>
-                                  <td style={{ backgroundColor: '#f9fafb', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>용 역 명</td>
-                                  <td style={{ fontWeight: '700', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px' }}>{projectName}</td>
-                                </tr>
+  /* A4 preview scale */
+  useEffect(()=>{
+    const update=()=>{if(a4WrapRef.current){const w=a4WrapRef.current.clientWidth-48;setA4Scale(Math.min(1,Math.max(0.3,w/794)));}};
+    update();const ro=window.ResizeObserver?new ResizeObserver(update):null;
+    if(ro&&a4WrapRef.current)ro.observe(a4WrapRef.current);
+    window.addEventListener('resize',update);
+    return()=>{if(ro)ro.disconnect();window.removeEventListener('resize',update);};
+  },[tab]);
 
-                                {result.adjustmentRate > 0 ? (
-                                  <>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ backgroundColor: '#f9fafb', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>기본 용역비</td>
-                                      <td style={{ fontWeight: '700', color: '#374151', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px' }}>{formatNumber(result.baseFee)} 원</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ backgroundColor: '#eef2ff', fontWeight: '700', color: '#3730a3', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>세부 조정액 (+{result.adjustmentRate}%)</td>
-                                      <td style={{ fontWeight: '700', color: '#4338ca', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px' }}>{formatNumber(result.adjustmentAmount)} 원</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ backgroundColor: '#eff6ff', fontWeight: '800', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>최종 용역비</td>
-                                      <td style={{ backgroundColor: '#eff6ff', fontWeight: '800', color: '#1d4ed8', fontSize: '14px', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px' }}>{formatNumber(result.finalFee)} 원</td>
-                                    </tr>
-                                  </>
-                                ) : (
-                                  <tr style={{ borderBottom: '1px solid black' }}>
-                                    <td style={{ backgroundColor: '#f9fafb', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>용 역 비</td>
-                                    <td style={{ fontWeight: '700', color: '#1d4ed8', fontSize: '14px', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px' }}>{formatNumber(result.finalFee)} 원</td>
-                                  </tr>
-                                )}
+  const handleCostChange=e=>setCostInput(e.target.value.replace(/[^0-9]/g,''));
 
-                                {/* 산출근거 영역 */}
-                                {result.isInterpolated ? (
-                                  <>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td rowSpan={7} style={{ backgroundColor: '#f3f4f6', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>산출근거</td>
-                                      <td style={{ borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>y2 (큰금액요율)</td>
-                                      <td style={{ fontFamily: 'monospace', fontWeight: '600', textAlign: 'center', verticalAlign: 'middle', padding: '8px' }}>{result.r_y2}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>x2 (작은금액)</td>
-                                      <td style={{ fontFamily: 'monospace', fontWeight: '600', textAlign: 'center', verticalAlign: 'middle', padding: '8px' }}>{formatNumber(result.r_x2)}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>y1 (작은금액요율)</td>
-                                      <td style={{ fontFamily: 'monospace', fontWeight: '600', textAlign: 'center', verticalAlign: 'middle', padding: '8px' }}>{result.r_y1}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ borderRight: '1px solid black', fontWeight: '700', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>x (당해금액)</td>
-                                      <td style={{ fontFamily: 'monospace', fontWeight: '700', textAlign: 'center', verticalAlign: 'middle', padding: '8px' }}>{formatNumber(result.targetCost)}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>x1 (큰금액)</td>
-                                      <td style={{ fontFamily: 'monospace', fontWeight: '600', textAlign: 'center', verticalAlign: 'middle', padding: '8px' }}>{formatNumber(result.r_x1)}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ backgroundColor: '#f9fafb', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>산출 요율식</td>
-                                      <td style={{ backgroundColor: '#f9fafb', fontFamily: 'monospace', fontWeight: '600', fontSize: '11px', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'break-all', lineHeight: '1.6' }}>
-                                        {result.r_y1} - ({formatNumber(result.targetCost)} - {formatNumber(result.r_x2)}) × ({result.r_y1} - {result.r_y2}) ÷ ({formatNumber(result.r_x1)} - {formatNumber(result.r_x2)})
-                                      </td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid black' }}>
-                                      <td style={{ backgroundColor: '#f3f4f6', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '8px', wordBreak: 'keep-all' }}>Y (당해공사비요율)</td>
-                                      <td style={{ backgroundColor: '#f3f4f6', fontFamily: 'monospace', fontWeight: '700', color: '#dc2626', fontSize: '14px', textAlign: 'center', verticalAlign: 'middle', padding: '8px' }}>{result.finalRate} %</td>
-                                    </tr>
-                                  </>
-                                ) : (
-                                  <tr style={{ borderBottom: '1px solid black' }}>
-                                    <td style={{ backgroundColor: '#f3f4f6', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>산출근거</td>
-                                    <td style={{ backgroundColor: '#f3f4f6', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>Y (당해공사비요율)</td>
-                                    <td style={{ backgroundColor: '#f3f4f6', fontFamily: 'monospace', fontWeight: '700', color: '#dc2626', fontSize: '14px', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px' }}>{result.finalRate} %</td>
-                                  </tr>
-                                )}
+  const currentUsageObj=USAGES.find(u=>u.name===buildingUsage);
+  const currentType=currentUsageObj?currentUsageObj.type:'type2';
 
-                                {/* 산출방식 영역 */}
-                                <tr style={{ borderBottom: result.bfNote ? '1px solid black' : 'none' }}>
-                                  <td style={{ backgroundColor: '#f3f4f6', fontWeight: '700', borderRight: '1px solid black', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all' }}>산출방식</td>
-                                  <td colSpan={2} style={{ fontWeight: '700', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', fontSize: '12px', wordBreak: 'keep-all' }}>
-                                    {result.isInterpolated 
-                                      ? '직선보간법 적용 [ Y = y1 - (x - x2) × (y1 - y2) ÷ (x1 - x2) ]'
-                                      : '해당 구간 요율 직접 적용 (보간법 제외)'}
-                                  </td>
-                                </tr>
+  /* ══ CORE CALCULATION (unchanged logic) ══ */
+  const result=useMemo(()=>{
+    let rawCost=parseFloat(costInput);
+    if(isNaN(rawCost)||rawCost<=0)return null;
+    let targetCost=rawCost;
+    let tbl=taskType==='design'?DESIGN_TABLE:SUPERVISION_TABLE;
+    let typeKey='type2',selectedLevelName='보통(제2종)';
+    let getRate;
 
-                                {/* BF 인증 실비 안내 문구 표기 */}
-                                {result.bfNote && (
-                                  <tr>
-                                    <td colSpan={3} style={{ backgroundColor: '#fef2f2', fontWeight: '700', color: '#b91c1c', textAlign: 'center', verticalAlign: 'middle', padding: '10px 8px', wordBreak: 'keep-all', fontSize: '13px' }}>
-                                      ※ {result.bfNote}
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
+    if(currentUsageObj){
+      typeKey=currentUsageObj.type;
+      let upgraded=false;
+      if(isSpecialEquip){
+        if(typeKey==='type1'){typeKey='type2';upgraded=true;}
+        else if(typeKey==='type2'){typeKey='type3';upgraded=true;}
+      }
+      selectedLevelName=typeKey==='type1'?'단순(제1종)':typeKey==='type2'?'보통(제2종)':'복잡(제3종)';
+      if(upgraded)selectedLevelName+=' (특수설비 상향적용)';
+    }
+    if(taskType==='design'){
+      getRate=entry=>entry[typeKey][docLevel];
+      const dlTxt=docLevel===0?'기본':docLevel===1?'중급':'상급';
+      selectedLevelName+=` (${dlTxt} 도서)`;
+    }else{
+      getRate=entry=>entry[typeKey];
+    }
 
-                        {/* 하단 서명 */}
-                        <div style={{ marginTop: 'auto', textAlign: 'right', paddingRight: '8px', paddingBottom: '8px' }}>
-                          <span style={{ fontSize: '17px', fontWeight: '800', color: 'black', letterSpacing: '1px', whiteSpace: 'nowrap' }}>Developer MANMIN ver-1.6</span>
+    let ry1=0,ry2=0,rx2=0,rx1=0,finalRate=0,interpolated=false;
+    if(targetCost<=tbl[0].cost){finalRate=getRate(tbl[0]);rx2=tbl[0].cost;rx1=tbl[0].cost;ry1=finalRate;ry2=finalRate;}
+    else if(targetCost>=tbl[tbl.length-1].cost){finalRate=getRate(tbl[tbl.length-1]);rx2=tbl[tbl.length-1].cost;rx1=tbl[tbl.length-1].cost;ry1=finalRate;ry2=finalRate;}
+    else{
+      for(let i=0;i<tbl.length-1;i++){
+        const c1=tbl[i].cost,c2=tbl[i+1].cost;
+        if(targetCost>c1&&targetCost<=c2){
+          const r1=getRate(tbl[i]),r2=getRate(tbl[i+1]);
+          rx2=c1;rx1=c2;ry1=r1;ry2=r2;
+          if(targetCost===c2){finalRate=r2;}
+          else{finalRate=Math.round((r1-((targetCost-c1)*(r1-r2))/(c2-c1))*1000)/1000;interpolated=true;}
+          break;
+        }
+      }
+    }
+
+    let totalAdj=0,adjNames=[],bfNote='';
+    if(taskType==='design'){
+      if(isRemodel){totalAdj+=50;adjNames.push('리모델링(인테리어)(+50%)');}
+      let certRates=[];
+      if(certGreen>0)certRates.push({name:'녹색건축',rate:certGreen});
+      if(certIBS>0)certRates.push({name:'지능형',rate:certIBS});
+      if(certZero>0)certRates.push({name:'제로에너지',rate:certZero});
+      else if(certEnergy>0)certRates.push({name:'에너지효율',rate:certEnergy});
+      if(certRates.length>0){
+        certRates.sort((a,b)=>b.rate-a.rate);
+        let combined=0,parts=[];
+        certRates.forEach((c,i)=>{const den=i===0?1:i===1?2:3;const ar=Math.round((c.rate/den)*100)/100;combined+=ar;parts.push(`${c.name}(+${ar}%)`);});
+        totalAdj+=combined;adjNames.push(`인증체감합산[${parts.join(', ')}]`);
+      }
+      if(isBF)bfNote='장애물 없는 생활환경(BF) 인증비용은 실비정액가산식으로 별도 산정(본 대가에 미포함)';
+    }
+    totalAdj=Math.round(totalAdj*100)/100;
+    const rawBase=targetCost*(finalRate/100);
+    const baseFee=Math.floor(rawBase/1000)*1000;
+    const adjAmt=Math.floor((baseFee*(totalAdj/100))/1000)*1000;
+    const finalFee=baseFee+adjAmt;
+    const basisSrc=`건축사의 업무범위와 대가기준 [별표${taskType==='design'?'4':'5'}]`;
+    return{targetCost,finalRate:finalRate.toFixed(3),rx2,rx1,ry1,ry2,interpolated,baseFee,adjustmentRate:totalAdj,adjustmentAmount:adjAmt,adjNames,bfNote,finalFee,basisSrc,selectedLevelName};
+  },[costInput,taskType,buildingUsage,docLevel,isSpecialEquip,isRemodel,isBF,certGreen,certIBS,certZero,certEnergy]);
+
+  useEffect(()=>{if(taskType==='supervision'){setIsRemodel(false);setIsBF(false);setCertGreen(0);setCertIBS(0);setCertZero(0);setCertEnergy(0);}}, [taskType]);
+
+  /* ══ EXPORT ══ */
+  const exportPNG=async()=>{
+    if(!reportRef.current)return;
+    setIsExporting(true);
+    try{
+      await document.fonts.ready;await new Promise(r=>setTimeout(r,200));
+      const node=reportRef.current,sc=3;
+      const orig=node.style.cssText;
+      // 19.5:9 비율 고정 (세로형 스마트폰)
+      const fixW=360,fixH=Math.round(360*19.5/9); // 360×780
+      node.style.cssText=`position:fixed;left:0;top:0;z-index:-9999;visibility:visible;width:${fixW}px;height:${fixH}px;overflow:hidden;`;
+      await new Promise(r=>setTimeout(r,250));
+      const url=await window.domtoimage.toPng(node,{
+        width:fixW*sc,height:fixH*sc,
+        style:{transform:`scale(${sc})`,transformOrigin:'top left',width:fixW+'px',height:fixH+'px',overflow:'hidden'}
+      });
+      const a=document.createElement('a');a.href=url;a.download=`산출내역_${projectName}_${Date.now()}.png`;a.click();
+      node.style.cssText=orig;
+    }catch(e){console.error(e);alert('저장 오류: '+e);}
+    finally{setIsExporting(false);}
+  };
+
+  const TABS=[
+    {k:'input',icon:<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,label:'입력·산출'},
+    {k:'a4prev',icon:<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,label:'A4 미리보기'},
+    {k:'mobprev',icon:<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>,label:'모바일 미리보기'},
+  ];
+
+  const isDesign=taskType==='design';
+  const typeLabel=currentType==='type1'?'단순':'currentType'==='type3'?'복잡':'보통';
+
+    /* ── A4 PRINT AREA (hidden) ── */
+  const A4PrintArea=()=>(
+    <div id="a4-print-area" style={{display:'none',width:'794px',minHeight:'1123px',background:'#fff',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",color:'#1a1a1a',boxSizing:'border-box',flexDirection:'column',padding:0}}>
+      {result&&(
+        <>
+        {/* 헤더 그라데이션 */}
+        <div style={{background:'linear-gradient(135deg,#0c3472,#1d4ed8)',padding:'22px 42px 18px',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',top:0,right:0,width:'220px',height:'220px',background:'rgba(255,255,255,.04)',borderRadius:'50%',transform:'translate(40%,-40%)'}}></div>
+          <div style={{position:'relative',zIndex:1}}>
+            <div style={{color:'rgba(147,197,253,.7)',fontSize:'9px',fontWeight:700,letterSpacing:'.22em',textTransform:'uppercase',marginBottom:'10px'}}>공공발주사업에 대한 건축사의 업무범위와 대가기준 · {isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
+            <div style={{color:'#fff',fontSize:'24px',fontWeight:900,marginBottom:'6px',letterSpacing:'-.02em',lineHeight:1.2}}>{projectName}</div>
+            <div style={{display:'flex',alignItems:'center',gap:'14px'}}>
+              <span style={{color:'rgba(147,197,253,.65)',fontSize:'9px',fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase'}}>MANMIN Ver-{VER}</span>
+              <span style={{width:'1px',height:'10px',background:'rgba(255,255,255,.2)',display:'inline-block'}}></span>
+              <span style={{color:'rgba(147,197,253,.65)',fontSize:'9px',fontWeight:700}}>국토교통부고시 제2020-635호</span>
+              <span style={{width:'1px',height:'10px',background:'rgba(255,255,255,.2)',display:'inline-block'}}></span>
+              <span style={{color:'rgba(147,197,253,.65)',fontSize:'9px',fontWeight:700}}>건축사법 제19조의3</span>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:'18px 42px 22px',display:'flex',flexDirection:'column',flex:1}}>
+          {/* ① 공사 개요 */}
+          <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px',paddingBottom:'8px',borderBottom:'2px solid #1d4ed8'}}>
+            <div style={{width:'3px',height:'16px',background:'#1d4ed8',borderRadius:'2px'}}></div>
+            <span style={{fontSize:'12px',fontWeight:900,color:'#1a2744',letterSpacing:'.08em',textTransform:'uppercase'}}>1. 용역 개요</span>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px',marginBottom:'20px'}}>
+            {[
+              {l:'예정 공사비',v:`${fmt(result.targetCost)} 원 (VAT 별도)`},
+              {l:'건물 종별·도서',v:result.selectedLevelName},
+              {l:'적용 기준',v:result.basisSrc},
+            ].map(x=>(
+              <div key={x.l} style={{background:'#f0f6ff',border:'1px solid #bfdbfe',borderRadius:'8px',padding:'12px 10px'}}>
+                <div style={{fontSize:'8px',color:'#6b7a99',fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'5px'}}>{x.l}</div>
+                <div style={{fontSize:'11px',color:'#1a2744',fontWeight:800,lineHeight:1.3}}>{x.v}</div>
+              </div>
+            ))}
+          </div>
+          {/* ② 산출 결과 */}
+          <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px',paddingBottom:'8px',borderBottom:'2px solid #1d4ed8'}}>
+            <div style={{width:'3px',height:'16px',background:'#1d4ed8',borderRadius:'2px'}}></div>
+            <span style={{fontSize:'12px',fontWeight:900,color:'#1a2744',letterSpacing:'.08em',textTransform:'uppercase'}}>2. 용역비 산출 결과</span>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px',marginBottom:'20px'}}>
+            <div style={{background:'#f0f6ff',border:'1.5px solid #bfdbfe',borderRadius:'12px',padding:'16px',textAlign:'center'}}>
+              <div style={{fontSize:'9px',color:'#6b7a99',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'9px'}}>적용 공사비요율 (Y)</div>
+              <div style={{fontSize:'28px',fontWeight:900,color:'#1e3a8a',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'16px'}}> %</span></div>
+              <div style={{fontSize:'9px',color:'#6b7a99',marginTop:'6px',fontWeight:600}}>{result.interpolated?'직선보간법 산출':'해당 구간 직접 적용'}</div>
+            </div>
+            <div style={{background:'#fefce8',border:'1.5px solid #fde047',borderRadius:'12px',padding:'16px',textAlign:'center'}}>
+              <div style={{fontSize:'9px',color:'#854d0e',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'9px'}}>기본 용역비</div>
+              <div style={{fontSize:'20px',fontWeight:900,color:'#854d0e',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{fmt(result.baseFee)}</div>
+              <div style={{fontSize:'9px',color:'#a16207',marginTop:'6px',fontWeight:600}}>원 VAT(별도)</div>
+            </div>
+            <div style={{background:result.adjustmentRate>0?'#f0fdf4':'#f0f6ff',border:`1.5px solid ${result.adjustmentRate>0?'#86efac':'#bfdbfe'}`,borderRadius:'12px',padding:'16px',textAlign:'center'}}>
+              <div style={{fontSize:'9px',color:result.adjustmentRate>0?'#065f46':'#1e3a8a',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'9px'}}>최종 용역비 (VAT 별도)</div>
+              <div style={{fontSize:'22px',fontWeight:900,color:result.adjustmentRate>0?'#059669':'#1d4ed8',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{fmt(result.finalFee)}</div>
+              <div style={{fontSize:'9px',color:result.adjustmentRate>0?'#059669':'#1d4ed8',marginTop:'6px',fontWeight:700}}>원{result.adjustmentRate>0?` (할증 +${result.adjustmentRate}%)`:''}
+              </div>
+            </div>
+          </div>
+          {/* ③ 산출 근거 상세 */}
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px',paddingBottom:'8px',borderBottom:'2px solid #1d4ed8'}}>
+            <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+              <div style={{width:'3px',height:'16px',background:'#1d4ed8',borderRadius:'2px'}}></div>
+              <span style={{fontSize:'12px',fontWeight:900,color:'#1a2744',letterSpacing:'.08em',textTransform:'uppercase'}}>3. 용역비 산출 근거</span>
+            </div>
+            <span style={{fontSize:'10px',color:'#94a3b8',fontStyle:'italic',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>Y = y1 − (X−x2)×(y1−y2)÷(x1−x2)</span>
+          </div>
+          <table style={{width:'100%',borderCollapse:'collapse',border:'1.5px solid #93c5fd',fontSize:'12px',color:'#1a2744',tableLayout:'fixed',marginBottom:'14px'}}>
+            <colgroup><col style={{width:'19%'}}/><col style={{width:'26%'}}/><col style={{width:'55%'}}/></colgroup>
+            <thead>
+              <tr style={{background:'#dbeafe',borderBottom:'2px solid #93c5fd'}}>
+                {['구 분','항 목','내 용'].map((h,i)=>(
+                  <th key={h} style={{padding:'9px 10px',textAlign:'center',fontWeight:800,fontSize:'11px',color:'#1e3a8a',letterSpacing:'.04em',borderRight:i<2?'1px solid #bfdbfe':'none'}}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{borderBottom:'1px solid #bfdbfe'}}>
+                <td rowSpan={result.adjustmentRate>0?4:2} style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',verticalAlign:'middle',padding:'9px 8px',fontSize:'12px'}}>용역 내역</td>
+                <td style={{background:'#f8fafd',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>용 역 명</td>
+                <td style={{fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{projectName}</td>
+              </tr>
+              {result.adjustmentRate>0?(
+                <>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>기본 용역비</td><td style={{fontWeight:700,color:'#374151',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.baseFee)} 원</td></tr>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#eff6ff',fontWeight:700,color:'#1d4ed8',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>세부 조정액 (+{result.adjustmentRate}%)</td><td style={{fontWeight:700,color:'#1d4ed8',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.adjustmentAmount)} 원</td></tr>
+                  <tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#dbeafe',fontWeight:900,color:'#1d4ed8',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>최종 용역비</td><td style={{background:'#dbeafe',fontWeight:900,color:'#1d4ed8',fontSize:'13px',textAlign:'left',padding:'9px 10px'}}>{fmt(result.finalFee)} 원</td></tr>
+                </>
+              ):(
+                <tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#f8fafd',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>용 역 비</td><td style={{fontWeight:900,color:'#1d4ed8',fontSize:'13px',textAlign:'left',padding:'9px 10px'}}>{fmt(result.finalFee)} 원</td></tr>
+              )}
+              {result.interpolated?(()=>{
+                const fStr=`Y = ${result.ry1} − (${fmt(result.targetCost)} − ${fmt(result.rx2)}) × (${result.ry1} − ${result.ry2}) ÷ (${fmt(result.rx1)} − ${fmt(result.rx2)})`;
+                const fitFx=Math.min(11,Math.max(7,Math.floor(2200/fStr.length)));
+                return(
+                <>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td rowSpan={7} style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',verticalAlign:'middle',padding:'9px 8px',fontSize:'12px',lineHeight:1.6}}>직선<br/>보간법<br/>산출근거</td><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>y2 (큰금액 요율)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#475569'}}>{result.ry2} %</td></tr>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>x2 (작은 금액)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:600,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.rx2)} 원</td></tr>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>y1 (작은금액 요율)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#475569'}}>{result.ry1} %</td></tr>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#eff6ff',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#1d4ed8'}}>X (당해 공사비)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:800,textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#1d4ed8'}}>{fmt(result.targetCost)} 원</td></tr>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>x1 (큰 금액)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:600,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.rx1)} 원</td></tr>
+                  <tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#fefce8',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>산 출 식</td><td style={{background:'#fefce8',fontFamily:'JetBrains Mono,monospace',fontWeight:600,fontSize:fitFx+'px',textAlign:'left',padding:'9px 10px',lineHeight:1.55,wordBreak:'break-all'}}>{fStr}</td></tr>
+                  <tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#e8f0fe',fontWeight:800,color:'#1d4ed8',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>Y (당해 요율)</td><td style={{background:'#e8f0fe',fontFamily:'JetBrains Mono,monospace',fontWeight:900,color:'#e11d48',fontSize:'15px',textAlign:'left',padding:'9px 10px'}}>{result.finalRate} %</td></tr>
+                </>
+              );})():(
+                <tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',padding:'9px 8px',fontSize:'12px'}}>산출근거</td><td colSpan={2} style={{background:'#e8f0fe',fontFamily:'JetBrains Mono,monospace',fontWeight:900,color:'#e11d48',fontSize:'15px',textAlign:'left',padding:'9px 10px'}}>{result.finalRate} %</td></tr>
+              )}
+              <tr style={{borderBottom:result.bfNote?'1px solid #bfdbfe':'none'}}><td style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',padding:'9px 8px',fontSize:'12px'}}>산출방식</td><td colSpan={2} style={{fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{result.interpolated?'직선보간법 적용 [ Y = y1 − (X−x2) × (y1−y2) ÷ (x1−x2) ]':'해당 구간 요율 직접 적용 (보간법 제외)'}</td></tr>
+              {result.bfNote&&<tr><td colSpan={3} style={{background:'#fff1f2',fontWeight:700,color:'#be123c',textAlign:'center',padding:'9px 8px',fontSize:'12px'}}>※ {result.bfNote}</td></tr>}
+            </tbody>
+          </table>
+          {result.adjNames.length>0&&(
+            <div style={{background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:'8px',padding:'10px 14px',marginBottom:'12px',fontSize:'12px',color:'#1d4ed8',fontWeight:600}}>
+              ▸ 세부 할증 적용: {result.adjNames.join(' / ')} &nbsp;(총 +{result.adjustmentRate}%)
+            </div>
+          )}
+          <div style={{marginTop:'auto',display:'flex',justifyContent:'space-between',alignItems:'flex-end',paddingTop:'14px',borderTop:'1px solid #e2e8f0'}}>
+            <span style={{fontSize:'9px',color:'#94a3b8',fontWeight:600}}>국토교통부고시 제2020-635호 · 공공발주사업에 대한 건축사의 업무범위와 대가기준 (건축사법 제19조의3)</span>
+            <span style={{fontSize:'13px',fontWeight:700,color:'#94a3b8',letterSpacing:'.05em'}}>MANMIN Ver-{VER}</span>
+          </div>
+        </div>
+        </>
+      )}
+    </div>
+  );
+
+  /* ── MOBILE CARD (hidden capture) ── */
+  const MobileCard=()=>(
+    <div ref={reportRef} style={{position:'fixed',left:'-9999px',top:0,zIndex:-1,width:'360px',height:'780px',background:'#162944',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'hidden',borderRadius:'20px'}}>
+      {result&&(
+        <div>
+          {/* ── 헤더 ── */}
+          <div style={{background:'#0f1e33',padding:'22px 20px 18px'}}>
+            <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'8px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
+            <div style={{fontSize:'18px',fontWeight:900,color:'#e8f1fb',marginBottom:'5px',lineHeight:1.25,letterSpacing:'-.01em'}}>{projectName}</div>
+            <div style={{fontSize:'8px',fontWeight:700,color:'#3d5c80',letterSpacing:'.12em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
+          </div>
+          <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px'}}>
+            {/* ── 4줄 세로 배치 ── */}
+            {/* Row 1: 예정 공사비 */}
+            <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>예정 공사비</div>
+              <div style={{textAlign:'right'}}>
+                <div style={{fontSize:'18px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
+              </div>
+            </div>
+            {/* Row 2: 건물종별·도서 */}
+            <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>건물종별·도서</div>
+              <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',maxWidth:'55%',lineHeight:1.3}}>{result.selectedLevelName}</div>
+            </div>
+            {/* Row 3: 적용 요율 */}
+            <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>적용 요율 (Y)</div>
+              <div style={{textAlign:'right'}}>
+                <div style={{fontSize:'28px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'14px'}}> %</span></div>
+                <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
+              </div>
+            </div>
+            {/* Row 4: 최종 산출대가 */}
+            <div style={{background:'rgba(29,78,216,.3)',border:'1.5px solid rgba(96,165,250,.4)',borderRadius:'12px',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#93c5fd',letterSpacing:'.1em',textTransform:'uppercase'}}>최종 산출대가</div>
+              <div style={{textAlign:'right'}}>
+                <div style={{fontSize:'20px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{fmt(result.finalFee)}</div>
+                <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px'}}>원 VAT별도</div>
+              </div>
+            </div>
+            {/* 할증 내역 */}
+            {result.adjustmentRate>0&&(
+              <div style={{background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.09)',borderRadius:'10px',padding:'11px 14px'}}>
+                <div style={{fontSize:'8px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'7px'}}>세부 할증 내역</div>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#c8ddf0',marginBottom:'4px'}}><span>기본 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>{fmt(result.baseFee)} 원</span></div>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#f59e0b',marginBottom:'4px'}}><span>{result.adjNames.join(', ')} (+{result.adjustmentRate}%)</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>+{fmt(result.adjustmentAmount)} 원</span></div>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#fde047',paddingTop:'5px',borderTop:'1px solid rgba(255,255,255,.1)',fontWeight:800}}><span>최종 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace'}}>{fmt(result.finalFee)} 원</span></div>
+              </div>
+            )}
+            {/* 직선보간법 산출근거 */}
+            {result.interpolated&&(
+              <div style={{background:'rgba(255,255,255,.04)',borderRadius:'12px',overflow:'hidden'}}>
+                <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',padding:'10px 14px 8px'}}>직선보간법 산출 근거</div>
+                <table style={{width:'100%',borderCollapse:'collapse',fontFamily:'JetBrains Mono,monospace',fontSize:'10px'}}>
+                  <thead><tr style={{borderBottom:'1px solid rgba(255,255,255,.1)'}}>{['기호','항목','값'].map((h,i)=><th key={h} style={{padding:'5px 10px 7px',textAlign:i===2?'right':'left',color:'#3d5c80',fontWeight:700,fontSize:'8px',letterSpacing:'.1em',textTransform:'uppercase'}}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {[{s:'y2',n:'큰금액 요율',v:`${result.ry2} %`,c:'#94a3b8'},{s:'x2',n:'작은 금액',v:`${fmt(result.rx2)} 원`,c:'#94a3b8'},{s:'y1',n:'작은금액 요율',v:`${result.ry1} %`,c:'#94a3b8'},{s:'X',n:'당해 공사비',v:`${fmt(result.targetCost)} 원`,c:'#f59e0b',fw:800},{s:'x1',n:'큰 금액',v:`${fmt(result.rx1)} 원`,c:'#94a3b8'}].map(({s,n,v,c,fw})=>(
+                      <tr key={s} style={{borderBottom:'1px solid rgba(255,255,255,.05)'}}><td style={{padding:'6px 10px',color:'#7da8d8',fontWeight:800}}>{s}</td><td style={{padding:'6px 10px',color:'#8ab4d4',fontSize:'10px'}}>{n}</td><td style={{padding:'6px 10px',textAlign:'right',color:c,fontWeight:fw||600}}>{v}</td></tr>
+                    ))}
+                    <tr style={{borderTop:'1px solid rgba(255,255,255,.1)'}}><td style={{padding:'6px 10px',color:'#5b84b1',fontWeight:800,fontSize:'9px'}}>식</td><td colSpan={2} style={{padding:'6px 10px',color:'#94a3b8',fontSize:'9px',lineHeight:1.6}}>{result.ry1} − ({fmt(result.targetCost)} − {fmt(result.rx2)}) × ({result.ry1} − {result.ry2}) ÷ ({fmt(result.rx1)} − {fmt(result.rx2)})</td></tr>
+                    <tr style={{background:'rgba(29,78,216,.2)',borderTop:'1px solid rgba(96,165,250,.3)'}}><td style={{padding:'8px 10px',color:'#93c5fd',fontWeight:800}}>Y</td><td style={{padding:'8px 10px',color:'#93c5fd',fontSize:'10px'}}>당해 공사비 요율</td><td style={{padding:'8px 10px',textAlign:'right',color:'#f43f5e',fontWeight:900,fontSize:'15px'}}>{result.finalRate} %</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {result.bfNote&&(<div style={{background:'rgba(239,68,68,.15)',borderRadius:'10px',padding:'11px 14px',border:'1px solid rgba(239,68,68,.4)'}}><p style={{color:'#fca5a5',fontSize:'10px',fontWeight:700,lineHeight:1.5}}>※ {result.bfNote}</p></div>)}
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.06)'}}><span style={{fontSize:'8px',color:'#243650',fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'8px',color:'#243650',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>MANMIN Ver-{VER}</span></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+
+  return(
+    <>
+    {/* ═══ HEADER ═══ */}
+    <header className="app-header no-print">
+      <div className="header-inner">
+        <div className="brand-logo">
+          <div className="brand-icon">
+            <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="12" y1="10" x2="12.01" y2="10"/><line x1="8" y1="10" x2="8.01" y2="10"/><line x1="12" y1="14" x2="12.01" y2="14"/><line x1="8" y1="14" x2="8.01" y2="14"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="8" y1="18" x2="8.01" y2="18"/></svg>
+          </div>
+          <div className="brand-texts">
+            <div className="brand-title">공공기관 건축사 업무대가 산출기 [MANMIN-Ver{VER}]</div>
+            <div className="brand-sub">공공발주사업에 대한 건축사의 업무범위와 대가기준 · 국토교통부고시 제2020-635호 · 2026년 기준</div>
+          </div>
+        </div>
+        <div className="hdr-btns">
+          <button className="btn-ghost no-print" onClick={exportPNG} disabled={isExporting} style={{fontSize:'11px',padding:'7px 12px'}}>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {isExporting?'저장 중...':'PNG 저장'}
+          </button>
+          <button className="btn-red no-print" onClick={()=>window.print()}>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="#fff" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span>인쇄 / PDF</span>
+          </button>
+        </div>
+      </div>
+      <div className="tab-bar">
+        <div className="tab-bar-inner">
+          {TABS.map(({k,icon,label})=>(
+            <button key={k} className={`tab-btn${tab===k?' active':''}`} onClick={()=>setTab(k)}>
+              {icon}{label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </header>
+
+    {/* ═══ MAIN ═══ */}
+    <div className="main-wrap">
+
+      {/* ── A4 미리보기 ── */}
+      {tab==='a4prev'&&(
+        <div className="full-panel">
+          <div className="card-head" style={{borderBottom:'none'}}>
+            <div className="card-icon"><svg viewBox="0 0 24 24" width="13" height="13" stroke="#1d4ed8" fill="none" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <span className="card-title">A4 계산서 미리보기</span>
+          </div>
+          <div className="preview-bg" ref={a4WrapRef}>
+            <div style={{width:794*a4Scale+'px',height:Math.round(1122*a4Scale)+'px',overflow:'hidden',flexShrink:0,boxShadow:'0 6px 40px rgba(0,0,0,.18)',border:'1px solid #c8d0dc'}}>
+              <div style={{width:'794px',transform:`scale(${a4Scale})`,transformOrigin:'top left',pointerEvents:'none'}}>
+                <div style={{fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",width:'794px',background:'#fff',color:'#1a1a1a',boxSizing:'border-box'}}>
+                  {result?(
+                    <>
+                    {/* 헤더 */}
+                    <div style={{background:'linear-gradient(135deg,#0c3472,#1d4ed8)',padding:'22px 42px 18px',position:'relative',overflow:'hidden'}}>
+                      <div style={{position:'absolute',top:0,right:0,width:'220px',height:'220px',background:'rgba(255,255,255,.04)',borderRadius:'50%',transform:'translate(40%,-40%)'}}></div>
+                      <div style={{position:'relative',zIndex:1}}>
+                        <div style={{color:'rgba(147,197,253,.7)',fontSize:'9px',fontWeight:700,letterSpacing:'.22em',textTransform:'uppercase',marginBottom:'10px'}}>공공발주사업에 대한 건축사의 업무범위와 대가기준 · {isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
+                        <div style={{color:'#fff',fontSize:'24px',fontWeight:900,marginBottom:'6px',letterSpacing:'-.02em',lineHeight:1.2}}>{projectName}</div>
+                        <div style={{display:'flex',alignItems:'center',gap:'14px'}}>
+                          <span style={{color:'rgba(147,197,253,.65)',fontSize:'9px',fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase'}}>MANMIN Ver-{VER}</span>
+                          <span style={{width:'1px',height:'10px',background:'rgba(255,255,255,.2)',display:'inline-block'}}></span>
+                          <span style={{color:'rgba(147,197,253,.65)',fontSize:'9px',fontWeight:700}}>국토교통부고시 제2020-635호</span>
+                          <span style={{width:'1px',height:'10px',background:'rgba(255,255,255,.2)',display:'inline-block'}}></span>
+                          <span style={{color:'rgba(147,197,253,.65)',fontSize:'9px',fontWeight:700}}>건축사법 제19조의3</span>
                         </div>
                       </div>
-
-                    ) : (
-                      /* ===== 모바일 최적화 (9:16 인포그래픽) ===== */
-                      <div ref={reportRef} className="print-area shadow-2xl overflow-hidden relative"
-                        style={{ width: '480px', minHeight: '853px', boxSizing: 'border-box', backgroundColor: '#0f172a', fontFamily: "'Noto Sans KR', sans-serif" }}>
-                        <div style={{ position: 'absolute', top: 0, right: 0, width: '256px', height: '256px', backgroundColor: '#2563eb', borderRadius: '50%', filter: 'blur(48px)', opacity: 0.3, transform: 'translate(50%, -50%)' }}></div>
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '320px', height: '320px', backgroundColor: '#4f46e5', borderRadius: '50%', filter: 'blur(48px)', opacity: 0.3, transform: 'translate(-33%, 33%)' }}></div>
-
-                        <div style={{ position: 'relative', zIndex: 10, padding: '24px', display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ marginBottom: '24px', textAlign: 'left' }}>
-                            <span style={{ display: 'inline-block', color: '#93c5fd', fontWeight: '700', fontSize: '14px', marginBottom: '8px' }}>
-                              {taskType === 'design' ? '설계 용역비 산출서' : '감리 용역비 산출서'}
-                            </span>
-                            <h1 style={{ fontSize: '22px', fontWeight: '800', color: 'white', lineHeight: '1.4', wordBreak: 'keep-all' }}>{projectName}</h1>
-                          </div>
-
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                              <p style={{ color: '#cbd5e1', fontSize: '13px', fontWeight: '500', marginBottom: '4px' }}>예정 공사비</p>
-                              <p style={{ fontSize: '24px', fontWeight: '700', color: 'white', letterSpacing: '-0.5px' }}>
-                                {formatNumber(result.targetCost)} <span style={{ fontSize: '14px', fontWeight: '400', opacity: 0.7 }}>원 VAT(별도)</span>
-                              </p>
-                            </div>
-
-                            <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                              <p style={{ color: '#cbd5e1', fontSize: '13px', fontWeight: '500', marginBottom: '6px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
-                                적용근거 <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: '400' }}>[국토교통부 고시 제 2020-635호, 2020.09.14 적용]</span>
-                              </p>
-                              <p style={{ fontSize: '14px', fontWeight: '700', color: 'white', lineHeight: '1.4' }}>{result.basisSource}</p>
-                              <p style={{ color: '#93c5fd', fontSize: '13px', marginTop: '4px' }}>{result.selectedLevelName} ({buildingUsage})</p>
-                              
-                              {result.appliedAdjustmentNames.length > 0 && (
-                                <p style={{ color: '#c7d2fe', fontSize: '12px', marginTop: '8px', lineHeight: '1.4', wordBreak: 'keep-all' }}>
-                                  [세부할증 적용] {result.appliedAdjustmentNames.join(', ')}
-                                </p>
-                              )}
-                            </div>
-
-                            <div style={{ background: 'linear-gradient(135deg, #2563eb, #4338ca)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 40px rgba(37,99,235,0.4)', border: '1px solid rgba(96,165,250,0.3)', position: 'relative', overflow: 'hidden' }}>
-                              <div style={{ position: 'absolute', right: '-16px', top: '-16px', opacity: 0.1 }}>
-                                <Calculator size={100} />
-                              </div>
-                              <div style={{ position: 'relative', zIndex: 1 }}>
-                                <p style={{ color: '#bfdbfe', fontSize: '13px', fontWeight: '700', marginBottom: '4px' }}>적용 요율 (Y)</p>
-                                <p style={{ fontSize: '32px', fontWeight: '900', color: 'white', marginBottom: '12px', lineHeight: '1' }}>
-                                  {result.finalRate} <span style={{ fontSize: '18px' }}>%</span>
-                                </p>
-                                <div style={{ height: '1px', backgroundColor: 'rgba(96,165,250,0.3)', margin: '12px 0' }}></div>
-                                
-                                {result.adjustmentRate > 0 && (
-                                  <div style={{ marginBottom: '12px' }}>
-                                    <p style={{ color: '#c7d2fe', fontSize: '11px', fontWeight: '700', marginBottom: '2px' }}>기본 대가 : {formatNumber(result.baseFee)} 원</p>
-                                    <p style={{ color: '#c7d2fe', fontSize: '11px', fontWeight: '700' }}>세부 조정 (+{result.adjustmentRate}%) : + {formatNumber(result.adjustmentAmount)} 원</p>
-                                  </div>
-                                )}
-                                
-                                <p style={{ color: '#bfdbfe', fontSize: '13px', fontWeight: '700', marginBottom: '4px' }}>최종 산출 대가</p>
-                                <p style={{ fontSize: '26px', fontWeight: '900', color: '#fde047', letterSpacing: '-0.5px', lineHeight: '1' }}>
-                                  {formatNumber(result.finalFee)} <span style={{ fontSize: '16px', fontWeight: '700', color: '#fef9c3', marginLeft: '4px' }}>원 <span style={{ fontSize: '11px', fontWeight: '400', opacity: 0.8 }}>VAT(별도)</span></span>
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* BF 인증 실비가산 안내 모바일 영역 */}
-                            {result.bfNote && (
-                              <div style={{ backgroundColor: 'rgba(239,68,68,0.15)', borderRadius: '12px', padding: '12px', border: '1px solid rgba(239,68,68,0.4)' }}>
-                                <p style={{ color: '#fca5a5', fontSize: '11px', fontWeight: '700', lineHeight: '1.4' }}>
-                                  ※ {result.bfNote}
-                                </p>
-                              </div>
-                            )}
-
-                            {/* 모바일 직선보간법 */}
-                            {result.isInterpolated && (
-                              <div style={{ backgroundColor: 'rgba(30,41,59,0.8)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(71,85,105,0.5)' }}>
-                                <p style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
-                                  <CheckCircle2 className="w-3 h-3 mr-1" />
-                                  직선보간법 산출 근거
-                                </p>
-                                
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', fontFamily: 'monospace', color: '#cbd5e1', border: '1px solid rgba(71,85,105,0.5)', borderRadius: '8px', overflow: 'hidden' }}>
-                                  <tbody>
-                                    <tr style={{ backgroundColor: 'rgba(30,41,59,0.3)', borderBottom: '1px solid rgba(71,85,105,0.5)' }}>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', borderRight: '1px solid rgba(71,85,105,0.5)', opacity: 0.7, wordBreak: 'keep-all' }}>y2(큰요율)</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', borderRight: '1px solid rgba(71,85,105,0.5)' }}>{result.r_y2}</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', borderRight: '1px solid rgba(71,85,105,0.5)', opacity: 0.7, wordBreak: 'keep-all' }}>x2(작은금액)</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle' }}>{formatNumber(result.r_x2)}</td>
-                                    </tr>
-                                    <tr style={{ backgroundColor: 'rgba(30,41,59,0.3)', borderBottom: '1px solid rgba(71,85,105,0.5)' }}>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', borderRight: '1px solid rgba(71,85,105,0.5)', opacity: 0.7, wordBreak: 'keep-all' }}>y1(작은요율)</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', borderRight: '1px solid rgba(71,85,105,0.5)' }}>{result.r_y1}</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', color: '#93c5fd', fontWeight: '700', borderRight: '1px solid rgba(71,85,105,0.5)', wordBreak: 'keep-all' }}>x(당해)</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', color: '#93c5fd', fontWeight: '700' }}>{formatNumber(result.targetCost)}</td>
-                                    </tr>
-                                    <tr style={{ backgroundColor: 'rgba(30,41,59,0.3)' }}>
-                                      <td colSpan={2} style={{ padding: '6px', borderRight: '1px solid rgba(71,85,105,0.5)', backgroundColor: 'rgba(15,23,42,0.5)' }}></td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle', borderRight: '1px solid rgba(71,85,105,0.5)', opacity: 0.7, wordBreak: 'keep-all' }}>x1(큰금액)</td>
-                                      <td style={{ padding: '6px', textAlign: 'center', verticalAlign: 'middle' }}>{formatNumber(result.r_x1)}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                                
-                                <div style={{ marginTop: '12px', backgroundColor: 'rgba(15,23,42,0.8)', padding: '10px', borderRadius: '8px', fontSize: '11px', fontFamily: 'monospace', color: '#94a3b8', wordBreak: 'break-all', lineHeight: '1.6', textAlign: 'center' }}>
-                                  Y = {result.r_y1} - ({formatNumber(result.targetCost)} - {formatNumber(result.r_x2)}) × ({result.r_y1} - {result.r_y2}) ÷ ({formatNumber(result.r_x1)} - {formatNumber(result.r_x2)})
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <div style={{ marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px', paddingBottom: '4px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                              <div style={{ textAlign: 'left', color: '#475569', fontSize: '10px', lineHeight: '1.5' }}>
-                                <p>본 산출내역은</p>
-                                <p>예산 편성 참고용입니다.</p>
-                              </div>
-                              <div style={{ textAlign: 'right' }}>
-                                <span style={{ fontSize: '13px', fontWeight: '700', color: '#e2e8f0', whiteSpace: 'nowrap', lineHeight: '1.4' }}>Developer MANMIN ver-1.6</span>
-                              </div>
-                            </div>
-                            <div style={{ textAlign: 'center', color: '#334155', fontSize: '9px', fontWeight: '700', letterSpacing: '2px' }}>
-                              공공기관 건축사 업무 대가 전용 산출기
-                            </div>
-                          </div>
-                        </div>
+                    </div>
+                    <div style={{padding:'24px 50px 30px'}}>
+                      {/* 1 개요 */}
+                      <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px',paddingBottom:'8px',borderBottom:'2px solid #1d4ed8'}}><div style={{width:'3px',height:'16px',background:'#1d4ed8',borderRadius:'2px'}}></div><span style={{fontSize:'12px',fontWeight:900,color:'#1a2744',letterSpacing:'.08em',textTransform:'uppercase'}}>1. 용역 개요</span></div>
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px',marginBottom:'20px'}}>
+                        {[{l:'예정 공사비',v:`${fmt(result.targetCost)} 원 (VAT 별도)`},{l:'건물 종별·도서',v:result.selectedLevelName},{l:'적용 기준',v:result.basisSrc}].map(x=>(
+                          <div key={x.l} style={{background:'#f0f6ff',border:'1px solid #bfdbfe',borderRadius:'8px',padding:'12px 10px'}}><div style={{fontSize:'8px',color:'#6b7a99',fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'5px'}}>{x.l}</div><div style={{fontSize:'11px',color:'#1a2744',fontWeight:800,lineHeight:1.3}}>{x.v}</div></div>
+                        ))}
                       </div>
-                    )
+                      {/* 2 결과 */}
+                      <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px',paddingBottom:'8px',borderBottom:'2px solid #1d4ed8'}}><div style={{width:'3px',height:'16px',background:'#1d4ed8',borderRadius:'2px'}}></div><span style={{fontSize:'12px',fontWeight:900,color:'#1a2744',letterSpacing:'.08em',textTransform:'uppercase'}}>2. 용역비 산출 결과</span></div>
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px',marginBottom:'20px'}}>
+                        <div style={{background:'#f0f6ff',border:'1.5px solid #bfdbfe',borderRadius:'12px',padding:'16px',textAlign:'center'}}><div style={{fontSize:'9px',color:'#6b7a99',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'9px'}}>적용 요율 (Y)</div><div style={{fontSize:'28px',fontWeight:900,color:'#1e3a8a',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'16px'}}> %</span></div><div style={{fontSize:'9px',color:'#6b7a99',marginTop:'6px',fontWeight:600}}>{result.interpolated?'직선보간법':'직접 적용'}</div></div>
+                        <div style={{background:'#fefce8',border:'1.5px solid #fde047',borderRadius:'12px',padding:'16px',textAlign:'center'}}><div style={{fontSize:'9px',color:'#854d0e',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'9px'}}>기본 용역비</div><div style={{fontSize:'20px',fontWeight:900,color:'#854d0e',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{fmt(result.baseFee)}</div><div style={{fontSize:'9px',color:'#a16207',marginTop:'6px',fontWeight:600}}>원 VAT(별도)</div></div>
+                        <div style={{background:result.adjustmentRate>0?'#f0fdf4':'#eff6ff',border:`1.5px solid ${result.adjustmentRate>0?'#86efac':'#bfdbfe'}`,borderRadius:'12px',padding:'16px',textAlign:'center'}}><div style={{fontSize:'9px',color:result.adjustmentRate>0?'#065f46':'#1e3a8a',fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'9px'}}>최종 용역비</div><div style={{fontSize:'22px',fontWeight:900,color:result.adjustmentRate>0?'#059669':'#1d4ed8',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{fmt(result.finalFee)}</div><div style={{fontSize:'9px',color:result.adjustmentRate>0?'#059669':'#1d4ed8',marginTop:'6px',fontWeight:700}}>원 VAT(별도)</div></div>
+                      </div>
+                      {/* 3 산출근거 */}
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px',paddingBottom:'8px',borderBottom:'2px solid #1d4ed8'}}><div style={{display:'flex',alignItems:'center',gap:'8px'}}><div style={{width:'3px',height:'16px',background:'#1d4ed8',borderRadius:'2px'}}></div><span style={{fontSize:'12px',fontWeight:900,color:'#1a2744',letterSpacing:'.08em',textTransform:'uppercase'}}>3. 용역비 산출 근거</span></div><span style={{fontSize:'10px',color:'#94a3b8',fontStyle:'italic',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>Y = y1 − (X−x2)×(y1−y2)÷(x1−x2)</span></div>
+                      <table style={{width:'100%',borderCollapse:'collapse',border:'1.5px solid #93c5fd',fontSize:'12px',color:'#1a2744',tableLayout:'fixed',marginBottom:'12px'}}>
+                        <colgroup><col style={{width:'19%'}}/><col style={{width:'26%'}}/><col style={{width:'55%'}}/></colgroup>
+                        <thead><tr style={{background:'#dbeafe',borderBottom:'2px solid #93c5fd'}}>{['구 분','항 목','내 용'].map((h,i)=><th key={h} style={{padding:'9px 10px',textAlign:'center',fontWeight:800,fontSize:'11px',color:'#1e3a8a',letterSpacing:'.04em',borderRight:i<2?'1px solid #bfdbfe':'none'}}>{h}</th>)}</tr></thead>
+                        <tbody>
+                          <tr style={{borderBottom:'1px solid #bfdbfe'}}><td rowSpan={result.adjustmentRate>0?4:2} style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',verticalAlign:'middle',padding:'9px 8px',fontSize:'12px'}}>용역 내역</td><td style={{background:'#f8fafd',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>용 역 명</td><td style={{fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{projectName}</td></tr>
+                          {result.adjustmentRate>0?(<><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>기본 용역비</td><td style={{fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.baseFee)} 원</td></tr><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#eff6ff',fontWeight:700,color:'#1d4ed8',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>세부 조정액 (+{result.adjustmentRate}%)</td><td style={{fontWeight:700,color:'#1d4ed8',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.adjustmentAmount)} 원</td></tr><tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#dbeafe',fontWeight:900,color:'#1d4ed8',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>최종 용역비</td><td style={{background:'#dbeafe',fontWeight:900,color:'#1d4ed8',fontSize:'13px',textAlign:'left',padding:'9px 10px'}}>{fmt(result.finalFee)} 원</td></tr></>):(<tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#f8fafd',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>용 역 비</td><td style={{fontWeight:900,color:'#1d4ed8',fontSize:'13px',textAlign:'left',padding:'9px 10px'}}>{fmt(result.finalFee)} 원</td></tr>)}
+                          {result.interpolated?(()=>{const fStr=`Y = ${result.ry1} − (${fmt(result.targetCost)} − ${fmt(result.rx2)}) × (${result.ry1} − ${result.ry2}) ÷ (${fmt(result.rx1)} − ${fmt(result.rx2)})`;const fitFx=Math.min(11,Math.max(7,Math.floor(2200/fStr.length)));return(<><tr style={{borderBottom:'1px solid #bfdbfe'}}><td rowSpan={7} style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',verticalAlign:'middle',padding:'9px 8px',fontSize:'12px',lineHeight:1.6}}>직선보간법<br/>산출근거</td><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>y2 (큰금액 요율)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#475569'}}>{result.ry2} %</td></tr><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>x2 (작은 금액)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:600,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.rx2)} 원</td></tr><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>y1 (작은금액 요율)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#475569'}}>{result.ry1} %</td></tr><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#eff6ff',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#1d4ed8'}}>X (당해 공사비)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:800,textAlign:'left',padding:'9px 10px',fontSize:'12px',color:'#1d4ed8'}}>{fmt(result.targetCost)} 원</td></tr><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#f8fafd',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>x1 (큰 금액)</td><td style={{fontFamily:'JetBrains Mono,monospace',fontWeight:600,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{fmt(result.rx1)} 원</td></tr><tr style={{borderBottom:'1px solid #bfdbfe'}}><td style={{background:'#fefce8',fontWeight:700,borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>산 출 식</td><td style={{background:'#fefce8',fontFamily:'JetBrains Mono,monospace',fontWeight:600,fontSize:fitFx+'px',textAlign:'left',padding:'9px 10px',lineHeight:1.55,wordBreak:'break-all'}}>{fStr}</td></tr><tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#e8f0fe',fontWeight:800,color:'#1d4ed8',borderRight:'1px solid #bfdbfe',textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>Y (당해 요율)</td><td style={{background:'#e8f0fe',fontFamily:'JetBrains Mono,monospace',fontWeight:900,color:'#e11d48',fontSize:'15px',textAlign:'left',padding:'9px 10px'}}>{result.finalRate} %</td></tr></>);})():(
+                            <tr style={{borderBottom:'2px solid #93c5fd'}}><td style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',padding:'9px 8px',fontSize:'12px'}}>산출근거</td><td colSpan={2} style={{background:'#e8f0fe',fontFamily:'JetBrains Mono,monospace',fontWeight:900,color:'#e11d48',fontSize:'15px',textAlign:'left',padding:'9px 10px'}}>{result.finalRate} %</td></tr>
+                          )}
+                          <tr style={{borderBottom:result.bfNote?'1px solid #bfdbfe':'none'}}><td style={{background:'#f0f4f9',fontWeight:700,borderRight:'1.5px solid #93c5fd',textAlign:'center',padding:'9px 8px',fontSize:'12px'}}>산출방식</td><td colSpan={2} style={{fontWeight:700,textAlign:'left',padding:'9px 10px',fontSize:'12px'}}>{result.interpolated?'직선보간법 적용 [ Y = y1 − (X−x2) × (y1−y2) ÷ (x1−x2) ]':'해당 구간 요율 직접 적용 (보간법 제외)'}</td></tr>
+                          {result.bfNote&&<tr><td colSpan={3} style={{background:'#fff1f2',fontWeight:700,color:'#be123c',textAlign:'center',padding:'9px 8px',fontSize:'12px'}}>※ {result.bfNote}</td></tr>}
+                        </tbody>
+                      </table>
+                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',paddingTop:'10px',borderTop:'1px solid #e2e8f0'}}><span style={{fontSize:'8px',color:'#94a3b8',fontWeight:600}}>국토교통부고시 제2020-635호 · 공공발주사업에 대한 건축사의 업무범위와 대가기준</span><span style={{fontSize:'12px',fontWeight:700,color:'#94a3b8'}}>MANMIN Ver-{VER}</span></div>
+                    </div>
+                    </>
+                  ):(
+                    <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'#94a3b8',fontSize:'14px',padding:'60px'}}>입력·산출 탭에서 공사비를 입력하면 미리보기가 표시됩니다.</div>
                   )}
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* ═══ PWA 설치 배너 ═══ */}
-            {showInstallBanner && (
-                <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-[380px] z-[60] pwa-install-banner rounded-2xl p-4 shadow-2xl">
-                    <div className="flex items-center gap-3">
-                        <img src="icons/icon-192.png" className="w-12 h-12 rounded-xl shadow-lg flex-shrink-0" alt="앱 아이콘" />
-                        <div className="flex-1 min-w-0">
-                            <p className="text-white text-[13px] font-extrabold leading-tight">홈 화면에 설치하시겠습니까?</p>
-                            <p className="text-blue-200 text-[10px] mt-1 font-bold opacity-80">오프라인에서도 사용 가능합니다</p>
-                        </div>
-                        <div className="flex gap-2 flex-shrink-0">
-                            <button onClick={()=>setShowInstallBanner(false)}
-                                className="text-white/60 hover:text-white text-[11px] font-bold px-3 py-2 rounded-lg">
-                                닫기
-                            </button>
-                            <button onClick={handleInstall}
-                                className="bg-white text-blue-700 text-[11px] font-extrabold px-4 py-2 rounded-lg shadow-md hover:bg-blue-50 active:scale-95 transition-all">
-                                설치
-                            </button>
-                        </div>
-                    </div>
+{/* ── 모바일 미리보기 ── */}
+      {tab==='mobprev'&&(
+        <div className="full-panel">
+          <div className="card-head" style={{borderBottom:'none',flexWrap:'wrap',gap:'8px'}}>
+            <div className="card-icon"><svg viewBox="0 0 24 24" width="13" height="13" stroke="#1d4ed8" fill="none" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+            <span className="card-title">모바일 카드 미리보기</span>
+            <div style={{marginLeft:'auto',flexShrink:0}}>
+              <button onClick={exportPNG} disabled={isExporting} className="btn-blue" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px'}}>
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                {isExporting?'저장 중...':'모바일 PNG 저장'}
+              </button>
+            </div>
+          </div>
+          <div className="preview-bg" style={{minHeight:'560px',alignItems:'flex-start',paddingTop:'24px'}}>
+            {result?(
+              <div style={{width:'360px',transform:'scale(0.88)',transformOrigin:'top center',background:'#162944',borderRadius:'20px',overflow:'hidden',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",pointerEvents:'none',boxShadow:'0 20px 60px rgba(0,0,0,.5)'}}>
+                {/* 헤더 */}
+                <div style={{background:'#0f1e33',padding:'22px 20px 18px'}}>
+                  <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'8px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
+                  <div style={{fontSize:'18px',fontWeight:900,color:'#e8f1fb',marginBottom:'5px',lineHeight:1.25,letterSpacing:'-.01em'}}>{projectName}</div>
+                  <div style={{fontSize:'8px',fontWeight:700,color:'#3d5c80',letterSpacing:'.12em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
                 </div>
+                <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px'}}>
+                  {/* ── 4줄 세로 배치 ── */}
+                  {/* Row 1: 예정 공사비 */}
+                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>예정 공사비</div>
+                    <div style={{textAlign:'right'}}>
+                      <div style={{fontSize:'18px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
+                    </div>
+                  </div>
+                  {/* Row 2: 건물종별·도서 */}
+                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>건물종별·도서</div>
+                    <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',maxWidth:'55%',lineHeight:1.3}}>{result.selectedLevelName}</div>
+                  </div>
+                  {/* Row 3: 적용 요율 */}
+                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>적용 요율 (Y)</div>
+                    <div style={{textAlign:'right'}}>
+                      <div style={{fontSize:'28px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'14px'}}> %</span></div>
+                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
+                    </div>
+                  </div>
+                  {/* Row 4: 최종 산출대가 */}
+                  <div style={{background:'rgba(29,78,216,.3)',border:'1.5px solid rgba(96,165,250,.4)',borderRadius:'12px',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#93c5fd',letterSpacing:'.1em',textTransform:'uppercase'}}>최종 산출대가</div>
+                    <div style={{textAlign:'right'}}>
+                      <div style={{fontSize:'20px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{fmt(result.finalFee)}</div>
+                      <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px'}}>원 VAT별도</div>
+                    </div>
+                  </div>
+                  {/* 할증 내역 */}
+                  {result.adjustmentRate>0&&(
+                    <div style={{background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.09)',borderRadius:'10px',padding:'11px 14px'}}>
+                      <div style={{fontSize:'8px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'7px'}}>세부 할증 내역</div>
+                      <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#c8ddf0',marginBottom:'4px'}}><span>기본 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>{fmt(result.baseFee)} 원</span></div>
+                      <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#f59e0b',marginBottom:'4px'}}><span>{result.adjNames.join(', ')} (+{result.adjustmentRate}%)</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>+{fmt(result.adjustmentAmount)} 원</span></div>
+                      <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#fde047',paddingTop:'5px',borderTop:'1px solid rgba(255,255,255,.1)',fontWeight:800}}><span>최종 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace'}}>{fmt(result.finalFee)} 원</span></div>
+                    </div>
+                  )}
+                  {/* 직선보간법 산출근거 */}
+                  {result.interpolated&&(
+                    <div style={{background:'rgba(255,255,255,.04)',borderRadius:'12px',overflow:'hidden'}}>
+                      <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',padding:'10px 14px 8px'}}>직선보간법 산출 근거</div>
+                      <table style={{width:'100%',borderCollapse:'collapse',fontFamily:'JetBrains Mono,monospace',fontSize:'10px'}}>
+                        <thead><tr style={{borderBottom:'1px solid rgba(255,255,255,.1)'}}>{['기호','항목','값'].map((h,i)=><th key={h} style={{padding:'5px 10px 7px',textAlign:i===2?'right':'left',color:'#3d5c80',fontWeight:700,fontSize:'8px',letterSpacing:'.1em',textTransform:'uppercase'}}>{h}</th>)}</tr></thead>
+                        <tbody>
+                          {[{s:'y2',n:'큰금액 요율',v:`${result.ry2} %`,c:'#94a3b8'},{s:'x2',n:'작은 금액',v:`${fmt(result.rx2)} 원`,c:'#94a3b8'},{s:'y1',n:'작은금액 요율',v:`${result.ry1} %`,c:'#94a3b8'},{s:'X',n:'당해 공사비',v:`${fmt(result.targetCost)} 원`,c:'#f59e0b',fw:800},{s:'x1',n:'큰 금액',v:`${fmt(result.rx1)} 원`,c:'#94a3b8'}].map(({s,n,v,c,fw})=>(
+                            <tr key={s} style={{borderBottom:'1px solid rgba(255,255,255,.05)'}}><td style={{padding:'6px 10px',color:'#7da8d8',fontWeight:800}}>{s}</td><td style={{padding:'6px 10px',color:'#8ab4d4',fontSize:'10px'}}>{n}</td><td style={{padding:'6px 10px',textAlign:'right',color:c,fontWeight:fw||600}}>{v}</td></tr>
+                          ))}
+                          <tr style={{borderTop:'1px solid rgba(255,255,255,.1)'}}><td style={{padding:'6px 10px',color:'#5b84b1',fontWeight:800,fontSize:'9px'}}>식</td><td colSpan={2} style={{padding:'6px 10px',color:'#94a3b8',fontSize:'9px',lineHeight:1.6}}>{result.ry1} − ({fmt(result.targetCost)} − {fmt(result.rx2)}) × ({result.ry1} − {result.ry2}) ÷ ({fmt(result.rx1)} − {fmt(result.rx2)})</td></tr>
+                          <tr style={{background:'rgba(29,78,216,.2)',borderTop:'1px solid rgba(96,165,250,.3)'}}><td style={{padding:'8px 10px',color:'#93c5fd',fontWeight:800}}>Y</td><td style={{padding:'8px 10px',color:'#93c5fd',fontSize:'10px'}}>당해 공사비 요율</td><td style={{padding:'8px 10px',textAlign:'right',color:'#f43f5e',fontWeight:900,fontSize:'15px'}}>{result.finalRate} %</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  {result.bfNote&&(<div style={{background:'rgba(239,68,68,.15)',borderRadius:'10px',padding:'11px 14px',border:'1px solid rgba(239,68,68,.4)'}}><p style={{color:'#fca5a5',fontSize:'10px',fontWeight:700,lineHeight:1.5}}>※ {result.bfNote}</p></div>)}
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.06)'}}><span style={{fontSize:'8px',color:'#243650',fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'8px',color:'#243650',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>MANMIN Ver-{VER}</span></div>
+                </div>
+              </div>
+            ):(
+              <div style={{color:'#94a3b8',fontSize:'13px'}}>입력·산출 탭에서 공사비를 입력하면 미리보기가 표시됩니다.</div>
             )}
-            </>
-          );
-        }
+          </div>
+        </div>
+      )}
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+{/* ── 입력·산출 탭 ── */}
+      {tab==='input'&&(
+        <div className="two-col">
+          {/* LEFT: 입력 */}
+          <div style={{display:'flex',flexDirection:'column',gap:'14px'}}>
+            {/* 법령 안내 */}
+            <div className="info-strip">
+              <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <p><strong>공공발주사업에 대한 건축사의 업무범위와 대가기준 (국토교통부고시 제2020-635호)</strong> — 건축사법 제19조의3에 따른 공공기관 건축설계·감리 대가 산정 기준. 공사비요율 적용, VAT 별도.</p>
+            </div>
 
-    <!-- ═══ Service Worker 등록 ═══ -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('[PWA] SW 등록 완료 — scope:', reg.scope))
-                    .catch(err => console.warn('[PWA] SW 등록 실패:', err));
-            });
-        }
-    </script>
+            {/* 업무 유형 */}
+            <div className="card">
+              <div className="card-head"><div className="card-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/></svg></div><span className="card-title">업무 유형 선택</span></div>
+              <div className="card-body">
+                <div style={{display:'flex',gap:'10px'}}>
+                  <button className={`task-btn${isDesign?' active':''}`} onClick={()=>setTaskType('design')}>
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <span>건축설계</span>
+                    <small>별표4 요율 적용</small>
+                  </button>
+                  <button className={`task-btn${!isDesign?' active':''}`} onClick={()=>setTaskType('supervision')}>
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>공사감리</span>
+                    <small>별표5 요율 적용</small>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 기본 정보 */}
+            <div className="card">
+              <div className="card-head"><div className="card-icon"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><span className="card-title">기본 정보 입력</span></div>
+              <div className="card-body" style={{display:'flex',flexDirection:'column',gap:'11px'}}>
+                <div>
+                  <label className="flbl">용역명 (프로젝트명)</label>
+                  <input type="text" value={projectName} onChange={e=>setProjectName(e.target.value)} className="finput"/>
+                </div>
+                <div>
+                  <label className="flbl">예정 공사비 (원, VAT 별도)</label>
+                  <div style={{position:'relative'}}>
+                    <input type="text" value={costInput?fmt(parseInt(costInput)):''} onChange={handleCostChange} className="finput mono" style={{paddingRight:'40px'}} placeholder="숫자만 입력"/>
+                    <span style={{position:'absolute',right:'12px',top:'50%',transform:'translateY(-50%)',fontSize:'11px',color:'#94a3b8',fontWeight:700}}>원</span>
+                  </div>
+                  {costInput&&<div style={{marginTop:'5px',fontSize:'10px',color:'#3b82f6',fontWeight:700}}>= {parseInt(costInput)>=100000000?`${(parseInt(costInput)/100000000).toFixed(2)}억원`:`${(parseInt(costInput)/10000).toFixed(0)}만원`}</div>}
+                </div>
+                <div>
+                  <label className="flbl">건축물 용도 (종별 자동 결정)</label>
+                  <select value={buildingUsage} onChange={e=>setBuildingUsage(e.target.value)} className="fselect">
+                    <optgroup label="▶ 제1종 (단순)">{USAGES.filter(u=>u.type==='type1').map(u=><option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
+                    <optgroup label="▶ 제2종 (보통)">{USAGES.filter(u=>u.type==='type2').map(u=><option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
+                    <optgroup label="▶ 제3종 (복잡)">{USAGES.filter(u=>u.type==='type3').map(u=><option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
+                  </select>
+                  <div style={{marginTop:'5px',fontSize:'10px',fontWeight:700,color:currentType==='type1'?'#6b7a99':currentType==='type3'?'#e11d48':'#059669'}}>→ 자동 판정: {currentType==='type1'?'제1종 단순 (특수설비 없음)':currentType==='type2'?'제2종 보통':'제3종 복잡'}{isSpecialEquip?' + 특수설비 상향':''}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 설계 도서 + 특수설비 */}
+            <div className="card">
+              <div className="card-head"><div className="card-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div><span className="card-title">세부 조건</span></div>
+              <div className="card-body" style={{display:'flex',flexDirection:'column',gap:'11px'}}>
+                {isDesign&&(
+                  <div>
+                    <label className="flbl">도서작성 구분 (설계업무)</label>
+                    <div style={{display:'flex',gap:'8px'}}>
+                      {[{v:0,l:'기본',sub:'인허가 최소'},{v:1,l:'중급',sub:'공사비 산정'},{v:2,l:'상급',sub:'세부 산정'}].map(({v,l,sub})=>(
+                        <button key={v} className={`doc-pill${docLevel===v?' active':''}`} onClick={()=>setDocLevel(v)}>
+                          <div style={{fontSize:'12px',fontWeight:800}}>{l}</div>
+                          <div style={{fontSize:'9px',opacity:.7,marginTop:'2px'}}>{sub}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <label className="chk-item" onClick={()=>setIsSpecialEquip(!isSpecialEquip)}>
+                  <input type="checkbox" checked={isSpecialEquip} readOnly style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
+                  <div>
+                    <div className="chk-item-label">특수 설비 요구 (종별 상향 적용)</div>
+                    <div className="chk-item-sub">공기조화 등 특수설비 → 제1종→2종, 제2종→3종 상향</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* 설계 할증 (설계 업무만) */}
+            {isDesign&&(
+              <div className="card">
+                <div className="card-head"><div className="card-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span className="card-title">추가 업무 할증 (선택)</span><span className="card-badge" style={{marginLeft:'auto'}}>설계만 적용</span></div>
+                <div className="card-body" style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+                  <label className="chk-item" onClick={()=>setIsRemodel(!isRemodel)}>
+                    <input type="checkbox" checked={isRemodel} readOnly style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
+                    <div><div className="chk-item-label">리모델링 / 인테리어 설계 +50%</div><div className="chk-item-sub">제11조 제4항 1호 — 기본 대가의 1.5배 적용</div></div>
+                  </label>
+                  <label className="chk-item" onClick={()=>setIsBF(!isBF)}>
+                    <input type="checkbox" checked={isBF} readOnly style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
+                    <div><div className="chk-item-label">BF 인증 (장애물 없는 생활환경)</div><div className="chk-item-sub">실비정액가산식 별도 산정 — 본 대가에 미포함</div></div>
+                  </label>
+                  <div style={{background:'#f8fafd',border:'1.5px solid #e2e8f0',borderRadius:'10px',padding:'12px',display:'flex',flexDirection:'column',gap:'9px'}}>
+                    <div style={{fontSize:'10px',fontWeight:800,color:'#6b7a99',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'2px'}}>인증 할증 (체감 공식 적용)</div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'9px'}}>
+                      <div>
+                        <label className="flbl">녹색건축 인증</label>
+                        <select value={certGreen} onChange={e=>setCertGreen(Number(e.target.value))} className="fselect">{GREEN_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>
+                      </div>
+                      <div>
+                        <label className="flbl">지능형건축물(IBS)</label>
+                        <select value={certIBS} onChange={e=>setCertIBS(Number(e.target.value))} className="fselect">{IBS_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>
+                      </div>
+                      <div>
+                        <label className="flbl">제로에너지 인증</label>
+                        <select value={certZero} onChange={e=>{const v=Number(e.target.value);setCertZero(v);if(v>0)setCertEnergy(0);}} className="fselect">{ZERO_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>
+                      </div>
+                      <div>
+                        <label className="flbl" style={{display:'flex',justifyContent:'space-between'}}>에너지효율등급 {certZero>0&&<span style={{color:'#e11d48',fontSize:'9px',fontWeight:700}}>중복불가</span>}</label>
+                        <select value={certEnergy} onChange={e=>setCertEnergy(Number(e.target.value))} disabled={certZero>0} className="fselect">
+                          {certZero>0?<option value="0">적용 불가 (제로에너지 우선)</option>:ENERGY_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: 결과 */}
+          <div style={{display:'flex',flexDirection:'column',gap:'14px'}}>
+            {result?(
+              <>
+              {/* 최종 금액 */}
+              <div className="result-card">
+                <div className="result-amount-box">
+                  <div style={{fontSize:'10px',fontWeight:700,color:'rgba(255,255,255,.55)',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'8px'}}>{isDesign?'설계':'감리'} 용역비 산출 결과</div>
+                  <div style={{fontSize:'11px',color:'rgba(255,255,255,.6)',marginBottom:'4px',fontWeight:600}}>최종 산출금액 (VAT 별도)</div>
+                  <div style={{fontSize:'36px',fontWeight:900,color:'#fde047',letterSpacing:'-.02em',lineHeight:1}} className="mono">{fmt(result.finalFee)}</div>
+                  <div style={{fontSize:'16px',fontWeight:700,color:'rgba(255,255,255,.7)',marginTop:'4px'}}>원</div>
+                  {result.adjustmentRate>0&&(
+                    <div style={{marginTop:'10px',fontSize:'11px',color:'rgba(255,255,255,.55)',fontWeight:600}}>
+                      기본 {fmt(result.baseFee)}원 + 조정 +{fmt(result.adjustmentAmount)}원 (할증 {result.adjustmentRate}%)
+                    </div>
+                  )}
+                </div>
+
+                {/* 3 cards */}
+                <div style={{padding:'14px',display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'9px'}}>
+                  <div className="vc vc-n">
+                    <div style={{fontSize:'8px',fontWeight:800,letterSpacing:'.1em',textTransform:'uppercase',color:'#6b7a99',marginBottom:'5px'}}>적용 요율</div>
+                    <div style={{fontSize:'22px',fontWeight:900,color:'#1a2744'}} className="mono">{result.finalRate}</div>
+                    <div style={{fontSize:'9px',color:'#94a3b8',marginTop:'3px',fontWeight:600}}>%</div>
+                  </div>
+                  <div className="vc vc-a">
+                    <div style={{fontSize:'8px',fontWeight:800,letterSpacing:'.1em',textTransform:'uppercase',color:'#854d0e',marginBottom:'5px'}}>공사비</div>
+                    <div style={{fontSize:'12px',fontWeight:900,color:'#854d0e'}} className="mono">{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                    <div style={{fontSize:'9px',color:'#b45309',marginTop:'3px',fontWeight:600}}>억 원</div>
+                  </div>
+                  <div className="vc vc-p">
+                    <div style={{fontSize:'8px',fontWeight:800,letterSpacing:'.1em',textTransform:'uppercase',color:'#059669',marginBottom:'5px'}}>종별</div>
+                    <div style={{fontSize:'14px',fontWeight:900,color:'#059669'}}>{(()=>{const t=result.selectedLevelName;return t.includes('제1종')?'1종':t.includes('제3종')?'3종':'2종';})()}</div>
+                    <div style={{fontSize:'9px',color:'#059669',marginTop:'3px',fontWeight:600,opacity:.7}}>{result.selectedLevelName.includes('제1종')?'단순':result.selectedLevelName.includes('제3종')?'복잡':'보통'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 산출 상세 */}
+              <div className="card">
+                <div className="card-head">
+                  <div className="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></div>
+                  <span className="card-title">산출 근거 상세</span>
+                  <span className="card-badge" style={{marginLeft:'8px',fontFamily:'JetBrains Mono,monospace',fontStyle:'italic'}}>{result.basisSrc}</span>
+                </div>
+                <div style={{overflowX:'auto',borderRadius:'0 0 14px 14px'}}>
+                  <table className="rtbl">
+                    <thead><tr><th style={{textAlign:'left'}}>항목</th><th style={{textAlign:'right'}}>값</th></tr></thead>
+                    <tbody>
+                      <tr><td style={{color:'#6b7a99',fontWeight:600}}>예정 공사비</td><td style={{textAlign:'right',fontFamily:'JetBrains Mono,monospace',fontWeight:700}} className="mono">{fmt(result.targetCost)} 원</td></tr>
+                      <tr><td style={{color:'#6b7a99',fontWeight:600}}>적용 난이도</td><td style={{textAlign:'right',fontSize:'11px',fontWeight:700}}>{result.selectedLevelName}</td></tr>
+                      <tr><td style={{color:'#6b7a99',fontWeight:600}}>Y (당해 공사비요율)</td><td style={{textAlign:'right',color:'#e11d48',fontWeight:900,fontSize:'15px'}} className="mono">{result.finalRate} %</td></tr>
+                      {result.adjustmentRate>0&&<tr><td style={{color:'#6b7a99',fontWeight:600}}>기본 대가</td><td style={{textAlign:'right',fontWeight:700}} className="mono">{fmt(result.baseFee)} 원</td></tr>}
+                      {result.adjustmentRate>0&&<tr><td style={{color:'#1d4ed8',fontWeight:700}}>세부 조정 (+{result.adjustmentRate}%)</td><td style={{textAlign:'right',color:'#1d4ed8',fontWeight:700}} className="mono">+{fmt(result.adjustmentAmount)} 원</td></tr>}
+                      {result.interpolated&&(
+                        <tr>
+                          <td style={{color:'#059669',fontWeight:700}}>보간 산출식</td>
+                          <td style={{textAlign:'right',fontSize:'10px',fontFamily:'JetBrains Mono,monospace',color:'#475569',lineHeight:1.6}}>
+                            {result.ry1} − ({fmt(result.targetCost)} − {fmt(result.rx2)}) × ({result.ry1} − {result.ry2}) ÷ ({fmt(result.rx1)} − {fmt(result.rx2)})
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td style={{fontWeight:800,fontSize:'12px',letterSpacing:'.06em',textTransform:'uppercase',color:'#1e40af'}}>최종 산출 대가 (VAT 별도)</td>
+                        <td style={{textAlign:'right',fontWeight:900,color:'#1d4ed8',fontSize:'16px'}} className="mono">{fmt(result.finalFee)} 원</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              {/* 적용 근거 */}
+              <div className="card">
+                <div className="card-head"><div className="card-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div><span className="card-title">적용 근거</span></div>
+                <div className="card-body">
+                  <div style={{fontSize:'12px',color:'#374151',lineHeight:1.9}}>
+                    <strong>근거 고시:</strong> {result.basisSrc}<br/>
+                    <strong>적용 기준:</strong> 국토교통부고시 제2020-635호 (2020.09.14 시행)<br/>
+                    <strong>건물 종별:</strong> {result.selectedLevelName} — {buildingUsage}<br/>
+                    <strong>산출 방식:</strong> {result.interpolated?'직선보간법 적용 [ Y = y1 - (x-x2)×(y1-y2)÷(x1-x2) ]':'해당 구간 요율 직접 적용'}<br/>
+                    {result.adjNames.length>0&&<><strong>세부 할증:</strong> {result.adjNames.join(' / ')} (합계 +{result.adjustmentRate}%)<br/></>}
+                    {result.bfNote&&<span style={{color:'#be123c',fontWeight:700,display:'block',marginTop:'4px'}}>※ {result.bfNote}</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',opacity:.35,fontSize:'9px',fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase',color:'#6b7a99',padding:'0 4px'}}>
+                <span>공공발주사업에 대한 건축사의 업무범위와 대가기준 · 제2020-635호</span>
+                <span className="mono">MANMIN Ver-{VER}</span>
+              </div>
+              </>
+            ):(
+              <div className="card" style={{padding:'40px 20px',textAlign:'center'}}>
+                <div style={{fontSize:'14px',color:'#94a3b8',lineHeight:2}}>공사비를 입력하면<br/>산출 결과가 실시간으로 표시됩니다.</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* ═══ FAB ═══ */}
+    <button className="fab-pill no-print" onClick={()=>setShowModal(true)}>📐 산출 안내</button>
+
+    {/* ═══ MODAL ═══ */}
+    {showModal&&<InfoModal onClose={()=>setShowModal(false)}/>}
+
+    {/* ═══ HIDDEN CAPTURE AREAS ═══ */}
+    <A4PrintArea/>
+    <MobileCard/>
+
+    {/* ═══ PWA BANNER ═══ */}
+    {showPWA&&(
+      <div className="no-print" style={{position:'fixed',bottom:'80px',left:'50%',transform:'translateX(-50%)',width:'min(380px,calc(100vw - 32px))',background:'linear-gradient(135deg,#1e3a8a,#1e1b4b)',border:'1px solid rgba(147,197,253,.2)',borderRadius:'16px',padding:'13px 15px',boxShadow:'0 20px 60px rgba(0,0,0,.25)',zIndex:60}}>
+        <div style={{display:'flex',alignItems:'center',gap:'11px'}}>
+          <div style={{flex:1}}><p style={{color:'#fff',fontSize:'12px',fontWeight:800,margin:0,lineHeight:1.4}}>홈 화면에 설치하시겠습니까?</p><p style={{color:'#93c5fd',fontSize:'10px',margin:'3px 0 0',fontWeight:600}}>오프라인에서도 사용 가능한 앱으로 설치됩니다</p></div>
+          <button onClick={()=>setShowPWA(false)} style={{color:'rgba(255,255,255,.5)',background:'transparent',border:'none',fontSize:'12px',fontWeight:700,cursor:'pointer',padding:'3px 7px',fontFamily:'inherit'}}>닫기</button>
+          <button onClick={async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;setInstallPrompt(null);}setShowPWA(false);}} style={{background:'#fff',color:'#1d4ed8',fontSize:'11px',fontWeight:800,border:'none',padding:'6px 13px',borderRadius:'8px',cursor:'pointer',fontFamily:'inherit'}}>설치</button>
+        </div>
+      </div>
+    )}
+    </>
+  );
+}
+
+const root=ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(r=>console.log('[PWA] SW:',r.scope))
+      .catch(e=>console.warn('[PWA] 실패:',e));
+  });
+}
+</script>
 </body>
 </html>

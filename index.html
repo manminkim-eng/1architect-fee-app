@@ -805,44 +805,44 @@ function App(){
 
   /* ── MOBILE CARD (hidden capture) ── */
   const MobileCard=()=>(
-    <div ref={reportRef} style={{position:'fixed',left:'-9999px',top:0,zIndex:-1,width:'360px',height:'780px',background:'#162944',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'hidden',borderRadius:'20px'}}>
+    <div ref={reportRef} style={{position:'fixed',left:'-9999px',top:0,zIndex:-1,width:'360px',height:'780px',background:'#1e3456',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'hidden',borderRadius:'20px'}}>
       {result&&(
         <div>
           {/* ── 헤더 ── */}
-          <div style={{background:'#0f1e33',padding:'22px 20px 18px'}}>
-            <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'8px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
-            <div style={{fontSize:'18px',fontWeight:900,color:'#e8f1fb',marginBottom:'5px',lineHeight:1.25,letterSpacing:'-.01em'}}>{projectName}</div>
-            <div style={{fontSize:'8px',fontWeight:700,color:'#3d5c80',letterSpacing:'.12em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
+          <div style={{background:'#162a4a',padding:'20px 18px 16px',borderBottom:'1px solid rgba(255,255,255,.08)'}}>
+            <div style={{fontSize:'8px',fontWeight:700,color:'#7da8d8',letterSpacing:'.18em',textTransform:'uppercase',marginBottom:'6px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
+            <div style={{fontSize:'16px',fontWeight:900,color:'#e8f1fb',marginBottom:'4px',lineHeight:1.3,letterSpacing:'-.01em'}}>{projectName}</div>
+            <div style={{fontSize:'8px',fontWeight:700,color:'#5b84b1',letterSpacing:'.08em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
           </div>
-          <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px'}}>
+          <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:'10px'}}>
             {/* ── 4줄 세로 배치 ── */}
             {/* Row 1: 예정 공사비 */}
-            <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>예정 공사비</div>
-              <div style={{textAlign:'right'}}>
-                <div style={{fontSize:'18px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
-                <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
+            <div style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>예정 공사비</div>
+              <div style={{textAlign:'right',minWidth:0}}>
+                <div style={{fontSize:'17px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1,whiteSpace:'nowrap'}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px',whiteSpace:'nowrap'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
               </div>
             </div>
             {/* Row 2: 건물종별·도서 */}
-            <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>건물종별·도서</div>
-              <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',maxWidth:'55%',lineHeight:1.3}}>{result.selectedLevelName}</div>
+            <div style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>건물종별·도서</div>
+              <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',lineHeight:1.3}}>{result.selectedLevelName}</div>
             </div>
             {/* Row 3: 적용 요율 */}
-            <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>적용 요율 (Y)</div>
-              <div style={{textAlign:'right'}}>
-                <div style={{fontSize:'28px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'14px'}}> %</span></div>
-                <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
+            <div style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>적용 요율 (Y)</div>
+              <div style={{textAlign:'right',minWidth:0}}>
+                <div style={{fontSize:'26px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1,whiteSpace:'nowrap'}}>{result.finalRate}<span style={{fontSize:'13px'}}> %</span></div>
+                <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px',whiteSpace:'nowrap'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
               </div>
             </div>
             {/* Row 4: 최종 산출대가 */}
-            <div style={{background:'rgba(29,78,216,.3)',border:'1.5px solid rgba(96,165,250,.4)',borderRadius:'12px',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{fontSize:'9px',fontWeight:700,color:'#93c5fd',letterSpacing:'.1em',textTransform:'uppercase'}}>최종 산출대가</div>
-              <div style={{textAlign:'right'}}>
-                <div style={{fontSize:'20px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{fmt(result.finalFee)}</div>
-                <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px'}}>원 VAT별도</div>
+            <div style={{background:'rgba(16,185,129,.18)',border:'1.5px solid rgba(52,211,153,.4)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+              <div style={{fontSize:'9px',fontWeight:700,color:'#34d399',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>최종 산출대가</div>
+              <div style={{textAlign:'right',minWidth:0}}>
+                <div style={{fontSize:'19px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1,whiteSpace:'nowrap'}}>{fmt(result.finalFee)}</div>
+                <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px',whiteSpace:'nowrap'}}>원 VAT별도</div>
               </div>
             </div>
             {/* 할증 내역 */}
@@ -871,7 +871,7 @@ function App(){
               </div>
             )}
             {result.bfNote&&(<div style={{background:'rgba(239,68,68,.15)',borderRadius:'10px',padding:'11px 14px',border:'1px solid rgba(239,68,68,.4)'}}><p style={{color:'#fca5a5',fontSize:'10px',fontWeight:700,lineHeight:1.5}}>※ {result.bfNote}</p></div>)}
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.06)'}}><span style={{fontSize:'8px',color:'#243650',fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'8px',color:'#243650',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>MANMIN Ver-{VER}</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.07)'}}><span style={{fontSize:'7.5px',color:'#2d4a6a',fontWeight:600,textTransform:'uppercase',letterSpacing:'.03em',whiteSpace:'nowrap'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'7.5px',color:'#2d4a6a',fontWeight:700,fontFamily:'JetBrains Mono,monospace',whiteSpace:'nowrap'}}>MANMIN Ver-{VER}</span></div>
           </div>
         </div>
       )}
@@ -1004,42 +1004,42 @@ function App(){
           </div>
           <div className="preview-bg" style={{minHeight:'560px',alignItems:'flex-start',paddingTop:'24px'}}>
             {result?(
-              <div style={{width:'360px',transform:'scale(0.88)',transformOrigin:'top center',background:'#162944',borderRadius:'20px',overflow:'hidden',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",pointerEvents:'none',boxShadow:'0 20px 60px rgba(0,0,0,.5)'}}>
+              <div style={{width:'360px',transform:'scale(0.88)',transformOrigin:'top center',background:'#1e3456',borderRadius:'20px',overflow:'hidden',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",pointerEvents:'none',boxShadow:'0 20px 60px rgba(0,0,0,.5)'}}>
                 {/* 헤더 */}
-                <div style={{background:'#0f1e33',padding:'22px 20px 18px'}}>
-                  <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'8px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
-                  <div style={{fontSize:'18px',fontWeight:900,color:'#e8f1fb',marginBottom:'5px',lineHeight:1.25,letterSpacing:'-.01em'}}>{projectName}</div>
-                  <div style={{fontSize:'8px',fontWeight:700,color:'#3d5c80',letterSpacing:'.12em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
+                <div style={{background:'#162a4a',padding:'20px 18px 16px',borderBottom:'1px solid rgba(255,255,255,.08)'}}>
+                  <div style={{fontSize:'8px',fontWeight:700,color:'#7da8d8',letterSpacing:'.18em',textTransform:'uppercase',marginBottom:'6px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
+                  <div style={{fontSize:'16px',fontWeight:900,color:'#e8f1fb',marginBottom:'4px',lineHeight:1.3,letterSpacing:'-.01em'}}>{projectName}</div>
+                  <div style={{fontSize:'8px',fontWeight:700,color:'#5b84b1',letterSpacing:'.08em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
                 </div>
-                <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px'}}>
+                <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:'10px'}}>
                   {/* ── 4줄 세로 배치 ── */}
                   {/* Row 1: 예정 공사비 */}
-                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>예정 공사비</div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:'18px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
-                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
+                  <div style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>예정 공사비</div>
+                    <div style={{textAlign:'right',minWidth:0}}>
+                      <div style={{fontSize:'17px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1,whiteSpace:'nowrap'}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px',whiteSpace:'nowrap'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
                     </div>
                   </div>
                   {/* Row 2: 건물종별·도서 */}
-                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>건물종별·도서</div>
-                    <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',maxWidth:'55%',lineHeight:1.3}}>{result.selectedLevelName}</div>
+                  <div style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>건물종별·도서</div>
+                    <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',lineHeight:1.3}}>{result.selectedLevelName}</div>
                   </div>
                   {/* Row 3: 적용 요율 */}
-                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>적용 요율 (Y)</div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:'28px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'14px'}}> %</span></div>
-                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
+                  <div style={{background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>적용 요율 (Y)</div>
+                    <div style={{textAlign:'right',minWidth:0}}>
+                      <div style={{fontSize:'26px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1,whiteSpace:'nowrap'}}>{result.finalRate}<span style={{fontSize:'13px'}}> %</span></div>
+                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px',whiteSpace:'nowrap'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
                     </div>
                   </div>
                   {/* Row 4: 최종 산출대가 */}
-                  <div style={{background:'rgba(29,78,216,.3)',border:'1.5px solid rgba(96,165,250,.4)',borderRadius:'12px',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#93c5fd',letterSpacing:'.1em',textTransform:'uppercase'}}>최종 산출대가</div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:'20px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{fmt(result.finalFee)}</div>
-                      <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px'}}>원 VAT별도</div>
+                  <div style={{background:'rgba(16,185,129,.18)',border:'1.5px solid rgba(52,211,153,.4)',borderRadius:'10px',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+                    <div style={{fontSize:'9px',fontWeight:700,color:'#34d399',letterSpacing:'.06em',textTransform:'uppercase',whiteSpace:'nowrap',flexShrink:0}}>최종 산출대가</div>
+                    <div style={{textAlign:'right',minWidth:0}}>
+                      <div style={{fontSize:'19px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1,whiteSpace:'nowrap'}}>{fmt(result.finalFee)}</div>
+                      <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px',whiteSpace:'nowrap'}}>원 VAT별도</div>
                     </div>
                   </div>
                   {/* 할증 내역 */}
@@ -1068,7 +1068,7 @@ function App(){
                     </div>
                   )}
                   {result.bfNote&&(<div style={{background:'rgba(239,68,68,.15)',borderRadius:'10px',padding:'11px 14px',border:'1px solid rgba(239,68,68,.4)'}}><p style={{color:'#fca5a5',fontSize:'10px',fontWeight:700,lineHeight:1.5}}>※ {result.bfNote}</p></div>)}
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.06)'}}><span style={{fontSize:'8px',color:'#243650',fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'8px',color:'#243650',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>MANMIN Ver-{VER}</span></div>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.07)'}}><span style={{fontSize:'7.5px',color:'#2d4a6a',fontWeight:600,textTransform:'uppercase',letterSpacing:'.03em',whiteSpace:'nowrap'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'7.5px',color:'#2d4a6a',fontWeight:700,fontFamily:'JetBrains Mono,monospace',whiteSpace:'nowrap'}}>MANMIN Ver-{VER}</span></div>
                 </div>
               </div>
             ):(

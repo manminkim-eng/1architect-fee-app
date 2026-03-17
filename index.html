@@ -286,7 +286,6 @@ const DESIGN_TABLE=[
 
 const GREEN_OPTS=[{label:'미적용',value:0},{label:'최우수 (9.5%)',value:9.5},{label:'우수 (9.0%)',value:9.0},{label:'우량 (8.5%)',value:8.5},{label:'일반 (8.0%)',value:8.0}];
 const IBS_OPTS=[{label:'미적용',value:0},{label:'1등급 (7.0%)',value:7.0},{label:'2등급 (6.5%)',value:6.5},{label:'3등급 (6.0%)',value:6.0},{label:'4등급 (5.5%)',value:5.5},{label:'5등급 (5.0%)',value:5.0}];
-const ENERGY_OPTS=[{label:'미적용',value:0},{label:'1+++~1++ (7.5%)',value:7.5},{label:'1+~1 (7.0%)',value:7.0},{label:'2~3등급 (6.5%)',value:6.5},{label:'4~5등급 (6.0%)',value:6.0},{label:'6~7등급 (5.5%)',value:5.5}];
 const ZERO_OPTS=[{label:'미적용',value:0},{label:'1등급 (10.0%)',value:10.0},{label:'2등급 (9.5%)',value:9.5},{label:'3등급 (9.0%)',value:9.0},{label:'4등급 (8.5%)',value:8.5},{label:'5등급 (8.0%)',value:8.0}];
 
 const fmt=n=>n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
@@ -343,7 +342,7 @@ const InfoModal=({onClose})=>{
               <div className="mhi">
                 <strong>공사비</strong> = 발주자의 공사비 총예정금액(자재대 포함)<br/>
                 <strong>제외 항목:</strong> 용지비, 보상비, 법률수속비, 부가가치세<br/>
-                · 공사비가 5,000만원 미만인 경우 → 5,000만원으로 간주 산출<br/>
+                · 공사비가 5,000만원 미만인 경우 → 5,000만원 구간의 요율 상한선 적용<br/>
                 · 공사비가 5,000억원 초과 시 → 별도 공식 적용
               </div>
             </div>
@@ -456,7 +455,7 @@ const InfoModal=({onClose})=>{
               </div>
               <div className="msec">특수 구간 처리</div>
               <div className="mhi amber">
-                · 공사비 5,000만원 미만 → <strong>5,000만원으로 간주</strong> 산출<br/>
+                · 공사비 5,000만원 미만 → <strong>5,000만원 구간의 요율 상한선 적용</strong><br/>
                 · 공사비 5,000억원 초과 → 별도 공식 적용 (평균급여액 × 소요인원 방식)<br/>
                 · 공사비가 구간 경계값과 일치 → 보간법 미적용, 해당 요율 직접 사용
               </div>
@@ -471,7 +470,6 @@ const InfoModal=({onClose})=>{
                 {[
                   {t:'녹색건축 인증',c:'#f0fdf4',bc:'#a7f3d0',tc:'#059669',rates:[['최우수','9.5%'],['우수','9.0%'],['우량','8.5%'],['일반','8.0%']]},
                   {t:'지능형건축물(IBS)',c:'#eff6ff',bc:'#bfdbfe',tc:'#1d4ed8',rates:[['1등급','7.0%'],['2등급','6.5%'],['3등급','6.0%'],['4등급','5.5%'],['5등급','5.0%']]},
-                  {t:'에너지효율등급',c:'#fefce8',bc:'#fde047',tc:'#854d0e',rates:[['1+++~1++','7.5%'],['1+~1','7.0%'],['2~3','6.5%'],['4~5','6.0%'],['6~7','5.5%']]},
                   {t:'제로에너지건축물',c:'#fff1f2',bc:'#fecdd3',tc:'#be123c',rates:[['1등급','10.0%'],['2등급','9.5%'],['3등급','9.0%'],['4등급','8.5%'],['5등급','8.0%']]},
                 ].map(({t,c,bc,tc,rates})=>(
                   <div key={t} style={{background:c,border:`1.5px solid ${bc}`,borderRadius:'10px',padding:'12px'}}>
@@ -487,8 +485,7 @@ const InfoModal=({onClose})=>{
               <div className="msec">복합 인증 체감 공식 (제11조 제4항 6호)</div>
               <div className="meq">추가요율 = A + B/2 + C/3</div>
               <div style={{fontSize:'11px',color:'#374151',lineHeight:1.9,marginBottom:'10px'}}>
-                <strong>A</strong> = 최상위 인증 요율 &nbsp; <strong>B</strong> = 차상위 인증 요율 &nbsp; <strong>C</strong> = 최하위 인증 요율<br/>
-                ※ 제로에너지 인증 시 에너지효율등급 요율 중복 불가
+                <strong>A</strong> = 최상위 인증 요율 &nbsp; <strong>B</strong> = 차상위 인증 요율 &nbsp; <strong>C</strong> = 최하위 인증 요율
               </div>
               <div className="mhi amber">
                 <strong>⚠ BF 인증 주의</strong><br/>
@@ -549,7 +546,6 @@ function App(){
   const [certGreen,setCertGreen]=useState(0);
   const [certIBS,setCertIBS]=useState(0);
   const [certZero,setCertZero]=useState(0);
-  const [certEnergy,setCertEnergy]=useState(0);
   const [isExporting,setIsExporting]=useState(false);
   const [installPrompt,setInstallPrompt]=useState(null);
   const [showPWA,setShowPWA]=useState(false);
@@ -624,7 +620,6 @@ function App(){
       if(certGreen>0)certRates.push({name:'녹색건축',rate:certGreen});
       if(certIBS>0)certRates.push({name:'지능형',rate:certIBS});
       if(certZero>0)certRates.push({name:'제로에너지',rate:certZero});
-      else if(certEnergy>0)certRates.push({name:'에너지효율',rate:certEnergy});
       if(certRates.length>0){
         certRates.sort((a,b)=>b.rate-a.rate);
         let combined=0,parts=[];
@@ -640,9 +635,9 @@ function App(){
     const finalFee=baseFee+adjAmt;
     const basisSrc=`건축사의 업무범위와 대가기준 [별표${taskType==='design'?'4':'5'}]`;
     return{targetCost,finalRate:finalRate.toFixed(3),rx2,rx1,ry1,ry2,interpolated,baseFee,adjustmentRate:totalAdj,adjustmentAmount:adjAmt,adjNames,bfNote,finalFee,basisSrc,selectedLevelName};
-  },[costInput,taskType,buildingUsage,docLevel,isSpecialEquip,isRemodel,isBF,certGreen,certIBS,certZero,certEnergy]);
+  },[costInput,taskType,buildingUsage,docLevel,isSpecialEquip,isRemodel,isBF,certGreen,certIBS,certZero]);
 
-  useEffect(()=>{if(taskType==='supervision'){setIsRemodel(false);setIsBF(false);setCertGreen(0);setCertIBS(0);setCertZero(0);setCertEnergy(0);}}, [taskType]);
+  useEffect(()=>{if(taskType==='supervision'){setIsRemodel(false);setIsBF(false);setCertGreen(0);setCertIBS(0);setCertZero(0);}}, [taskType]);
 
   /* ══ EXPORT ══ */
   const exportPNG=async()=>{
@@ -1196,13 +1191,7 @@ function App(){
                       </div>
                       <div>
                         <label className="flbl">제로에너지 인증</label>
-                        <select value={certZero} onChange={e=>{const v=Number(e.target.value);setCertZero(v);if(v>0)setCertEnergy(0);}} className="fselect">{ZERO_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>
-                      </div>
-                      <div>
-                        <label className="flbl" style={{display:'flex',justifyContent:'space-between'}}>에너지효율등급 {certZero>0&&<span style={{color:'#e11d48',fontSize:'9px',fontWeight:700}}>중복불가</span>}</label>
-                        <select value={certEnergy} onChange={e=>setCertEnergy(Number(e.target.value))} disabled={certZero>0} className="fselect">
-                          {certZero>0?<option value="0">적용 불가 (제로에너지 우선)</option>:ENERGY_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
-                        </select>
+                        <select value={certZero} onChange={e=>{const v=Number(e.target.value);setCertZero(v);}} className="fselect">{ZERO_OPTS.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}</select>
                       </div>
                     </div>
                   </div>

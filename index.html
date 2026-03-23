@@ -531,6 +531,7 @@ const InfoModal=({onClose})=>{
 /* ══════════ MAIN APP ══════════ */
 function App(){
   const reportRef=useRef(null);
+  const deviceRef=useRef(null);
   const a4WrapRef=useRef(null);
 
   const [tab,setTab]=useState('input');
@@ -639,26 +640,69 @@ function App(){
 
   useEffect(()=>{if(taskType==='supervision'){setIsRemodel(false);setIsBF(false);setCertGreen(0);setCertIBS(0);setCertZero(0);}}, [taskType]);
 
-  /* ══ EXPORT ══ */
-  const exportPNG=async()=>{
-    if(!reportRef.current)return;
+  /* ══ EXPORT JPG + SHARE ══ */
+  const [jpgBlob,setJpgBlob]=useState(null);
+  const [jpgFname,setJpgFname]=useState('');
+  const [showShare,setShowShare]=useState(false);
+
+  const exportJPG=async()=>{
+    // deviceRef 우선, 없으면 reportRef fallback
+    const captureNode=deviceRef.current||reportRef.current;
+    if(!captureNode)return;
     setIsExporting(true);
+    setShowShare(false);
     try{
-      await document.fonts.ready;await new Promise(r=>setTimeout(r,200));
-      const node=reportRef.current,sc=3;
-      const orig=node.style.cssText;
-      // 19.5:9 비율 고정 (세로형 스마트폰)
-      const fixW=360,fixH=Math.round(360*19.5/9); // 360×780
-      node.style.cssText=`position:fixed;left:0;top:0;z-index:-9999;visibility:visible;width:${fixW}px;height:${fixH}px;overflow:hidden;background:#162944;border-radius:20px;`;
-      await new Promise(r=>setTimeout(r,250));
-      const url=await window.domtoimage.toPng(node,{
-        width:fixW*sc,height:fixH*sc,
-        style:{transform:`scale(${sc})`,transformOrigin:'top left',width:fixW+'px',height:fixH+'px',overflow:'hidden'}
+      await document.fonts.ready;
+      await new Promise(r=>setTimeout(r,300));
+      // 기기 전체 크기 측정
+      const rect=captureNode.getBoundingClientRect();
+      const sc=2; // 2배 해상도
+      const url=await window.domtoimage.toJpeg(captureNode,{
+        quality:0.95,
+        bgcolor:'#111827',
+        width:Math.round(rect.width*sc),
+        height:Math.round(rect.height*sc),
+        style:{transform:`scale(${sc})`,transformOrigin:'top left'}
       });
-      const a=document.createElement('a');a.href=url;a.download=`산출내역_${projectName}_${Date.now()}.png`;a.click();
-      node.style.cssText=orig;
-    }catch(e){console.error(e);alert('저장 오류: '+e);}
+
+      // ── Blob 생성 ──
+      const res=await fetch(url);
+      const blob=await res.blob();
+      const now=new Date();
+      const dateStr=now.getFullYear()+('0'+(now.getMonth()+1)).slice(-2)+('0'+now.getDate()).slice(-2);
+      const fname=`대가산출_S24Ultra_${projectName}_${dateStr}.jpg`;
+      setJpgBlob(blob);
+      setJpgFname(fname);
+
+      // ── 다운로드 ──
+      const objUrl=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=objUrl;a.download=fname;a.click();
+      setTimeout(()=>URL.revokeObjectURL(objUrl),3000);
+
+      // ── 공유 버튼 표시 ──
+      setShowShare(true);
+    }catch(e){console.error(e);alert('JPG 저장 오류: '+e);}
     finally{setIsExporting(false);}
+  };
+
+  const shareJPG=async()=>{
+    if(!jpgBlob){alert('먼저 JPG 저장 버튼을 눌러주세요.');return;}
+    if(navigator.share&&navigator.canShare){
+      const file=new File([jpgBlob],jpgFname,{type:'image/jpeg'});
+      if(navigator.canShare({files:[file]})){
+        try{
+          await navigator.share({title:'건축사 업무대가 산출 결과',text:`${projectName} — MANMIN-Ver${VER}`,files:[file]});
+        }catch(e){if(e.name!=='AbortError')alert('공유 오류: '+e.message);}
+        return;
+      }
+    }
+    // Web Share 미지원 → 재다운로드
+    const objUrl=URL.createObjectURL(jpgBlob);
+    const a=document.createElement('a');
+    a.href=objUrl;a.download=jpgFname;a.click();
+    setTimeout(()=>URL.revokeObjectURL(objUrl),3000);
+    alert('이 브라우저는 공유를 지원하지 않아 파일을 다시 다운로드합니다.');
   };
 
   const TABS=[
@@ -896,9 +940,9 @@ function App(){
           </div>
         </div>
         <div className="hdr-btns">
-          <button className="btn-ghost no-print" onClick={exportPNG} disabled={isExporting} style={{fontSize:'11px',padding:'7px 12px'}}>
+          <button className="btn-ghost no-print" onClick={exportJPG} disabled={isExporting} style={{fontSize:'11px',padding:'7px 12px'}}>
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            {isExporting?'저장 중...':'PNG 저장'}
+            {isExporting?'저장 중...':'JPG 저장'}
           </button>
           <button className="btn-red no-print" onClick={()=>window.print()}>
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="#fff" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -994,87 +1038,146 @@ function App(){
 {/* ── 모바일 미리보기 ── */}
       {tab==='mobprev'&&(
         <div className="full-panel">
-          <div className="card-head" style={{borderBottom:'none',flexWrap:'wrap',gap:'8px'}}>
+          {/* ── 버튼 바 ── */}
+          <div className="card-head" style={{borderBottom:'none',flexWrap:'wrap',gap:'8px',paddingBottom:'10px'}}>
             <div className="card-icon"><svg viewBox="0 0 24 24" width="13" height="13" stroke="#1d4ed8" fill="none" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
             <span className="card-title">모바일 카드 미리보기</span>
-            <div style={{marginLeft:'auto',flexShrink:0}}>
-              <button onClick={exportPNG} disabled={isExporting} className="btn-blue" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px'}}>
+            <span style={{fontSize:'10px',color:'#6b7a99',fontWeight:600}}>Samsung Galaxy S24 Ultra — 412×916px</span>
+            <div style={{marginLeft:'auto',display:'flex',gap:'7px',flexShrink:0,alignItems:'center'}}>
+              {/* JPG 저장 버튼 */}
+              <button onClick={exportJPG} disabled={isExporting} className="btn-blue" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px',display:'flex',alignItems:'center'}}>
                 <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                {isExporting?'저장 중...':'모바일 PNG 저장'}
+                {isExporting?'저장 중...':'📱 JPG 저장'}
               </button>
+              {/* 공유 버튼 — JPG 저장 완료 후 표시 */}
+              {showShare&&(
+                <button onClick={shareJPG} className="btn-ghost" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px',display:'flex',alignItems:'center',border:'1.5px solid #1d4ed8',color:'#1d4ed8'}}>
+                  <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  📤 공유
+                </button>
+              )}
             </div>
           </div>
-          <div className="preview-bg" style={{minHeight:'560px',alignItems:'flex-start',paddingTop:'24px'}}>
+
+          {/* ── S24 Ultra 기기 프레임 ── */}
+          <div style={{
+            background:'linear-gradient(160deg,#111827 0%,#0d0d1a 50%,#080810 100%)',
+            padding:'28px 16px 36px',
+            display:'flex',
+            justifyContent:'center',
+            alignItems:'flex-start',
+            minHeight:'560px',
+            borderRadius:'0 0 12px 12px'
+          }}>
             {result?(
-              <div style={{width:'360px',transform:'scale(0.88)',transformOrigin:'top center',background:'#162944',borderRadius:'20px',overflow:'hidden',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",pointerEvents:'none',boxShadow:'0 20px 60px rgba(0,0,0,.5)'}}>
-                {/* 헤더 */}
-                <div style={{background:'#0f1e33',padding:'22px 20px 18px'}}>
-                  <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'8px'}}>{isDesign?'설계 용역비 산출서':'감리 용역비 산출서'}</div>
-                  <div style={{fontSize:'18px',fontWeight:900,color:'#e8f1fb',marginBottom:'5px',lineHeight:1.25,letterSpacing:'-.01em'}}>{projectName}</div>
-                  <div style={{fontSize:'8px',fontWeight:700,color:'#3d5c80',letterSpacing:'.12em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
-                </div>
-                <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px'}}>
-                  {/* ── 4줄 세로 배치 ── */}
-                  {/* Row 1: 예정 공사비 */}
-                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>예정 공사비</div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:'18px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
-                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
+              /* 기기 외형 */
+              <div ref={deviceRef} style={{
+                position:'relative',
+                background:'linear-gradient(160deg,#1a1a2e 0%,#0d0d1a 40%,#0a0a14 100%)',
+                borderRadius:'44px',
+                width:'412px',
+                padding:'11px',
+                boxShadow:'0 0 0 1px rgba(255,255,255,.08),0 0 0 2px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.75),0 8px 24px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)',
+                transform:'scale(0.82)',
+                transformOrigin:'top center',
+              }}>
+                {/* 전원/볼륨 버튼 (우측) */}
+                <div style={{position:'absolute',right:'-3px',top:'130px',width:'3px',height:'68px',background:'linear-gradient(180deg,#2a2a3e,#1a1a2e)',borderRadius:'0 2px 2px 0',boxShadow:'0 40px 0 #1a1a2e,0 70px 0 #1a1a2e'}}/>
+                {/* S펜 슬롯 (좌측) */}
+                <div style={{position:'absolute',left:'-3px',bottom:'60px',width:'3px',height:'80px',background:'linear-gradient(180deg,#1e1e30,#14141f)',borderRadius:'2px 0 0 2px'}}/>
+
+                {/* 화면 */}
+                <div style={{background:'#0f172a',borderRadius:'38px',overflow:'hidden',minHeight:'893px'}}>
+                  {/* 펀치홀 카메라 */}
+                  <div style={{background:'#0a0a14',height:'32px',display:'flex',alignItems:'center',justifyContent:'center',borderRadius:'38px 38px 0 0'}}>
+                    <div style={{width:'12px',height:'12px',background:'radial-gradient(circle at 35% 35%,#2a2a3e,#050508)',borderRadius:'50%',boxShadow:'0 0 0 1px rgba(255,255,255,.06),0 0 6px rgba(99,102,241,.3)'}}/>
+                  </div>
+                  {/* 상태바 */}
+                  <div style={{background:'#0f172a',height:'28px',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 18px',fontSize:'10.5px',color:'#e2e8f0',fontWeight:700,letterSpacing:'.02em'}}>
+                    <span>{(()=>{const n=new Date();const h=n.getHours();const m=('0'+n.getMinutes()).slice(-2);return (h>=12?'오후 ':'오전 ')+(h%12||12)+':'+m;})()}</span>
+                    <span style={{display:'flex',alignItems:'center',gap:'5px',fontSize:'10px'}}>
+                      <span>5G</span>
+                      <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="1" fill="white" opacity=".4"/><rect x="4" y="5" width="3" height="6" rx="1" fill="white" opacity=".6"/><rect x="8" y="3" width="3" height="8" rx="1" fill="white" opacity=".8"/><rect x="12" y="0" width="3" height="11" rx="1" fill="white"/></svg>
+                      <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2.5" stroke="white" strokeOpacity=".4"/><rect x="1.5" y="1.5" width="15" height="8" rx="1.5" fill="white"/><path d="M20 3.5V7.5C20.8 7.2 21.5 6.5 21.5 5.5C21.5 4.5 20.8 3.8 20 3.5Z" fill="white" opacity=".4"/></svg>
+                    </span>
+                  </div>
+
+                  {/* ── 앱 콘텐츠 (reportRef 바인딩) ── */}
+                  <div ref={reportRef} style={{background:'#162944',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'hidden'}}>
+                    {/* 앱 헤더 */}
+                    <div style={{background:'#0f1e33',padding:'18px 18px 14px'}}>
+                      <div style={{fontSize:'8.5px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'6px'}}>{result&&(result.finalRate?'설계 용역비 산출서':'감리 용역비 산출서')}</div>
+                      <div style={{fontSize:'17px',fontWeight:900,color:'#e8f1fb',marginBottom:'4px',lineHeight:1.25,letterSpacing:'-.01em'}}>{projectName}</div>
+                      <div style={{fontSize:'8px',fontWeight:700,color:'#3d5c80',letterSpacing:'.1em',textTransform:'uppercase'}}>MANMIN Ver-{VER} · 국토교통부고시 제2020-635호</div>
+                    </div>
+                    <div style={{padding:'14px 16px',display:'flex',flexDirection:'column',gap:'9px'}}>
+                      {/* 예정 공사비 */}
+                      <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'12px 15px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                        <div style={{fontSize:'8.5px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>예정 공사비</div>
+                        <div style={{textAlign:'right'}}>
+                          <div style={{fontSize:'17px',fontWeight:900,color:'#c8ddf0',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                          <div style={{fontSize:'8.5px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>원 VAT별도 ({costInput?fmt(parseInt(costInput)):'-'})</div>
+                        </div>
+                      </div>
+                      {/* 건물종별·도서 */}
+                      <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'12px 15px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                        <div style={{fontSize:'8.5px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>건물종별·도서</div>
+                        <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',maxWidth:'56%',lineHeight:1.3}}>{result.selectedLevelName}</div>
+                      </div>
+                      {/* 적용 요율 */}
+                      <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'12px 15px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                        <div style={{fontSize:'8.5px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>적용 요율 (Y)</div>
+                        <div style={{textAlign:'right'}}>
+                          <div style={{fontSize:'26px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'13px'}}> %</span></div>
+                          <div style={{fontSize:'8.5px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
+                        </div>
+                      </div>
+                      {/* 최종 산출대가 */}
+                      <div style={{background:'rgba(29,78,216,.3)',border:'1.5px solid rgba(96,165,250,.4)',borderRadius:'12px',padding:'13px 15px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                        <div style={{fontSize:'8.5px',fontWeight:700,color:'#93c5fd',letterSpacing:'.1em',textTransform:'uppercase'}}>최종 산출대가</div>
+                        <div style={{textAlign:'right'}}>
+                          <div style={{fontSize:'19px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{fmt(result.finalFee)}</div>
+                          <div style={{fontSize:'8.5px',color:'#5b84b1',fontWeight:600,marginTop:'2px'}}>원 VAT별도</div>
+                        </div>
+                      </div>
+                      {/* 할증 내역 */}
+                      {result.adjustmentRate>0&&(
+                        <div style={{background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.09)',borderRadius:'10px',padding:'10px 13px'}}>
+                          <div style={{fontSize:'7.5px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'6px'}}>세부 할증 내역</div>
+                          <div style={{display:'flex',justifyContent:'space-between',fontSize:'9.5px',color:'#c8ddf0',marginBottom:'3px'}}><span>기본 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>{fmt(result.baseFee)} 원</span></div>
+                          <div style={{display:'flex',justifyContent:'space-between',fontSize:'9.5px',color:'#f59e0b',marginBottom:'3px'}}><span>{result.adjNames.join(', ')} (+{result.adjustmentRate}%)</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>+{fmt(result.adjustmentAmount)} 원</span></div>
+                          <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#fde047',paddingTop:'4px',borderTop:'1px solid rgba(255,255,255,.1)',fontWeight:800}}><span>최종 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace'}}>{fmt(result.finalFee)} 원</span></div>
+                        </div>
+                      )}
+                      {/* 직선보간법 산출근거 */}
+                      {result.interpolated&&(
+                        <div style={{background:'rgba(255,255,255,.04)',borderRadius:'12px',overflow:'hidden'}}>
+                          <div style={{fontSize:'8.5px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',padding:'9px 13px 7px'}}>직선보간법 산출 근거</div>
+                          <table style={{width:'100%',borderCollapse:'collapse',fontFamily:'JetBrains Mono,monospace',fontSize:'9.5px'}}>
+                            <thead><tr style={{borderBottom:'1px solid rgba(255,255,255,.1)'}}>{['기호','항목','값'].map((h,i)=><th key={h} style={{padding:'5px 10px 6px',textAlign:i===2?'right':'left',color:'#3d5c80',fontWeight:700,fontSize:'7.5px',letterSpacing:'.1em',textTransform:'uppercase'}}>{h}</th>)}</tr></thead>
+                            <tbody>
+                              {[{s:'y2',n:'큰금액 요율',v:`${result.ry2} %`,c:'#94a3b8'},{s:'x2',n:'작은 금액',v:`${fmt(result.rx2)} 원`,c:'#94a3b8'},{s:'y1',n:'작은금액 요율',v:`${result.ry1} %`,c:'#94a3b8'},{s:'X',n:'당해 공사비',v:`${fmt(result.targetCost)} 원`,c:'#f59e0b',fw:800},{s:'x1',n:'큰 금액',v:`${fmt(result.rx1)} 원`,c:'#94a3b8'}].map(({s,n,v,c,fw})=>(
+                                <tr key={s} style={{borderBottom:'1px solid rgba(255,255,255,.05)'}}><td style={{padding:'5px 10px',color:'#7da8d8',fontWeight:800}}>{s}</td><td style={{padding:'5px 10px',color:'#8ab4d4',fontSize:'9.5px'}}>{n}</td><td style={{padding:'5px 10px',textAlign:'right',color:c,fontWeight:fw||600}}>{v}</td></tr>
+                              ))}
+                              <tr style={{borderTop:'1px solid rgba(255,255,255,.1)'}}><td style={{padding:'5px 10px',color:'#5b84b1',fontWeight:800,fontSize:'8.5px'}}>식</td><td colSpan={2} style={{padding:'5px 10px',color:'#94a3b8',fontSize:'8.5px',lineHeight:1.6}}>{result.ry1} − ({fmt(result.targetCost)} − {fmt(result.rx2)}) × ({result.ry1} − {result.ry2}) ÷ ({fmt(result.rx1)} − {fmt(result.rx2)})</td></tr>
+                              <tr style={{background:'rgba(29,78,216,.2)',borderTop:'1px solid rgba(96,165,250,.3)'}}><td style={{padding:'7px 10px',color:'#93c5fd',fontWeight:800}}>Y</td><td style={{padding:'7px 10px',color:'#93c5fd',fontSize:'9.5px'}}>당해 공사비 요율</td><td style={{padding:'7px 10px',textAlign:'right',color:'#f43f5e',fontWeight:900,fontSize:'14px'}}>{result.finalRate} %</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                      {result.bfNote&&(<div style={{background:'rgba(239,68,68,.15)',borderRadius:'10px',padding:'10px 13px',border:'1px solid rgba(239,68,68,.4)'}}><p style={{color:'#fca5a5',fontSize:'9.5px',fontWeight:700,lineHeight:1.5}}>※ {result.bfNote}</p></div>)}
+                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'7px',borderTop:'1px solid rgba(255,255,255,.06)'}}><span style={{fontSize:'7.5px',color:'#243650',fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'7.5px',color:'#243650',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>MANMIN Ver-{VER}</span></div>
                     </div>
                   </div>
-                  {/* Row 2: 건물종별·도서 */}
-                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>건물종별·도서</div>
-                    <div style={{fontSize:'11px',fontWeight:800,color:'#c8ddf0',textAlign:'right',maxWidth:'55%',lineHeight:1.3}}>{result.selectedLevelName}</div>
+
+                  {/* 하단 홈 인디케이터 */}
+                  <div style={{background:'#162944',padding:'10px 0 12px',display:'flex',justifyContent:'center'}}>
+                    <div style={{width:'120px',height:'5px',background:'rgba(255,255,255,.25)',borderRadius:'3px'}}/>
                   </div>
-                  {/* Row 3: 적용 요율 */}
-                  <div style={{background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.1)',borderRadius:'12px',padding:'13px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#4a6d8c',letterSpacing:'.1em',textTransform:'uppercase'}}>적용 요율 (Y)</div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:'28px',fontWeight:900,color:'#b0cae4',fontFamily:'JetBrains Mono,monospace',lineHeight:1}}>{result.finalRate}<span style={{fontSize:'14px'}}> %</span></div>
-                      <div style={{fontSize:'9px',color:'#3d5c80',fontWeight:600,marginTop:'2px'}}>{result.interpolated?'직선보간법':'직접 적용'}</div>
-                    </div>
-                  </div>
-                  {/* Row 4: 최종 산출대가 */}
-                  <div style={{background:'rgba(29,78,216,.3)',border:'1.5px solid rgba(96,165,250,.4)',borderRadius:'12px',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                    <div style={{fontSize:'9px',fontWeight:700,color:'#93c5fd',letterSpacing:'.1em',textTransform:'uppercase'}}>최종 산출대가</div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:'20px',fontWeight:900,color:'#fde047',fontFamily:'JetBrains Mono,monospace',lineHeight:1.1}}>{fmt(result.finalFee)}</div>
-                      <div style={{fontSize:'9px',color:'#5b84b1',fontWeight:600,marginTop:'2px'}}>원 VAT별도</div>
-                    </div>
-                  </div>
-                  {/* 할증 내역 */}
-                  {result.adjustmentRate>0&&(
-                    <div style={{background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.09)',borderRadius:'10px',padding:'11px 14px'}}>
-                      <div style={{fontSize:'8px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'7px'}}>세부 할증 내역</div>
-                      <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#c8ddf0',marginBottom:'4px'}}><span>기본 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>{fmt(result.baseFee)} 원</span></div>
-                      <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#f59e0b',marginBottom:'4px'}}><span>{result.adjNames.join(', ')} (+{result.adjustmentRate}%)</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>+{fmt(result.adjustmentAmount)} 원</span></div>
-                      <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#fde047',paddingTop:'5px',borderTop:'1px solid rgba(255,255,255,.1)',fontWeight:800}}><span>최종 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace'}}>{fmt(result.finalFee)} 원</span></div>
-                    </div>
-                  )}
-                  {/* 직선보간법 산출근거 */}
-                  {result.interpolated&&(
-                    <div style={{background:'rgba(255,255,255,.04)',borderRadius:'12px',overflow:'hidden'}}>
-                      <div style={{fontSize:'9px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',padding:'10px 14px 8px'}}>직선보간법 산출 근거</div>
-                      <table style={{width:'100%',borderCollapse:'collapse',fontFamily:'JetBrains Mono,monospace',fontSize:'10px'}}>
-                        <thead><tr style={{borderBottom:'1px solid rgba(255,255,255,.1)'}}>{['기호','항목','값'].map((h,i)=><th key={h} style={{padding:'5px 10px 7px',textAlign:i===2?'right':'left',color:'#3d5c80',fontWeight:700,fontSize:'8px',letterSpacing:'.1em',textTransform:'uppercase'}}>{h}</th>)}</tr></thead>
-                        <tbody>
-                          {[{s:'y2',n:'큰금액 요율',v:`${result.ry2} %`,c:'#94a3b8'},{s:'x2',n:'작은 금액',v:`${fmt(result.rx2)} 원`,c:'#94a3b8'},{s:'y1',n:'작은금액 요율',v:`${result.ry1} %`,c:'#94a3b8'},{s:'X',n:'당해 공사비',v:`${fmt(result.targetCost)} 원`,c:'#f59e0b',fw:800},{s:'x1',n:'큰 금액',v:`${fmt(result.rx1)} 원`,c:'#94a3b8'}].map(({s,n,v,c,fw})=>(
-                            <tr key={s} style={{borderBottom:'1px solid rgba(255,255,255,.05)'}}><td style={{padding:'6px 10px',color:'#7da8d8',fontWeight:800}}>{s}</td><td style={{padding:'6px 10px',color:'#8ab4d4',fontSize:'10px'}}>{n}</td><td style={{padding:'6px 10px',textAlign:'right',color:c,fontWeight:fw||600}}>{v}</td></tr>
-                          ))}
-                          <tr style={{borderTop:'1px solid rgba(255,255,255,.1)'}}><td style={{padding:'6px 10px',color:'#5b84b1',fontWeight:800,fontSize:'9px'}}>식</td><td colSpan={2} style={{padding:'6px 10px',color:'#94a3b8',fontSize:'9px',lineHeight:1.6}}>{result.ry1} − ({fmt(result.targetCost)} − {fmt(result.rx2)}) × ({result.ry1} − {result.ry2}) ÷ ({fmt(result.rx1)} − {fmt(result.rx2)})</td></tr>
-                          <tr style={{background:'rgba(29,78,216,.2)',borderTop:'1px solid rgba(96,165,250,.3)'}}><td style={{padding:'8px 10px',color:'#93c5fd',fontWeight:800}}>Y</td><td style={{padding:'8px 10px',color:'#93c5fd',fontSize:'10px'}}>당해 공사비 요율</td><td style={{padding:'8px 10px',textAlign:'right',color:'#f43f5e',fontWeight:900,fontSize:'15px'}}>{result.finalRate} %</td></tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  {result.bfNote&&(<div style={{background:'rgba(239,68,68,.15)',borderRadius:'10px',padding:'11px 14px',border:'1px solid rgba(239,68,68,.4)'}}><p style={{color:'#fca5a5',fontSize:'10px',fontWeight:700,lineHeight:1.5}}>※ {result.bfNote}</p></div>)}
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:'8px',borderTop:'1px solid rgba(255,255,255,.06)'}}><span style={{fontSize:'8px',color:'#243650',fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em'}}>제2020-635호 · 예산편성 참고용</span><span style={{fontSize:'8px',color:'#243650',fontWeight:700,fontFamily:'JetBrains Mono,monospace'}}>MANMIN Ver-{VER}</span></div>
                 </div>
               </div>
             ):(
-              <div style={{color:'#94a3b8',fontSize:'13px'}}>입력·산출 탭에서 공사비를 입력하면 미리보기가 표시됩니다.</div>
+              <div style={{color:'#94a3b8',fontSize:'13px',textAlign:'center',padding:'60px 0'}}>입력·산출 탭에서 공사비를 입력하면<br/>미리보기가 표시됩니다.</div>
             )}
           </div>
         </div>

@@ -340,7 +340,7 @@ const fmt=n=>n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
 /* ══════════ MODAL ══════════ */
 const InfoModal=({onClose})=>{
-  const [itab,setItab]=useState('intro');
+  const [itab,setItab]=useState('howto');
   return(
     <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
       <div className="modal-box">
@@ -353,12 +353,128 @@ const InfoModal=({onClose})=>{
             <button className="mclose" onClick={onClose}>✕</button>
           </div>
           <div className="mitabs">
-            {[['intro','📋 개요'],['design','✏️ 설계대가'],['supervision','🏗️ 감리대가'],['formula','📐 보간법'],['cert','🏅 인증할증'],['kind','🏢 건물종별']].map(([k,l])=>(
+            {[['howto','🗺️ 이용방법'],['intro','📋 개요'],['design','✏️ 설계대가'],['supervision','🏗️ 감리대가'],['formula','📐 보간법'],['cert','🏅 인증할증'],['kind','🏢 건물종별']].map(([k,l])=>(
               <button key={k} className={`mitab${itab===k?' on':''}`} onClick={()=>setItab(k)}>{l}</button>
             ))}
           </div>
         </div>
         <div className="mbd">
+
+          {/* ── 이용방법 ── */}
+          {itab==='howto'&&(
+            <div>
+
+              {/* 상단 배너 */}
+              <div style={{background:'linear-gradient(135deg,#081e44,#0c4da2)',borderRadius:'13px',padding:'16px 18px',marginBottom:'16px'}}>
+                <div style={{fontSize:'13px',fontWeight:900,color:'#fbbf24',marginBottom:'5px',display:'flex',alignItems:'center',gap:'8px'}}>
+                  <span style={{fontSize:'20px'}}>🏛️</span> 공공기관 건축사 업무대가 산출기 이용방법
+                </div>
+                <div style={{fontSize:'10.5px',color:'rgba(255,255,255,.7)',lineHeight:1.65}}>
+                  국토교통부고시 제2020-635호 · 공공발주사업에 대한 건축사의 업무범위와 대가기준<br/>
+                  아래 순서대로 입력하면 설계·감리 대가가 자동으로 산출됩니다.
+                </div>
+              </div>
+
+              {/* STEP 1 */}
+              <div style={{display:'flex',gap:'11px',alignItems:'flex-start',background:'#f8fafc',border:'1.5px solid #e4e9f0',borderLeft:'4px solid #0c4da2',borderRadius:'10px',padding:'13px 14px',marginBottom:'9px'}}>
+                <div style={{minWidth:'30px',height:'30px',background:'linear-gradient(135deg,#0c4da2,#0a3270)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:900,color:'#fff',flexShrink:0,boxShadow:'0 2px 8px rgba(12,77,162,.35)'}}>1</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'12px',fontWeight:900,color:'#0c4da2',marginBottom:'5px'}}>📁 프로젝트 기본 정보 입력</div>
+                  <div style={{fontSize:'10.5px',color:'#374151',lineHeight:1.85}}>
+                    ① <strong>공사명</strong>을 입력합니다 — 출력 보고서 상단에 표기됩니다.<br/>
+                    ② <strong>공사비(원)</strong>를 입력합니다 — 용지비·보상비·부가가치세는 제외한 총예정금액을 입력하세요.<br/>
+                    ③ 공사비 5,000만원 미만이면 자동으로 5,000만원 구간 상한요율이 적용됩니다.
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 2 */}
+              <div style={{display:'flex',gap:'11px',alignItems:'flex-start',background:'#fff7ed',border:'1.5px solid #fed7aa',borderLeft:'4px solid #f97316',borderRadius:'10px',padding:'13px 14px',marginBottom:'9px'}}>
+                <div style={{minWidth:'30px',height:'30px',background:'linear-gradient(135deg,#f97316,#ea580c)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:900,color:'#fff',flexShrink:0,boxShadow:'0 2px 8px rgba(249,115,22,.35)'}}>2</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'12px',fontWeight:900,color:'#c2410c',marginBottom:'5px'}}>🏗️ 업무 유형 선택</div>
+                  <div style={{fontSize:'10.5px',color:'#374151',lineHeight:1.85}}>
+                    ① <strong>설계대가</strong> 또는 <strong>감리대가</strong> 중 산출 목적에 맞는 유형을 선택합니다.<br/>
+                    ② 설계대가 선택 시 — <strong>도서작성 구분</strong>(기본·중급·상급)과 <strong>수행 방식</strong>(일괄·분리발주)을 선택합니다.<br/>
+                    ③ 감리대가 선택 시 — <strong>감리 유형</strong>(가목 비상주 / 나목 상주 / 다목 다중이용)을 선택합니다.
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 3 */}
+              <div style={{display:'flex',gap:'11px',alignItems:'flex-start',background:'#f0fdf4',border:'1.5px solid #bbf7d0',borderLeft:'4px solid #16a34a',borderRadius:'10px',padding:'13px 14px',marginBottom:'9px'}}>
+                <div style={{minWidth:'30px',height:'30px',background:'linear-gradient(135deg,#16a34a,#15803d)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:900,color:'#fff',flexShrink:0,boxShadow:'0 2px 8px rgba(22,163,74,.35)'}}>3</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'12px',fontWeight:900,color:'#15803d',marginBottom:'5px'}}>🏢 건물 종별 선택</div>
+                  <div style={{fontSize:'10.5px',color:'#374151',lineHeight:1.85}}>
+                    ① <strong>건물 용도</strong>를 선택하면 별표3 기준에 따라 <strong>제1종(단순) / 제2종(보통) / 제3종(복잡)</strong>이 자동 결정됩니다.<br/>
+                    ② 혼용 용도 건물은 가장 넓은 바닥면적의 용도 기준, 동일 면적 시 높은 종별을 적용합니다.<br/>
+                    ③ 종별이 불확실하면 우측 <strong>「🏢 건물종별」 탭</strong>에서 분류 기준을 확인하세요.
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 4 */}
+              <div style={{display:'flex',gap:'11px',alignItems:'flex-start',background:'#f5f3ff',border:'1.5px solid #ddd6fe',borderLeft:'4px solid #7c3aed',borderRadius:'10px',padding:'13px 14px',marginBottom:'9px'}}>
+                <div style={{minWidth:'30px',height:'30px',background:'linear-gradient(135deg,#7c3aed,#6d28d9)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:900,color:'#fff',flexShrink:0,boxShadow:'0 2px 8px rgba(124,58,237,.35)'}}>4</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'12px',fontWeight:900,color:'#6d28d9',marginBottom:'5px'}}>🏅 인증 할증 적용 (선택)</div>
+                  <div style={{fontSize:'10.5px',color:'#374151',lineHeight:1.85}}>
+                    ① 녹색건축·지능형건축물(IBS)·제로에너지건축물 인증이 있는 경우 해당 등급을 선택합니다.<br/>
+                    ② 복합 인증 시 <strong>A + B/2 + C/3</strong> 체감 공식이 자동 적용됩니다.<br/>
+                    ③ 인증 없으면 건너뜁니다 — BF 인증은 실비정액가산식으로 별도 산정합니다.
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 5 */}
+              <div style={{display:'flex',gap:'11px',alignItems:'flex-start',background:'#eff6ff',border:'1.5px solid #bfdbfe',borderLeft:'4px solid #2563eb',borderRadius:'10px',padding:'13px 14px',marginBottom:'16px'}}>
+                <div style={{minWidth:'30px',height:'30px',background:'linear-gradient(135deg,#2563eb,#1d4ed8)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:900,color:'#fff',flexShrink:0,boxShadow:'0 2px 8px rgba(37,99,235,.35)'}}>5</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:'12px',fontWeight:900,color:'#1d4ed8',marginBottom:'5px'}}>📊 산출 결과 확인 및 출력</div>
+                  <div style={{fontSize:'10.5px',color:'#374151',lineHeight:1.85}}>
+                    ① 조건 입력 즉시 <strong>직선보간법</strong>으로 요율이 자동 계산되어 대가 금액이 표시됩니다.<br/>
+                    ② 상단 <strong>「A4 미리보기」 탭</strong>에서 공식 산출서 서식을 확인한 뒤 <strong>인쇄·PDF</strong>로 저장합니다.<br/>
+                    ③ <strong>「모바일 미리보기」 탭</strong>에서 JPG로 저장하거나 공유할 수 있습니다.<br/>
+                    ④ PWA 설치: 브라우저 주소창 아이콘 또는 iOS Safari → 공유 → 홈 화면에 추가.
+                  </div>
+                </div>
+              </div>
+
+              {/* 주요 기능 안내 */}
+              <div className="msec">💡 주요 기능 안내</div>
+              <div className="mg2">
+                <div className="mcard" style={{borderLeft:'3px solid #0c4da2'}}>
+                  <div style={{fontSize:'11px',fontWeight:800,color:'#0c4da2',marginBottom:'5px'}}>📐 산출 안내 버튼</div>
+                  <div style={{fontSize:'10px',color:'#475569',lineHeight:1.75}}>오른쪽 하단 플로팅 버튼(FAB)을 클릭하면 이 창이 열립니다. 탭을 전환하여 개요·설계대가·감리대가·보간법·인증할증·건물종별 상세 기준을 확인하세요.</div>
+                </div>
+                <div className="mcard" style={{borderLeft:'3px solid #f97316'}}>
+                  <div style={{fontSize:'11px',fontWeight:800,color:'#f97316',marginBottom:'5px'}}>⚡ 실시간 자동 계산</div>
+                  <div style={{fontSize:'10px',color:'#475569',lineHeight:1.75}}>공사비·종별·도서구분·인증 변경 즉시 직선보간법으로 요율과 대가가 실시간 갱신됩니다. 별도의 계산 버튼 없이 입력값만 변경하면 됩니다.</div>
+                </div>
+                <div className="mcard" style={{borderLeft:'3px solid #16a34a'}}>
+                  <div style={{fontSize:'11px',fontWeight:800,color:'#16a34a',marginBottom:'5px'}}>📄 A4 산출서 출력</div>
+                  <div style={{fontSize:'10px',color:'#475569',lineHeight:1.75}}>「A4 미리보기」 탭의 인쇄 버튼을 클릭하면 공공기관 제출용 건축사 업무대가 산출서가 ISO A4 형식으로 출력됩니다. 적용 법령·산출 근거가 자동 포함됩니다.</div>
+                </div>
+                <div className="mcard" style={{borderLeft:'3px solid #7c3aed'}}>
+                  <div style={{fontSize:'11px',fontWeight:800,color:'#7c3aed',marginBottom:'5px'}}>🔢 부가가치세 처리</div>
+                  <div style={{fontSize:'10px',color:'#475569',lineHeight:1.75}}>부가가치세는 산출 대가에 10%를 별도 계상합니다. VAT 포함/제외 여부는 체크박스로 선택 가능하며, 총액은 천 원 단위로 자동 처리됩니다.</div>
+                </div>
+              </div>
+
+              {/* 법적 근거 */}
+              <div className="mhi">
+                <strong style={{color:'#0c4da2'}}>📌 주요 법적 근거</strong><br/>
+                <div style={{fontSize:'10.5px',lineHeight:2.1,marginTop:'5px'}}>
+                  <strong>건축사법 제19조의3</strong> — 공공발주사업 건축사 업무범위와 대가기준 근거 법령<br/>
+                  <strong>국토교통부고시 제2020-635호</strong> — 공사비요율표(별표4·5), 건물종별(별표3), 인증할증(제11조)<br/>
+                  <strong>직선보간법 (제16조)</strong> — 공사비가 요율표 구간 사이에 있을 때 적용<br/>
+                  <strong>부가가치세법</strong> — 산출 대가에 10% 별도 계상 의무
+                </div>
+              </div>
+
+            </div>
+          )}
 
           {/* 개요 */}
           {itab==='intro'&&(

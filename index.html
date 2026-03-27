@@ -794,6 +794,7 @@ const InfoModal=({onClose})=>{
 function App(){
   const reportRef=useRef(null);
   const deviceRef=useRef(null);
+  const captureRef=useRef(null); /* MobileCard 전용 — reportRef와 분리 */
   const a4WrapRef=useRef(null);
 
   const [tab,setTab]=useState('input');
@@ -908,43 +909,68 @@ function App(){
   const [showShare,setShowShare]=useState(false);
 
   const exportJPG=async()=>{
-    // reportRef(앱 콘텐츠)만 캡처 — deviceRef의 scale(0.82) transform 우회
     const captureNode=reportRef.current;
-    if(!captureNode)return;
+    if(!captureNode){alert('미리보기 탭에서 결과를 확인한 후 저장해주세요.');return;}
     setIsExporting(true);
     setShowShare(false);
+
+    /* ① 캡처 전 — overflow/height 임시 해제로 전체 콘텐츠 노출 */
+    const origOverflow=captureNode.style.overflow;
+    const origHeight=captureNode.style.height;
+    const origMaxH=captureNode.style.maxHeight;
+    captureNode.style.overflow='visible';
+    captureNode.style.height='auto';
+    captureNode.style.maxHeight='none';
+
     try{
       await document.fonts.ready;
-      await new Promise(r=>setTimeout(r,400));
-      // 실제 콘텐츠 크기 기준 (scale 영향 없음)
-      const sc=2; // 2배 해상도 (고화질)
+      await new Promise(r=>setTimeout(r,350));
+
+      /* ② 실제 렌더 크기 측정 (overflow:visible 후) */
+      const naturalW=captureNode.offsetWidth||390;
+      const naturalH=captureNode.scrollHeight||captureNode.offsetHeight;
+      const sc=2;
+
       const url=await window.domtoimage.toJpeg(captureNode,{
         quality:0.96,
         bgcolor:'#162944',
-        width:390*sc,
-        height:captureNode.scrollHeight*sc,
-        style:{transform:`scale(${sc})`,transformOrigin:'top left',width:'390px'}
+        width:naturalW*sc,
+        height:naturalH*sc,
+        style:{
+          transform:`scale(${sc})`,
+          transformOrigin:'top left',
+          width:`${naturalW}px`,
+          overflow:'visible'
+        }
       });
 
-      // ── Blob 생성 ──
+      /* ③ overflow/height 원복 */
+      captureNode.style.overflow=origOverflow;
+      captureNode.style.height=origHeight;
+      captureNode.style.maxHeight=origMaxH;
+
+      /* ④ Blob → 다운로드 */
       const res=await fetch(url);
       const blob=await res.blob();
       const now=new Date();
       const dateStr=now.getFullYear()+('0'+(now.getMonth()+1)).slice(-2)+('0'+now.getDate()).slice(-2);
-      const fname=`대가산출_S24Ultra_${projectName}_${dateStr}.jpg`;
+      const fname=`대가산출_${projectName}_${dateStr}.jpg`;
       setJpgBlob(blob);
       setJpgFname(fname);
 
-      // ── 다운로드 ──
       const objUrl=URL.createObjectURL(blob);
       const a=document.createElement('a');
       a.href=objUrl;a.download=fname;a.click();
       setTimeout(()=>URL.revokeObjectURL(objUrl),3000);
-
-      // ── 공유 버튼 표시 ──
       setShowShare(true);
-    }catch(e){console.error(e);alert('JPG 저장 오류: '+e);}
-    finally{setIsExporting(false);}
+    }catch(e){
+      /* 오류 시에도 반드시 원복 */
+      captureNode.style.overflow=origOverflow;
+      captureNode.style.height=origHeight;
+      captureNode.style.maxHeight=origMaxH;
+      console.error('[exportJPG]',e);
+      alert('JPG 저장 오류: '+e.message);
+    }finally{setIsExporting(false);}
   };
 
   const shareJPG=async()=>{
@@ -1113,7 +1139,7 @@ function App(){
   // rgba(29,78,216,.2) → #173062   rgba(96,165,250,.3) → #2c4e7b
   // rgba(239,68,68,.15)→ #2b2748   rgba(239,68,68,.4) → #6d3444
   const MobileCard=()=>(
-    <div ref={reportRef} style={{position:'fixed',left:'-9999px',top:0,zIndex:-1,width:'360px',height:'780px',background:MOB_BG,fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'hidden',borderRadius:'20px'}}>
+    <div ref={captureRef} style={{position:'fixed',left:'-9999px',top:0,zIndex:-1,width:'390px',height:'auto',minHeight:'780px',background:MOB_BG,fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'visible',borderRadius:'20px'}}>
       {result&&(
         <div style={{background:MOB_BG}}>
           {/* ── 헤더 ── */}
@@ -1365,7 +1391,7 @@ function App(){
                   </div>
 
                   {/* ── 앱 콘텐츠 (reportRef 바인딩) ── */}
-                  <div ref={reportRef} style={{background:'#162944',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'hidden'}}>
+                  <div ref={reportRef} style={{background:'#162944',fontFamily:"'Pretendard','Apple SD Gothic Neo',sans-serif",overflow:'visible'}}>
                     {/* 앱 헤더 */}
                     <div style={{background:'#0f1e33',padding:'18px 18px 14px'}}>
                       <div style={{fontSize:'8.5px',fontWeight:700,color:'#5b84b1',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:'6px'}}>{result&&(result.finalRate?'설계 용역비 산출서':'감리 용역비 산출서')}</div>
@@ -1408,7 +1434,7 @@ function App(){
                           <div style={{fontSize:'7.5px',fontWeight:700,color:'#5b84b1',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'6px'}}>세부 할증 내역</div>
                           <div style={{display:'flex',justifyContent:'space-between',fontSize:'9.5px',color:'#c8ddf0',marginBottom:'3px'}}><span>기본 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>{fmt(result.baseFee)} 원</span></div>
                           <div style={{display:'flex',justifyContent:'space-between',fontSize:'9.5px',color:'#f59e0b',marginBottom:'3px'}}><span>{result.adjNames.join(', ')} (+{result.adjustmentRate}%)</span><span style={{fontFamily:'JetBrains Mono,monospace',fontWeight:700}}>+{fmt(result.adjustmentAmount)} 원</span></div>
-                          <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#fde047',paddingTop:'4px',borderTop:'1px solid rgba(255,255,255,.1)',fontWeight:800}}><span>최종 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace'}}>{fmt(result.finalFee)} 원</span></div>
+                          <div style={{display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#fde047',paddingTop:'4px',borderTop:'1px solid #2d3e57',fontWeight:800}}><span>최종 용역비</span><span style={{fontFamily:'JetBrains Mono,monospace'}}>{fmt(result.finalFee)} 원</span></div>
                         </div>
                       )}
                       {/* 직선보간법 산출근거 */}
@@ -1434,12 +1460,12 @@ function App(){
 
                   {/* 하단 홈 인디케이터 */}
                   <div style={{background:'#162944',padding:'10px 0 12px',display:'flex',justifyContent:'center'}}>
-                    <div style={{width:'120px',height:'5px',background:'rgba(255,255,255,.25)',borderRadius:'3px'}}/>
+                    <div style={{width:'120px',height:'5px',background:'rgba(200,210,230,.35)',borderRadius:'3px'}}/>
                   </div>
                 </div>
               </div>
             ):(
-              <div style={{color:'#94a3b8',fontSize:'13px',textAlign:'center',padding:'60px 0'}}>입력·산출 탭에서 공사비를 입력하면<br/>미리보기가 표시됩니다.</div>
+              <div style={{color:'#94a3b8',fontSize:'13px',textAlign:'center',padding:'60px 0'}}><div style={{fontSize:'32px',marginBottom:'10px'}}>📋</div>입력·산출 탭에서 공사비를 입력하면<br/>모바일 카드가 표시됩니다.<br/><div style={{fontSize:'11px',marginTop:'10px',color:'#64748b'}}>결과 확인 후 📱 JPG 저장 버튼을 누르세요</div></div>
             )}
           </div>
         </div>

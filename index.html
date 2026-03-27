@@ -70,6 +70,104 @@ input[type="number"]{-moz-appearance:textfield;}
   50%{box-shadow:0 2px 20px rgba(249,115,22,.7);}
 }
 @media(max-width:520px){#pwa-install-btn .pwa-txt{display:none;}}
+/* ══ PWA 설치 버튼 강화 (산출대가 Edition) ══ */
+#pwa-install-btn{
+  display:none;align-items:center;gap:6px;
+  background:linear-gradient(135deg,#f97316,#1d4ed8) !important;
+  color:#fff !important;border:none;padding:9px 14px;border-radius:9px;
+  font-size:12px;font-weight:800;cursor:pointer;
+  font-family:inherit;white-space:nowrap;flex-shrink:0;
+  transition:all .2s;
+  box-shadow:0 2px 12px rgba(249,115,22,.45);
+  animation:cost-pwa-glow 2.5s ease-in-out infinite;
+}
+#pwa-install-btn.visible{display:flex !important;}
+#pwa-install-btn:hover{
+  background:linear-gradient(135deg,#ea580c,#1e40af) !important;
+  transform:translateY(-1px) !important;
+  box-shadow:0 4px 18px rgba(249,115,22,.65) !important;
+  animation:none !important;
+}
+@keyframes cost-pwa-glow{
+  0%,100%{box-shadow:0 2px 12px rgba(249,115,22,.45);}
+  50%{box-shadow:0 2px 22px rgba(249,115,22,.75),0 0 10px rgba(29,78,216,.25);}
+}
+
+/* ══ 배너 강화 ══ */
+#pwa-banner{
+  background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 60%,#1e40af 100%) !important;
+  border-top:2px solid rgba(191,219,254,.4) !important;
+  border-radius:20px 20px 0 0 !important;
+  box-shadow:0 -6px 32px rgba(29,78,216,.55) !important;
+  padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px)) !important;
+  animation:cost-banner-up .35s cubic-bezier(.22,.61,.36,1) !important;
+}
+@keyframes cost-banner-up{from{transform:translateY(110%);opacity:0}to{transform:translateY(0);opacity:1}}
+.pwa-icon{
+  width:52px !important;height:52px !important;
+  border-radius:13px !important;
+  border:1.5px solid rgba(191,219,254,.4) !important;
+  box-shadow:0 2px 12px rgba(29,78,216,.35) !important;
+  overflow:hidden;flex-shrink:0;background:#fff;
+}
+.pwa-icon img{width:100% !important;height:100% !important;object-fit:cover !important;border-radius:11px !important;}
+.pwa-title{font-size:14px !important;font-weight:800 !important;color:#fff !important;}
+.pwa-desc{font-size:11px !important;color:#93c5fd !important;line-height:1.5 !important;}
+.pwa-ok{
+  background:linear-gradient(135deg,#f97316,#ea580c) !important;
+  color:#fff !important;
+  padding:10px 18px !important;font-size:13px !important;font-weight:800 !important;
+  border-radius:10px !important;border:none;
+  box-shadow:0 2px 10px rgba(249,115,22,.4) !important;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+  transition:all .2s !important;
+}
+.pwa-ok:hover{transform:translateY(-1px) !important;}
+.pwa-no{
+  background:rgba(255,255,255,.12) !important;
+  color:#93c5fd !important;
+  border:1px solid rgba(191,219,254,.3) !important;
+  padding:10px 13px !important;border-radius:10px !important;
+  font-size:13px !important;font-weight:700 !important;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+  transition:all .15s !important;flex-shrink:0;
+}
+.pwa-no:hover{color:#eff6ff !important;}
+
+/* ══ iOS 안내 모달 ══ */
+#ios-modal-cost{
+  position:fixed;bottom:0;left:0;right:0;z-index:10000;
+  background:linear-gradient(135deg,#1e3a8a,#1d4ed8);
+  border-top:2px solid rgba(191,219,254,.5);
+  border-radius:20px 20px 0 0;
+  padding:22px 20px calc(18px + env(safe-area-inset-bottom,0px));
+  display:none;
+  box-shadow:0 -8px 40px rgba(29,78,216,.55);
+  animation:cost-banner-up .35s cubic-bezier(.22,.61,.36,1);
+}
+#ios-modal-cost.show{display:block;}
+.cm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cm-title{font-size:15px;font-weight:800;color:#fff;}
+.cm-cls{background:rgba(255,255,255,.12);border:none;color:#fff;
+  width:28px;height:28px;border-radius:50%;font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.cm-step{display:flex;align-items:flex-start;gap:12px;
+  background:rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:8px;}
+.cm-num{min-width:26px;height:26px;border-radius:50%;
+  background:rgba(249,115,22,.35);border:1px solid rgba(249,115,22,.6);
+  color:#fed7aa;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cm-txt{font-size:13px;color:#bfdbfe;line-height:1.5;}
+.cm-txt strong{color:#fff;}
+.cm-foot{text-align:center;font-size:11px;color:#93c5fd;margin-top:12px;}
+
+@media(max-width:520px){
+  #pwa-install-btn .pwa-txt{display:none;}
+  #pwa-install-btn{padding:9px 11px;}
+  .pwa-icon{width:42px !important;height:42px !important;}
+}
+@media(max-width:360px){.pwa-desc{display:none;}}
+
 /* ── PWA 배너 ── */
 #pwa-banner{
   display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
@@ -1095,9 +1193,7 @@ function App(){
     <header className="app-header no-print">
       <div className="header-inner">
         <div className="brand-logo">
-          <div className="brand-icon">
-            <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="12" y1="10" x2="12.01" y2="10"/><line x1="8" y1="10" x2="8.01" y2="10"/><line x1="12" y1="14" x2="12.01" y2="14"/><line x1="8" y1="14" x2="8.01" y2="14"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="8" y1="18" x2="8.01" y2="18"/></svg>
-          </div>
+          <div className="brand-icon" style={{background:"none",padding:0,overflow:"hidden",width:"42px",height:"42px",borderRadius:"10px",flexShrink:0,boxShadow:"0 2px 10px rgba(29,78,216,.38)"}}><img src="./icons/brand-icon.png" alt="산출대가 MANMIN" style={{width:"42px",height:"42px",objectFit:"cover",borderRadius:"10px",display:"block"}}/></div>
           <div className="brand-texts">
             <div className="brand-title">공공기관 건축사 업무대가 산출기 [MANMIN-Ver{VER}]</div>
             <div className="brand-sub">공공발주사업에 대한 건축사의 업무범위와 대가기준 · 국토교통부고시 제2020-635호 · 2026년 기준</div>
@@ -1600,12 +1696,42 @@ function App(){
 const root=ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App/>);
 </script>
+<!-- ═══ iOS 홈화면 추가 안내 모달 ═══ -->
+<div id="ios-modal-cost">
+  <div class="cm-hdr">
+    <div class="cm-title">📱 홈 화면에 추가하기 (iOS)</div>
+    <button class="cm-cls" onclick="document.getElementById('ios-modal-cost').classList.remove('show')">✕</button>
+  </div>
+  <div class="cm-step"><div class="cm-num">1</div><div class="cm-txt">Safari 하단 <strong>공유 버튼</strong> (□↑) 을 탭하세요</div></div>
+  <div class="cm-step"><div class="cm-num">2</div><div class="cm-txt">스크롤해서 <strong>홈 화면에 추가</strong>를 탭하세요</div></div>
+  <div class="cm-step"><div class="cm-num">3</div><div class="cm-txt">오른쪽 상단 <strong>추가</strong>를 탭하면 완료!</div></div>
+  <div class="cm-foot">산출대가를 홈 화면에서 오프라인으로도 사용 가능합니다 ✓</div>
+</div>
+
 <script>
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js')
-      .then(r=>console.log('[PWA] SW:',r.scope))
-      .catch(e=>console.warn('[PWA] 실패:',e));
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js', {scope:'./'})
+      .then(function(r){
+        console.log('[PWA] SW:', r.scope);
+        r.addEventListener('updatefound', function(){
+          var nw = r.installing; if(!nw) return;
+          nw.addEventListener('statechange', function(){
+            if(nw.state === 'installed' && navigator.serviceWorker.controller){
+              var b = document.createElement('div');
+              b.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:#1d4ed8;color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(29,78,216,.5);white-space:nowrap;font-family:inherit;';
+              b.innerHTML = '<span>🔄 새 버전 준비됨</span>'
+                + '<button onclick="navigator.serviceWorker.ready.then(function(r){if(r.waiting)r.waiting.postMessage({type:\'SKIP_WAITING\'});});this.parentNode.remove();location.reload();" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 12px;border-radius:7px;cursor:pointer;font-weight:800;font-family:inherit;">지금 적용</button>'
+                + '<button onclick="this.parentNode.remove()" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px;padding:0 4px;">✕</button>';
+              document.body.appendChild(b);
+              setTimeout(function(){if(b.parentNode)b.remove();}, 8000);
+            }
+          });
+        });
+      }).catch(function(e){ console.warn('[PWA] 실패:', e); });
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if(!window._pwaR){ window._pwaR=true; location.reload(); }
+    });
   });
 }
 </script>
@@ -1613,15 +1739,15 @@ if('serviceWorker' in navigator){
 <div id="pwa-banner">
   <div class="pwa-inner">
     <div class="pwa-icon">
-      <img src="./icons/icon-192x192.png" alt="산출대가 아이콘"/>
+      <img src="./icons/brand-icon.png" alt="산출대가 MANMIN"/>
     </div>
     <div class="pwa-texts">
-      <div class="pwa-title">📲 산출대가 앱 설치</div>
-      <div class="pwa-desc">홈 화면에 추가하면 오프라인에서도 바로 사용 가능합니다</div>
+      <div class="pwa-title">📲 산출대가 앱으로 설치!</div>
+      <div class="pwa-desc">홈화면 추가 → 오프라인 업무대가 산출 가능 · 빠른 실행</div>
     </div>
     <div class="pwa-btns">
       <button class="pwa-ok" onclick="window.pwaTriggerInstall&&window.pwaTriggerInstall()">설치하기</button>
-      <button class="pwa-no" onclick="window.pwaDismiss&&window.pwaDismiss()">✕</button>
+      <button class="pwa-no" onclick="window.pwaDismiss&&window.pwaDismiss()">나중에</button>
     </div>
   </div>
 </div>
@@ -1630,13 +1756,16 @@ if('serviceWorker' in navigator){
 <script>
 (function(){
   var deferred = null;
+  var _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  var _isSA  = window.matchMedia('(display-mode:standalone)').matches || !!navigator.standalone;
 
+  /* 1. beforeinstallprompt (Android/PC) */
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     deferred = e;
     var btn = document.getElementById('pwa-install-btn');
     if(btn) btn.classList.add('visible');
-    if(!sessionStorage.getItem('pwa-dismissed')){
+    if(!sessionStorage.getItem('pwa-dismissed') && !_isSA){
       setTimeout(function(){
         var b = document.getElementById('pwa-banner');
         if(b) b.classList.add('visible');
@@ -1644,11 +1773,36 @@ if('serviceWorker' in navigator){
     }
   });
 
+  /* 2. iOS: 헤더 버튼 + 2초 후 안내 모달 */
+  document.addEventListener('DOMContentLoaded', function(){
+    if(_isIOS && !_isSA){
+      var btn = document.getElementById('pwa-install-btn');
+      if(btn) btn.classList.add('visible');
+      if(!sessionStorage.getItem('pwa-dismissed')){
+        setTimeout(function(){
+          var m = document.getElementById('ios-modal-cost');
+          if(m) m.classList.add('show');
+        }, 2000);
+      }
+    }
+    if(_isSA){
+      var btn = document.getElementById('pwa-install-btn');
+      if(btn) btn.style.display = 'none';
+    }
+  });
+
+  /* 3. 설치 실행 */
   window.pwaTriggerInstall = function(){
     var b = document.getElementById('pwa-banner');
     if(b) b.classList.remove('visible');
+    if(_isIOS && !_isSA){
+      var m = document.getElementById('ios-modal-cost');
+      if(m) m.classList.add('show');
+      return;
+    }
     if(!deferred){
-      alert('이미 설치되어 있거나 자동 설치를 지원하지 않는 브라우저입니다.\n\n📱 iOS Safari: 공유(□↑) → "홈 화면에 추가"\n💻 Chrome/Edge: 주소창 우측 ⊕ 아이콘');
+      if(_isSA){ alert('✅ 이미 앱으로 설치되어 있습니다.'); return; }
+      alert('📱 브라우저 메뉴 → 앱 설치 / 홈 화면에 추가');
       return;
     }
     deferred.prompt();
@@ -1661,12 +1815,18 @@ if('serviceWorker' in navigator){
     });
   };
 
+  /* 4. 배너 닫기 */
   window.pwaDismiss = function(){
     var b = document.getElementById('pwa-banner');
-    if(b) b.classList.remove('visible');
+    if(b){
+      b.style.transition='transform .3s,opacity .25s';
+      b.style.transform='translateY(110%)';b.style.opacity='0';
+      setTimeout(function(){b.classList.remove('visible');b.style='';},330);
+    }
     try{ sessionStorage.setItem('pwa-dismissed','1'); }catch(e){}
   };
 
+  /* 5. 설치 완료 */
   window.addEventListener('appinstalled', function(){
     var btn = document.getElementById('pwa-install-btn');
     var b   = document.getElementById('pwa-banner');
@@ -1674,13 +1834,6 @@ if('serviceWorker' in navigator){
     if(b)   b.classList.remove('visible');
     deferred = null;
   });
-
-  if(window.matchMedia('(display-mode:standalone)').matches || window.navigator.standalone===true){
-    document.addEventListener('DOMContentLoaded', function(){
-      var btn = document.getElementById('pwa-install-btn');
-      if(btn) btn.style.display = 'none';
-    });
-  }
 })();
 </script>
 

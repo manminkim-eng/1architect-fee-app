@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════
    산출대가 — 공공기관 건축사 업무대가 산출기  MANMIN Ver3.0
-   Service Worker — 오프라인 캐시 + 버전 업데이트
+   Service Worker — Cache-First 오프라인 캐시 + 버전 업데이트
    ARCHITECT KIM MANMIN
 ═══════════════════════════════════════════════════ */
 const CACHE = 'cost-v3.0';

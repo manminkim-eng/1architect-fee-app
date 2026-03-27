@@ -1,27 +1,50 @@
 {
-  "name": "산출대가 — 공공기관 건축사 업무대가 산출기 [MANMIN-Ver3.0]",
+  "name": "공공기관 건축사 업무대가 산출기",
   "short_name": "산출대가",
-  "description": "공공발주사업 건축사 업무범위와 대가기준 · 국토교통부고시 제2020-635호 · 2026년 기준 | ARCHITECT KIM MANMIN",
+  "description": "공공발주사업에 대한 건축사의 업무범위와 대가기준 (국토교통부고시 제2020-635호) — 설계·감리 대가 자동 산출",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f0f4f9",
-  "theme_color": "#1d4ed8",
   "orientation": "portrait-primary",
+  "background_color": "#1d4ed8",
+  "theme_color": "#1d4ed8",
   "lang": "ko",
-  "categories": ["utilities", "productivity"],
+  "categories": ["utilities", "business"],
   "icons": [
-    { "src": "./icons/icon-72x72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-96x96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
-    { "src": "./icons/icon-256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+    { "src": "icons/icon-72x72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-96x96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "screenshots": [
-    { "src": "./icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "form_factor": "narrow" }
-  ]
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "산출대가 메인 화면"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "설계대가 산출",
+      "short_name": "설계",
+      "description": "건축설계 대가 바로 산출",
+      "url": "./index.html#input",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "감리대가 산출",
+      "short_name": "감리",
+      "description": "공사감리 대가 바로 산출",
+      "url": "./index.html#input",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "prefer_related_applications": false
 }

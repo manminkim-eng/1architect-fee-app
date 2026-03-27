@@ -533,7 +533,7 @@ const InfoModal=({onClose})=>{
                   <div style={{fontSize:'10.5px',color:'#374151',lineHeight:1.85}}>
                     ① 조건 입력 즉시 <strong>직선보간법</strong>으로 요율이 자동 계산되어 대가 금액이 표시됩니다.<br/>
                     ② 상단 <strong>「A4 미리보기」 탭</strong>에서 공식 산출서 서식을 확인한 뒤 <strong>인쇄·PDF</strong>로 저장합니다.<br/>
-                    ③ <strong>「모바일 미리보기」 탭</strong>에서 JPG로 저장하거나 공유할 수 있습니다.<br/>
+                    ③ <strong>「모바일 미리보기」 탭</strong>에서 PNG로 저장하거나 공유할 수 있습니다.<br/>
                     ④ PWA 설치: 브라우저 주소창 아이콘 또는 iOS Safari → 공유 → 홈 화면에 추가.
                   </div>
                 </div>
@@ -903,14 +903,14 @@ function App(){
 
   useEffect(()=>{if(taskType==='supervision'){setIsRemodel(false);setIsBF(false);setCertGreen(0);setCertIBS(0);setCertZero(0);}}, [taskType]);
 
-  /* ══ EXPORT JPG + SHARE ══ */
-  const [jpgBlob,setJpgBlob]=useState(null);
-  const [jpgFname,setJpgFname]=useState('');
+  /* ══ EXPORT PNG + SHARE ══ */
+  const [pngBlob,setPngBlob]=useState(null);
+  const [pngFname,setPngFname]=useState('');
   const [showShare,setShowShare]=useState(false);
-  const jpgBlobRef=useRef(null);  /* shareJPG 클로저 문제 방지 */
-  const jpgFnameRef=useRef('');
+  const pngBlobRef=useRef(null);  /* sharePNG 클로저 문제 방지 */
+  const pngFnameRef=useRef('');
 
-  const exportJPG=async()=>{
+  const exportPNG=async()=>{
     /* ─ captureRef(MobileCard 전용) 우선, 없으면 reportRef fallback ─ */
     const captureNode=captureRef.current||reportRef.current;
     if(!captureNode){alert('산출 결과가 없습니다. 먼저 입력·산출 탭에서 공사비를 입력하세요.');return;}
@@ -934,8 +934,8 @@ function App(){
       const natW=captureNode.offsetWidth  || 390;
       const natH=captureNode.scrollHeight || captureNode.offsetHeight || 780;
 
-      const url=await window.domtoimage.toJpeg(captureNode,{
-        quality:0.96,
+      /* ── PNG: toPng 사용 — iOS/Android Canvas JPEG 인코딩 버그 우회 ── */
+      const url=await window.domtoimage.toPng(captureNode,{
         bgcolor:'#162944',
         width :natW*sc,
         height:natH*sc,
@@ -952,11 +952,11 @@ function App(){
       const blob=await res.blob();
       const now=new Date();
       const dateStr=now.getFullYear()+('0'+(now.getMonth()+1)).slice(-2)+('0'+now.getDate()).slice(-2);
-      const fname=`대가산출_${projectName}_${dateStr}.jpg`;
+      const fname=`대가산출_${projectName}_${dateStr}.png`;
 
-      /* state + ref 동시 저장 — shareJPG 클로저 문제 방지 */
-      setJpgBlob(blob);  setJpgFname(fname);
-      jpgBlobRef.current=blob;  jpgFnameRef.current=fname;
+      /* state + ref 동시 저장 — sharePNG 클로저 문제 방지 */
+      setPngBlob(blob);  setPngFname(fname);
+      pngBlobRef.current=blob;  pngFnameRef.current=fname;
 
       /* ── 자동 다운로드 ── */
       const objUrl=URL.createObjectURL(blob);
@@ -970,20 +970,20 @@ function App(){
       captureNode.style.overflow=origOverflow;
       captureNode.style.height=origHeight;
       captureNode.style.maxHeight=origMaxH;
-      console.error('[exportJPG]',e);
-      alert('JPG 저장 오류:\n'+e.message+'\n\n캡처 노드: '+(captureNode===captureRef.current?'MobileCard':'reportRef'));
+      console.error('[exportPNG]',e);
+      alert('PNG 저장 오류:\n'+e.message+'\n\n캡처 노드: '+(captureNode===captureRef.current?'MobileCard':'reportRef'));
     }finally{setIsExporting(false);}
   };
 
-  const shareJPG=async()=>{
+  const sharePNG=async()=>{
     /* ref 우선 (클로저 문제 방지), state fallback */
-    const blob=jpgBlobRef.current||jpgBlob;
-    const fname=jpgFnameRef.current||jpgFname;
-    if(!blob){alert('먼저 📱 JPG 저장 버튼을 눌러 이미지를 생성해주세요.');return;}
+    const blob=pngBlobRef.current||pngBlob;
+    const fname=pngFnameRef.current||pngFname;
+    if(!blob){alert('먼저 📱 PNG 저장 버튼을 눌러 이미지를 생성해주세요.');return;}
 
     /* ── Web Share API (파일 공유 지원 브라우저) ── */
     if(typeof navigator.share==='function' && typeof navigator.canShare==='function'){
-      const file=new File([blob],fname,{type:'image/jpeg'});
+      const file=new File([blob],fname,{type:'image/png'});
       if(navigator.canShare({files:[file]})){
         try{
           await navigator.share({
@@ -994,7 +994,7 @@ function App(){
           return;
         }catch(e){
           if(e.name==='AbortError')return; /* 사용자 취소 — 정상 */
-          console.warn('[shareJPG] Web Share 오류:',e);
+          console.warn('[sharePNG] Web Share 오류:',e);
           /* 오류 발생 시 다운로드 fallback으로 진행 */
         }
       }
@@ -1242,9 +1242,9 @@ function App(){
           <button id="pwa-install-btn" onClick={()=>window.pwaTriggerInstall&&window.pwaTriggerInstall()}>
             📲 <span className="pwa-txt">설치</span>
           </button>
-          <button className="btn-ghost no-print" onClick={exportJPG} disabled={isExporting} style={{fontSize:'11px',padding:'7px 12px'}}>
+          <button className="btn-ghost no-print" onClick={exportPNG} disabled={isExporting} style={{fontSize:'11px',padding:'7px 12px'}}>
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            {isExporting?'저장 중...':'JPG 저장'}
+            {isExporting?'저장 중...':'PNG 저장'}
           </button>
           <button className="btn-red no-print" onClick={()=>window.print()}>
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="#fff" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -1344,16 +1344,16 @@ function App(){
           <div className="card-head" style={{borderBottom:'none',flexWrap:'wrap',gap:'8px',paddingBottom:'10px'}}>
             <div className="card-icon"><svg viewBox="0 0 24 24" width="13" height="13" stroke="#1d4ed8" fill="none" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
             <span className="card-title">모바일 카드 미리보기</span>
-            <span style={{fontSize:'10px',color:'#6b7a99',fontWeight:600}}>모바일 카드 미리보기 · 고화질 JPG 저장</span>
+            <span style={{fontSize:'10px',color:'#6b7a99',fontWeight:600}}>모바일 카드 미리보기 · 고화질 PNG 저장</span>
             <div style={{marginLeft:'auto',display:'flex',gap:'7px',flexShrink:0,alignItems:'center'}}>
-              {/* JPG 저장 버튼 */}
-              <button onClick={exportJPG} disabled={isExporting} className="btn-blue" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px',display:'flex',alignItems:'center'}}>
+              {/* PNG 저장 버튼 */}
+              <button onClick={exportPNG} disabled={isExporting} className="btn-blue" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px',display:'flex',alignItems:'center'}}>
                 <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                {isExporting?'저장 중...':'📱 JPG 저장'}
+                {isExporting?'저장 중...':'📱 PNG 저장'}
               </button>
-              {/* 공유 버튼 — JPG 저장 완료 후 표시 */}
+              {/* 공유 버튼 — PNG 저장 완료 후 표시 */}
               {showShare&&(
-                <button onClick={shareJPG} className="btn-ghost" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px',display:'flex',alignItems:'center',border:'1.5px solid #1d4ed8',color:'#1d4ed8'}}>
+                <button onClick={sharePNG} className="btn-ghost" style={{fontSize:'11px',padding:'7px 13px',borderRadius:'8px',gap:'5px',height:'32px',display:'flex',alignItems:'center',border:'1.5px solid #1d4ed8',color:'#1d4ed8'}}>
                   <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                   📤 공유
                 </button>

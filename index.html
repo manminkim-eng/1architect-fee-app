@@ -877,6 +877,32 @@ const InfoModal=({onClose})=>{
                   <tr><td>별표6</td><td>공종별 시공상세도 난이도</td><td>참고 기준</td></tr>
                 </tbody>
               </table>
+                            <div className="msec">요율 산출표 (별표1~4)</div>
+              <div style={{maxHeight:'340px',overflowY:'auto',border:'1px solid #e4e9f0',borderRadius:'8px',padding:'8px 10px',marginBottom:'12px'}}>
+                {["건설","통신","산업플랜트","시공상세도"].map(sec=>(
+                  <div key={sec} style={{marginBottom:'12px'}}>
+                    <div style={{fontSize:'11px',fontWeight:800,color:'#0f766e',margin:'6px 0 4px'}}>{ENG_SECTORS[sec].label} · {ENG_SECTORS[sec].law}</div>
+                    {engTasksOf(sec).map(tk=>{
+                      const S=ENG_SECTORS[sec].tasks[tk];
+                      const cl=n=>n<1?(n*10000).toLocaleString()+'만원':n.toLocaleString()+'억';
+                      return(
+                        <div key={tk} style={{overflowX:'auto',marginBottom:'8px'}}>
+                          <div style={{fontSize:'10px',fontWeight:700,color:'#334155',margin:'4px 0 2px'}}>· {engTaskLabel(tk)} 요율(%)</div>
+                          <table className="mtbl" style={{fontSize:'9px'}}>
+                            <thead><tr><th>공사비 이하</th>{S.fields.map(f=><th key={f}>{f}</th>)}</tr></thead>
+                            <tbody>
+                              {S.table.map((r,i)=>(<tr key={i}><td>{cl(r[0])}</td>{r.slice(1).map((v,j)=><td key={j} style={{textAlign:'right'}}>{v}</td>)}</tr>))}
+                              <tr><td>5,000억 초과</td><td colSpan={S.fields.length} style={{color:'#64748b'}}>지수공식 (별표 비고)</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })}
+                    {sec==='산업플랜트'&&<div style={{fontSize:'9px',color:'#64748b',marginTop:'2px'}}>※ 화학·가스플랜트 ×1.25, 부대시설 ×0.813 (별표3 비고2·3)</div>}
+                    {sec==='건설'&&<div style={{fontSize:'9px',color:'#64748b',marginTop:'2px'}}>※ 요율표 없는 분야는 도로분야 준용 (별표1 비고5)</div>}
+                  </div>
+                ))}
+              </div>
               <div className="msec">건축사 대가기준과의 관계</div>
               <div style={{fontSize:'10px',color:'#475569',lineHeight:1.75,background:'#f8fafc',border:'1px solid #e4e9f0',borderRadius:'8px',padding:'12px 14px'}}>
                 · <strong>건축물</strong> 설계·감리 → 건축사 대가기준(별표4·5)이 원칙<br/>

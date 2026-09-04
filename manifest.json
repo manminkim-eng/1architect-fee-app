@@ -1,13 +1,13 @@
 {
-  "name": "공공기관 건축사 업무대가 산출기",
+  "name": "공공기관 건축사 업무대가 산출기 · MANMIN Ver-5.0",
   "short_name": "산출대가",
-  "description": "공공발주사업에 대한 건축사의 업무범위와 대가기준 (국토교통부고시 제2020-635호) — 설계·감리 대가 자동 산출",
+  "description": "건축사법 제19조의3 · 국토교통부고시 제2020-635호 [별표 4·5] 공사비요율 직선보간 · 할증 · 엔지니어링 대가기준 병행 · A4 산출서 — MANMIN Ver-5.0 | ARCHITECT KIM MANMIN",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#1d4ed8",
-  "theme_color": "#1d4ed8",
+  "background_color": "#f4f6f9",
+  "theme_color": "#15803d",
   "lang": "ko",
   "categories": ["utilities", "business"],
   "icons": [

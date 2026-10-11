@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>공공기관 건축사 업무대가 산출기 사용자 매뉴얼 Ver-5.0</title>
+<meta name="description" content="공공기관 건축사 업무대가 산출기 MANMIN Ver-5.0 사용자 매뉴얼 — 화면 기능, 기술기준(건축사 대가기준 제10조·제11조·제16조·별표3·4·5, 엔지니어링사업대가의 기준 별표1~4), 실무 작업 방법">
+<meta name="author" content="김만민 건축사 · ㈜대성건축사사무소">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@700;900&display=swap">
+<link rel="stylesheet" href="./assets/fonts/manmin-fonts.css">
+<style>
+:root{
+  --navy:#2D3A8C;--navy-d:#1F2A6B;--navy-l:#E9ECF8;--accent:#F4A261;--accent-d:#C97A3A;--accent-l:#FDF1E7;
+  --bg:#F8F9FA;--card:#FFFFFF;--text:#1A1A2E;--text2:#4A4F66;--line:#DDE1EA;--ok:#0F766E;--ng:#B42318;
+  --r:12px;--pad:24px;--shadow:0 4px 20px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:16px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--navy)}a:hover{color:var(--accent-d)}
+code,kbd,.mono{font-family:var(--font-mono);font-size:.9em}
+code{background:var(--navy-l);color:var(--navy-d);padding:1px 6px;border-radius:5px}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:#fff}
+/* 상단 */
+.top{background:linear-gradient(135deg,var(--navy-d),var(--navy));color:#fff}
+.top-in{max-width:1240px;margin:0 auto;padding:44px 24px 36px}
+.eyebrow{font-family:var(--font-brand);font-weight:700;font-size:12px;letter-spacing:.18em;opacity:.85}
+.top h1{font-size:28px;font-weight:900;margin:8px 0 6px;line-height:1.35}
+.top .sub{opacity:.9;margin:0}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 12px;font-size:13px}
+a.badge{color:#fff;text-decoration:none}a.badge:hover{background:rgba(255,255,255,.24);color:#fff}
+.badge.acc{background:var(--accent);border-color:var(--accent);color:#1A1A2E;font-weight:700}
+/* 레이아웃 */
+.wrap{max-width:1240px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px}
+nav.toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 16px;font-size:14px}
+nav.toc h2{font-size:13px;letter-spacing:.12em;color:var(--text2);margin:0 0 8px}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc li a{display:block;padding:5px 8px;border-radius:8px;text-decoration:none;color:var(--text)}
+nav.toc li a:hover,nav.toc li a.on{background:var(--navy-l);color:var(--navy)}
+nav.toc li.sub a{padding-left:20px;font-size:13px;color:var(--text2)}
+main{min-width:0}
+section.ch{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:var(--pad) calc(var(--pad) + 8px);margin-bottom:28px}
+section.ch>h2{font-size:24px;font-weight:700;color:var(--navy);margin:0 0 4px;display:flex;align-items:baseline;gap:10px}
+section.ch>h2 .n{font-family:var(--font-brand);font-weight:700;font-size:14px;color:#fff;background:var(--navy);border-radius:8px;padding:2px 9px}
+section.ch>.lead{color:var(--text2);margin:0 0 18px}
+h3{font-size:19px;color:var(--navy-d);margin:34px 0 10px;padding-top:6px;border-top:1px solid var(--line)}
+h3:first-of-type{border-top:0}
+h4{font-size:16px;margin:22px 0 8px}
+p{margin:8px 0}
+ul,ol{padding-left:22px}
+.note,.tip,.warn{border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15px}
+.note{background:var(--navy-l);border-left:4px solid var(--navy)}
+.tip{background:var(--accent-l);border-left:4px solid var(--accent)}
+.warn{background:#FEF3F2;border-left:4px solid var(--ng)}
+.note b:first-child,.tip b:first-child,.warn b:first-child{margin-right:6px}
+/* 표 */
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px;background:#fff}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--navy-l);color:var(--navy-d);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--font-mono);white-space:nowrap}
+.ok{color:var(--ok);font-weight:700}.ng{color:var(--ng);font-weight:700}
+/* 그림 */
+figure.shot{margin:18px 0 26px}
+figure.shot .frame{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;cursor:zoom-in}
+figure.shot img{display:block;width:100%;height:auto}
+figure.narrow{max-width:420px}
+.pin{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:var(--accent);color:#1A1A2E;font:700 13px/26px var(--font-mono);text-align:center;box-shadow:0 0 0 3px #fff,0 2px 8px rgba(0,0,0,.35);pointer-events:none}
+figcaption{font-size:14px;color:var(--text2);margin-top:8px}
+.fno{font-family:var(--font-mono);font-size:11px;background:var(--navy);color:#fff;border-radius:6px;padding:1px 7px;margin-right:8px}
+ol.legend{list-style:none;padding:0;margin:10px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 16px;font-size:14px}
+ol.legend li{display:flex;gap:8px;align-items:flex-start}
+ol.legend b{flex:0 0 22px;height:22px;border-radius:50%;background:var(--accent);font:700 12px/22px var(--font-mono);text-align:center}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+/* 단계 */
+.steps{counter-reset:st;list-style:none;padding:0;margin:16px 0}
+.steps>li{counter-increment:st;position:relative;padding:4px 0 18px 54px;border-left:2px solid var(--line);margin-left:18px}
+.steps>li:last-child{border-left-color:transparent}
+.steps>li::before{content:counter(st);position:absolute;left:-19px;top:0;width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;font:700 15px/36px var(--font-mono);text-align:center;box-shadow:0 0 0 4px var(--bg)}
+.steps>li>b.t{display:block;font-size:17px;color:var(--navy-d);margin-bottom:2px}
+/* 수식 */
+.eq{font-family:var(--font-mono);background:#0F1630;color:#E8ECFF;border-radius:10px;padding:14px 18px;margin:12px 0;overflow-x:auto;font-size:14px;line-height:1.9;white-space:pre}
+.eq .c{color:#9AA6D6}
+.svgbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:14px 0;overflow-x:auto}
+.svgbox svg{display:block;width:100%;min-width:640px;height:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:14px 0}
+.card{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:#fff}
+.card h5{margin:0 0 4px;font-size:15px;color:var(--navy)}
+.card p{margin:0;font-size:14px;color:var(--text2)}
+footer.foot{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--text2);font-size:13px}
+/* 라이트박스 */
+#lb{position:fixed;inset:0;background:rgba(10,14,30,.88);display:none;align-items:center;justify-content:center;z-index:99;cursor:zoom-out;padding:16px}
+#lb.open{display:flex}#lb img{max-width:100%;max-height:100%;border-radius:8px;background:#fff}
+.totop{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;border:0;font-size:18px;box-shadow:var(--shadow);cursor:pointer}
+/* 반응형 5단계 */
+@media (max-width:1240px){.wrap{grid-template-columns:230px minmax(0,1fr);gap:24px}}
+@media (max-width:1024px){.wrap{grid-template-columns:1fr}nav.toc{position:static;max-height:none}nav.toc ol{columns:2}}
+@media (max-width:760px){.pair{grid-template-columns:1fr}section.ch{padding:20px 18px}.top h1{font-size:24px}}
+@media (max-width:640px){nav.toc ol{columns:1}body{font-size:15px}}
+@media (max-width:480px){.wrap,.top-in{padding-left:16px;padding-right:16px}.pin{width:22px;height:22px;font-size:11px;line-height:22px}}
+@media (max-width:400px){section.ch>h2{font-size:20px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* A4 인쇄 */
+@page{size:A4;margin:14mm 12mm 14mm}
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:10.5pt}
+  nav.toc,.totop,#lb{display:none!important}
+  .wrap{display:block;padding:0}
+  section.ch{box-shadow:none;padding:0 0 8mm;margin:0;break-before:page}
+  main{padding-bottom:8mm}
+  section.ch:first-of-type{break-before:auto}
+  figure.shot,.tbl,.eq,.svgbox,.note,.tip,.warn,.steps>li{break-inside:avoid}
+  h3,h4{break-after:avoid}
+  .top{border-radius:0}
+  .pfoot{position:fixed;bottom:0;left:0;right:0;height:6mm;background:#fff;font-size:8pt;color:#666;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
+}
+.pfoot{display:none}
+@media print{.pfoot{display:flex}}
+</style>
+</head><body>
+<header class="top"><div class="top-in">
+<div class="eyebrow">ARCHITECT FEE · USER MANUAL</div>
+<h1>공공기관 건축사 업무대가 산출기 사용자 매뉴얼</h1>
+<p class="sub">웹 기능 · 기술기준 · 작업 방법 — 발주 담당자·건축사사무소 실무자용 안내서</p>
+<div class="badges"><span class="badge acc">매뉴얼 <span style="font-family:var(--font-brand)">Ver-5.0</span></span><a class="badge" href="../index.html">▶ 업무대가 산출기 열기</a><a class="badge" href="FEE_사용자매뉴얼_Ver-5.0.pdf" download>⤓ PDF</a><span class="badge">2026-10-11</span><span class="badge">김만민 건축사 · ㈜대성건축사사무소</span></div>
+</div></header>
+<div class="wrap"><nav class="toc" aria-label="목차"><h2>목차</h2><ol><li><a href="#ch0">0. 이 매뉴얼에 대하여</a></li><li><a href="#ch1">1. 한눈에 보기</a></li><li class="sub"><a href="#s1-1">화면 구성</a></li><li class="sub"><a href="#s1-2">작업 탭·근거 표시</a></li><li class="sub"><a href="#s1-3">설치·보관·매뉴얼</a></li><li><a href="#ch2">2. 5분 따라하기</a></li><li><a href="#ch3">3. 화면별 기능 상세</a></li><li class="sub"><a href="#s3-1">공사 정보</a></li><li class="sub"><a href="#s3-2">대가기준 선택</a></li><li class="sub"><a href="#s3-3">기본 정보 입력</a></li><li class="sub"><a href="#s3-4">업무 유형·세부 조건</a></li><li class="sub"><a href="#s3-5">추가 업무 할증</a></li><li class="sub"><a href="#s3-6">산출 결과</a></li><li class="sub"><a href="#s3-7">산출 근거 상세</a></li><li class="sub"><a href="#s3-8">인증 할증 예</a></li><li class="sub"><a href="#s3-9">공사감리 대가</a></li><li class="sub"><a href="#s3-10">A4 산출서 출력</a></li><li class="sub"><a href="#s3-11">A4 산출서 구성</a></li><li class="sub"><a href="#s3-12">엔지니어링 대가 입력</a></li><li class="sub"><a href="#s3-13">엔지니어링 결과·산출서</a></li><li class="sub"><a href="#s3-14">이용안내·초기화</a></li><li class="sub"><a href="#s3-15">모바일</a></li><li><a href="#ch4">4. 기술기준 해설</a></li><li class="sub"><a href="#s4-1">적용 범위와 산출 원칙</a></li><li class="sub"><a href="#s4-2">종별·도서작성 구분</a></li><li class="sub"><a href="#s4-3">별표4 건축설계 대가요율</a></li><li class="sub"><a href="#s4-4">별표5 건축공사감리 대가요율</a></li><li class="sub"><a href="#s4-5">직선보간과 공사비 범위</a></li><li class="sub"><a href="#s4-6">추가 업무 대가</a></li><li class="sub"><a href="#s4-7">프로그램이 계산하지 않는 대가</a></li><li class="sub"><a href="#s4-8">엔지니어링사업대가의 기준</a></li><li class="sub"><a href="#s4-9">적용 시점</a></li><li><a href="#ch5">5. 실무 작업 방법</a></li><li class="sub"><a href="#s5-1">발주 단계별 절차</a></li><li class="sub"><a href="#s5-2">제출 전 확인</a></li><li class="sub"><a href="#s5-3">예제 결과</a></li><li><a href="#ch6">6. 문제 해결·FAQ</a></li><li><a href="#ch7">부록</a></li><li class="sub"><a href="#a1">예제 입력값</a></li><li class="sub"><a href="#a2">버전 변경 내역</a></li><li class="sub"><a href="#a3">용어</a></li></ol></nav><main><style>
+#fig-s03_project,#fig-s04_standard,#fig-s05_basic,#fig-s06_task,#fig-s07_surcharge,#fig-s08_result,#fig-s09_detail{max-width:660px}
+#fig-s10_cert,#fig-s13_a4page,#fig-s14_eng_input,#fig-s16_eng_a4page{max-width:540px}
+.wide table{font-size:12.5px}.wide th,.wide td{padding:6px 7px;white-space:nowrap}
+.k1 td:first-child,.k1 th:first-child{white-space:nowrap}
+.nw{white-space:nowrap}
+@media print{
+  figure.shot{max-width:none!important}
+  figure.shot .frame{width:fit-content;max-width:100%}
+  figure.shot img{width:auto;height:auto;max-width:100%;max-height:118mm}
+  #fig-s13_a4page img,#fig-s16_eng_a4page img,#fig-s10_cert img{max-height:150mm}
+  figure.narrow img{max-height:105mm}
+  .wide table{font-size:9pt}.wide th,.wide td{padding:4px 5px}
+  .pair{grid-template-columns:1fr 1fr}
+}
+</style><section class="ch" id="ch0"><h2><span class="n">00</span>이 매뉴얼에 대하여</h2>
+<p class="lead">공공기관 건축사 업무대가 산출기는 예정 공사비와 건축물 용도를 넣으면 「공공발주사업에 대한 건축사의 업무범위와 대가기준」 별표4·별표5의 공사비요율을 직선보간해 건축설계·공사감리 대가를 계산하고, A4 산출서로 출력하는 웹 계산도구입니다. 「엔지니어링사업대가의 기준」 별표1~4 요율도 같은 화면에서 계산합니다. 발주 부서 담당자와 건축사사무소 실무자가 화면 순서대로 따라 하며 용역비를 산출할 수 있도록 작성했습니다.</p>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">항목</th><th class="">내용</th></tr></thead><tbody><tr><td class="">대상 프로그램</td><td class="">공공기관 건축사 업무대가 산출기 <b>MANMIN Ver-5.0</b> — 탭 막대 「📘 매뉴얼」 버튼으로 이 문서가 열립니다</td></tr><tr><td class="">접속 주소</td><td class=""><a href="https://manminkim-eng.github.io/1architect-fee-app/" target="_blank" rel="noopener">manminkim-eng.github.io/1architect-fee-app</a></td></tr><tr><td class="">매뉴얼 판</td><td class=""><b>Ver-5.0</b> (화면 표기와 같은 판 번호, 초판) · 2026-10-11 · 작성 김만민 건축사(㈜대성건축사사무소)</td></tr><tr><td class="">내려받기</td><td class=""><a href="FEE_사용자매뉴얼_Ver-5.0.pdf" download>PDF(A4)</a> · <a href="../index.html">업무대가 산출기 열기</a></td></tr><tr><td class="">예제</td><td class="">본문 그림은 모두 같은 예제(만민 건축사 신사옥 신축공사 설계용역 · 예정 공사비 16억원 · 공동주택 · 건축설계 · 중급)로 캡처 — 프로그램을 처음 열었을 때의 초기값과 같습니다. 입력값은 <a href="#a1">부록 A1</a></td></tr><tr><td class="">근거 기준</td><td class="">「공공발주사업에 대한 건축사의 업무범위와 대가기준」 국토교통부고시 제2020-635호(2020.9.14. 시행) · 「엔지니어링사업대가의 기준」 산업통상자원부고시 제2024-217호(2024.12.31. 시행) — 4장 조문·별표는 법령 원문(LawMCP, 2026-10-11 조회)으로 대조</td></tr><tr><td class="">읽는 순서</td><td class="">처음이면 1장 → 2장(따라하기) → 필요할 때 3장(화면별 상세). 예산 요구·발주 전에는 4장(기술기준)·5장(작업 방법)</td></tr></tbody></table></div></div>
+<div class="note"><b>표기</b>그림 위 주황색 번호(①②…)는 그림 아래 범례 번호와 같습니다. 그림을 누르면 크게 볼 수 있습니다. 버튼 이름은 「인쇄 / PDF 저장」처럼 낫표로 적었습니다. 금액은 따로 적지 않으면 부가가치세 별도입니다.</div>
+<div class="warn"><b>책임 한계</b>본 도구는 공사비요율 방식의 대가를 계산하는 보조 프로그램입니다. 실비정액가산식으로 산정하는 업무(사후설계관리, 상주감리, 건설사업관리 등)와 발주자 협의 사항은 계산하지 않습니다(<a href="#s4-7">4-7</a>). 계약 금액은 발주기관의 예산·계약 관계 법령과 원문 고시로 확정하십시오.</div>
+</section>
+<section class="ch" id="ch1"><h2><span class="n">01</span>한눈에 보기</h2>
+<p class="lead">설치 없이 브라우저에서 바로 실행되는 단일 페이지 앱(PWA)입니다. 입력은 내 PC 브라우저 안에서만 처리되며 서버로 전송되지 않습니다.</p>
+<div class="cards">
+<div class="card"><h5>무엇을 계산하나</h5><p>건축설계 대가(별표4)와 건축공사감리 대가(별표5), 엔지니어링 설계·감리·시공상세도 대가(별표1~4)</p></div>
+<div class="card"><h5>자동으로 정해지는 값</h5><p>용도에 따른 건축물 종별(별표3), 공사비 구간 사이의 요율(직선보간), 인증 2개 이상일 때의 체감 합산 요율</p></div>
+<div class="card"><h5>근거</h5><p>건축사법 제19조의3 · 대가기준 제10조·제11조·제14조·제16조 (국토교통부고시 제2020-635호(2020.9.14. 시행))</p></div>
+<div class="card"><h5>출력</h5><p>A4 용역비 산출서 — 공급가액·부가가치세·합계와 보간 산출 근거(인쇄·PDF·JPG)</p></div>
+</div>
+<div class="svgbox"><svg viewBox="0 0 900 190" role="img" aria-label="대가 산출 흐름: 공사비와 용도를 넣으면 종별이 정해지고, 업무와 도서작성 구분을 고르면 요율이 직선보간으로 계산되어 대가가 나오며, A4 산출서로 출력한다">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2D3A8C"/></marker></defs>
+<style>.b{fill:#E9ECF8;stroke:#2D3A8C;stroke-width:1.5}.o{fill:#FDF1E7;stroke:#C97A3A;stroke-width:1.5}.t{font:600 14px 'Noto Sans KR','Noto Sans KR Local',sans-serif;fill:#1A1A2E}.s{font:12px 'Noto Sans KR','Noto Sans KR Local',sans-serif;fill:#4A4F66}.l{stroke:#2D3A8C;stroke-width:1.6;fill:none;marker-end:url(#ar)}</style>
+<rect class="b" x="10" y="45" width="190" height="100" rx="10"/><text class="t" x="26" y="78">① 공사비·용도</text><text class="s" x="26" y="102">예정 공사비(VAT 별도)</text><text class="s" x="26" y="122">용도 → 별표3 종별 자동</text>
+<rect class="b" x="240" y="45" width="190" height="100" rx="10"/><text class="t" x="256" y="78">② 업무·도서구분</text><text class="s" x="256" y="102">건축설계 / 공사감리</text><text class="s" x="256" y="122">기본 · 중급 · 상급</text>
+<rect class="o" x="470" y="45" width="190" height="100" rx="10"/><text class="t" x="486" y="78">③ 요율·대가</text><text class="s" x="486" y="102">별표4·5 직선보간</text><text class="s" x="486" y="122">공사비 × 요율(천원 미만 절사)</text>
+<rect class="b" x="700" y="45" width="190" height="100" rx="10"/><text class="t" x="716" y="78">④ A4 산출서</text><text class="s" x="716" y="102">공급가액 · VAT · 합계</text><text class="s" x="716" y="122">인쇄 · PDF · JPG</text>
+<path class="l" d="M200,95 L238,95"/><path class="l" d="M430,95 L468,95"/><path class="l" d="M660,95 L698,95"/>
+<text class="s" x="16" y="172">「대가기준 선택」에서 엔지니어링 대가로 바꾸면 같은 흐름으로 「엔지니어링사업대가의 기준」 별표1~4 요율이 적용됩니다.</text>
+</svg></div>
+<h3 id="s1-1">1-1. 화면 구성</h3>
+<figure class="shot" id="fig-s01_overview"><div class="frame"><img src="images/s01_overview.webp" width="1440" height="900" loading="lazy" alt="전체 화면 — 입력·산출 탭"><span class="pin" style="left:5.26%;top:13.49%">1</span><span class="pin" style="left:1.50%;top:18.82%">2</span><span class="pin" style="left:6.93%;top:27.58%">3</span><span class="pin" style="left:6.93%;top:53.58%">4</span><span class="pin" style="left:50.96%;top:27.58%">5</span><span class="pin" style="left:50.96%;top:58.69%">6</span><span class="pin" style="left:94.15%;top:83.96%">7</span></div><figcaption><span class="fno">S01</span>전체 화면 — 입력·산출 탭</figcaption><ol class="legend"><li><b>1</b><span>작업 탭: 입력·산출 · A4 산출서 · 매뉴얼</span></li><li><b>2</b><span>요약 스트립: 기준·용도(부문)·공사비·요율·할증·용역비가 입력할 때마다 갱신</span></li><li><b>3</b><span>공사 정보: 용역명·발주처·작성자·작성일 — A4 산출서 표제로 들어감</span></li><li><b>4</b><span>대가기준 선택: 건축사 대가 / 엔지니어링 대가</span></li><li><b>5</b><span>산출 결과: 최종 산출금액(VAT 별도)과 적용 요율·공사비·종별</span></li><li><b>6</b><span>산출 근거 상세: 요율·보간 산출식·최종 대가</span></li><li><b>7</b><span>오른쪽 아래 버튼: 「초기화」와 「이용안내」</span></li></ol></figure>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">탭</th><th class="">하는 일</th><th class="">본문</th></tr></thead><tbody><tr><td class="">⌨️ 입력·산출</td><td class="">공사 정보·대가기준·공사비·용도·업무 조건 입력, 실시간 산출 결과와 산출 근거</td><td class="">3-1~3-9 · 3-12~3-13</td></tr><tr><td class="">📄 A4 산출서</td><td class="">용역비 산출서 미리보기 · 인쇄/PDF · JPG 저장</td><td class="">3-10~3-11</td></tr><tr><td class="">📘 매뉴얼</td><td class="">이 사용자 매뉴얼을 새 창으로 열기(인터넷 연결 필요)</td><td class="">1-3</td></tr></tbody></table></div></div>
+<p>입력 화면은 왼쪽에 입력 카드(공사 정보 → 대가기준 선택 → 기본 정보 입력 → 업무 유형 선택 → 세부 조건 → 추가 업무 할증), 오른쪽에 결과 카드(산출 결과 → 산출 근거 상세 → 적용 근거)가 놓입니다. 계산 버튼은 없고, 값을 바꾸는 즉시 다시 계산됩니다.</p>
+<h3 id="s1-2">1-2. 작업 탭·근거 표시</h3>
+<figure class="shot" id="fig-s02_tabs"><div class="frame"><img src="images/s02_tabs.webp" width="1440" height="162" loading="lazy" alt="헤더 — 작업 탭과 근거 고시 표시"><span class="pin" style="left:6.93%;top:75.87%">1</span><span class="pin" style="left:14.46%;top:75.87%">2</span><span class="pin" style="left:87.74%;top:75.87%">3</span><span class="pin" style="left:76.52%;top:15.33%">4</span></div><figcaption><span class="fno">S02</span>헤더 — 작업 탭과 근거 고시 표시</figcaption><ol class="legend"><li><b>1</b><span>입력·산출</span></li><li><b>2</b><span>A4 산출서</span></li><li><b>3</b><span>📘 매뉴얼 — 이 매뉴얼을 새 창으로(탭 막대 오른쪽 끝)</span></li><li><b>4</b><span>근거 법령·고시 표시</span></li></ol></figure>
+<p>헤더 오른쪽에는 근거 법령(건축사법 제19조의3)과 두 고시가 적혀 있습니다. 고시가 개정되면 이 표시와 4장 내용을 함께 확인하십시오.</p>
+<h3 id="s1-3">1-3. 설치·보관·매뉴얼</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">항목</th><th class="">내용</th></tr></thead><tbody><tr><td class="">설치(PWA)</td><td class="">크롬·엣지 주소창의 설치 아이콘 또는 화면 아래 설치 안내를 누르면 바탕화면 앱으로 설치됩니다. 한 번 연 뒤에는 인터넷이 끊겨도 계산·출력이 됩니다.</td></tr><tr><td class="">입력값 보관</td><td class="">입력값을 파일로 저장하는 기능은 없습니다. 새로고침하면 초기 예제로 돌아가므로, 산출이 끝나면 A4 산출서를 PDF 또는 JPG로 저장해 두십시오.</td></tr><tr><td class="">매뉴얼</td><td class="">탭 막대 오른쪽 끝 「📘 매뉴얼」 — 인터넷 연결 시 새 창으로 열립니다. PDF는 이 문서 상단 「⤓ PDF」에서 받습니다.</td></tr></tbody></table></div></div>
+</section>
+<section class="ch" id="ch2"><h2><span class="n">02</span>5분 따라하기</h2>
+<p class="lead">공사비 16억원 공동주택의 건축설계 대가를 예제로 6단계를 따라 하면 요율 4.960%, 설계 용역비 79,360,000원(VAT 별도) 산출서가 나옵니다. 예제 값은 프로그램을 처음 열었을 때 이미 들어 있으므로, 값을 바꿔 보며 결과가 달라지는 것을 확인하면 됩니다.</p>
+<ol class="steps">
+<li><b class="t">공사비 입력</b><a href="https://manminkim-eng.github.io/1architect-fee-app/" target="_blank" rel="noopener">manminkim-eng.github.io/1architect-fee-app</a> 를 열고 「기본 정보 입력」의 「예정 공사비(원, VAT 별도)」에 숫자만 적습니다. 예제는 <b>1,600,000,000</b>이며 아래에 「= 16.00억원」으로 환산해 보여 줍니다.</li>
+<li><b class="t">건축물 용도 선택</b>「건축물 용도」에서 용도를 고르면 별표3에 따라 종별이 자동으로 정해집니다. 예제 <b>공동주택</b>은 「자동 판정: 제2종 보통」입니다.</li>
+<li><b class="t">업무 유형·도서작성 구분 선택</b>「업무 유형 선택」에서 <b>건축설계</b>를, 「세부 조건」의 도서작성 구분에서 <b>중급</b>(공사비 산정)을 고릅니다. 공사감리를 고르면 도서작성 구분 없이 별표5 요율이 적용됩니다.</li>
+<li><b class="t">결과 확인</b>오른쪽 「산출 결과」에 적용 요율 <b>4.960%</b>, 최종 산출금액 <b>79,360,000원</b>(VAT 별도)이 표시됩니다. 「산출 근거 상세」에서 10억원 5.32%와 20억원 4.72% 사이를 보간한 산출식을 확인합니다.</li>
+<li><b class="t">A4 산출서 출력</b>「공사 정보」에 용역명·발주처·작성자·작성일을 적고 「A4 산출서」 탭에서 「인쇄 / PDF 저장」 또는 「JPG 저장」을 누릅니다. 산출서에는 부가가치세 7,936,000원을 더한 합계 87,296,000원이 함께 나옵니다.</li>
+<li><b class="t">엔지니어링 대가로 전환</b>토목·통신·플랜트 용역은 「대가기준 선택」에서 <b>엔지니어링 대가</b>를 누릅니다. 부문·업무 단계·분야를 고르면 같은 공사비 16억원에 건설부문 실시설계(도로) 요율 5.746%, 91,936,000원이 나옵니다.</li>
+</ol>
+<div class="tip"><b>확인</b>따라 한 결과가 요율 4.960% · 79,360,000원이면 정상입니다. 다른 값이 나오면 <a href="#a1">부록 A1</a>의 입력값과 비교하십시오.</div>
+</section>
+<section class="ch" id="ch3"><h2><span class="n">03</span>화면별 기능 상세</h2>
+<p class="lead">화면에 보이는 순서대로 각 카드가 하는 일과 입력 방법을 설명합니다.</p>
+<h3 id="s3-1">3-1. 공사 정보</h3>
+<figure class="shot" id="fig-s03_project"><div class="frame"><img src="images/s03_project.webp" width="618" height="220" loading="lazy" alt="공사 정보 카드 — A4 산출서 표제"><span class="pin" style="left:3.15%;top:46.18%">1</span><span class="pin" style="left:51.21%;top:46.18%">2</span><span class="pin" style="left:3.15%;top:78.91%">3</span><span class="pin" style="left:51.21%;top:78.91%">4</span></div><figcaption><span class="fno">S03</span>공사 정보 카드 — A4 산출서 표제</figcaption><ol class="legend"><li><b>1</b><span>용역명(공사명)</span></li><li><b>2</b><span>발주처(건축주)</span></li><li><b>3</b><span>작성자(건축사사무소)</span></li><li><b>4</b><span>작성일</span></li></ol></figure>
+<p>이 카드의 네 항목은 계산에 쓰이지 않고 A4 산출서의 표제와 작성자 서명란에 그대로 들어갑니다. 발주처를 비워 두면 산출서에는 「—」로 표시됩니다. 작성일은 오늘 날짜가 기본이며 달력에서 바꿀 수 있습니다.</p>
+<h3 id="s3-2">3-2. 대가기준 선택</h3>
+<figure class="shot" id="fig-s04_standard"><div class="frame"><img src="images/s04_standard.webp" width="618" height="257" loading="lazy" alt="대가기준 선택 카드"><span class="pin" style="left:3.15%;top:30.59%">1</span><span class="pin" style="left:51.21%;top:30.59%">2</span><span class="pin" style="left:1.50%;top:79.93%">3</span></div><figcaption><span class="fno">S04</span>대가기준 선택 카드</figcaption><ol class="legend"><li><b>1</b><span>건축사 대가 — 국토교통부고시 별표4·5</span></li><li><b>2</b><span>엔지니어링 대가 — 엔지니어링사업대가의 기준 별표1~4</span></li><li><b>3</b><span>선택한 기준의 근거 고시 안내</span></li></ol></figure>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">기준</th><th class="">근거 고시</th><th class="">대상</th><th class="">본문</th></tr></thead><tbody><tr><td class="">건축사 대가</td><td class="">「공공발주사업에 대한 건축사의 업무범위와 대가기준」 국토교통부고시 제2020-635호(2020.9.14. 시행)</td><td class="">건축설계(별표4) · 공사감리(별표5)</td><td class="">3-3~3-11</td></tr><tr><td class="">엔지니어링 대가</td><td class="">「엔지니어링사업대가의 기준」 산업통상자원부고시 제2024-217호(2024.12.31. 시행)</td><td class="">건설·통신·산업플랜트 설계·감리, 시공상세도작성비(별표1~4)</td><td class="">3-12~3-13</td></tr></tbody></table></div></div>
+<p>기준을 바꾸면 아래 입력 카드와 결과 카드, A4 산출서 서식이 그 기준에 맞게 바뀝니다. 건축물 설계·감리는 건축사 대가를, 건축물이 아닌 토목·통신·플랜트 용역은 엔지니어링 대가를 씁니다.</p>
+<h3 id="s3-3">3-3. 기본 정보 입력</h3>
+<figure class="shot" id="fig-s05_basic"><div class="frame"><img src="images/s05_basic.webp" width="618" height="261" loading="lazy" alt="기본 정보 입력 카드"><span class="pin" style="left:3.15%;top:37.20%">1</span><span class="pin" style="left:3.15%;top:53.67%">2</span><span class="pin" style="left:3.15%;top:72.83%">3</span><span class="pin" style="left:3.15%;top:89.31%">4</span></div><figcaption><span class="fno">S05</span>기본 정보 입력 카드</figcaption><ol class="legend"><li><b>1</b><span>예정 공사비(원, VAT 별도) — 숫자만 입력, 쉼표는 자동</span></li><li><b>2</b><span>억원 환산 표시</span></li><li><b>3</b><span>건축물 용도 — 별표3의 용도 39종</span></li><li><b>4</b><span>종별 자동 판정 — 제1종 단순 · 제2종 보통 · 제3종 복잡</span></li></ol></figure>
+<ul>
+<li>공사비는 발주자의 공사비 총예정금액(자재대 포함)에서 용지비, 보상비, 법률수속비, 부가가치세를 뺀 금액입니다(별표4·별표5 주). 관급자재대를 빠뜨리지 않도록 합니다.</li>
+<li>용도를 고르면 종별이 자동으로 정해집니다. 용도 목록과 종별은 <a href="#s4-2">4-2</a> 표와 같습니다.</li>
+<li>한 건물에 종별이 다른 용도가 섞여 있으면 바닥면적이 가장 넓은 용도를 고릅니다. 면적이 같으면 높은 종별의 용도를 고릅니다(제11조제2항제3호).</li>
+</ul>
+<h3 id="s3-4">3-4. 업무 유형·세부 조건</h3>
+<figure class="shot" id="fig-s06_task"><div class="frame"><img src="images/s06_task.webp" width="618" height="425" loading="lazy" alt="업무 유형 선택 · 세부 조건 카드"><span class="pin" style="left:3.15%;top:19.72%">1</span><span class="pin" style="left:51.21%;top:19.72%">2</span><span class="pin" style="left:3.15%;top:69.81%">3</span><span class="pin" style="left:35.08%;top:69.81%">4</span><span class="pin" style="left:67.01%;top:69.81%">5</span><span class="pin" style="left:3.15%;top:84.64%">6</span></div><figcaption><span class="fno">S06</span>업무 유형 선택 · 세부 조건 카드</figcaption><ol class="legend"><li><b>1</b><span>건축설계 — 별표4 요율 적용</span></li><li><b>2</b><span>공사감리 — 별표5 요율 적용</span></li><li><b>3</b><span>도서작성 구분: 기본 — 인·허가에 필요한 최소한의 설계도서</span></li><li><b>4</b><span>중급 — 공종별 공사비 산정을 위한 설계도서</span></li><li><b>5</b><span>상급 — 세부적인 공사비 산정을 위한 구체적인 설계도서</span></li><li><b>6</b><span>특수 설비 요구 — 종별 한 단계 상향</span></li></ol></figure>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">도서작성 구분</th><th class="">제10조제2항</th></tr></thead><tbody><tr><td class="">기본</td><td class="">소규모 건축물 등과 같이 인·허가와 관련된 최소한의 설계도서만을 요구하는 경우</td></tr><tr><td class="">중급</td><td class="">공종별 공사비 산정을 위한 설계도서를 작성하는 경우</td></tr><tr><td class="">상급</td><td class="">중급에 비하여 세부적인 공사비 산정을 위한 구체적인 설계도서 작성을 요구하는 경우</td></tr></tbody></table></div></div>
+<ul>
+<li>도서작성 구분별로 작성하는 설계도서의 종류는 고시 별표2에 단계별(계획·중간·실시설계)로 정해져 있습니다. 과업지시서의 성과품 목록과 별표2를 대조해 구분을 정합니다.</li>
+<li>「특수 설비 요구」를 켜면 제1종은 제2종으로, 제2종은 제3종으로 올려 요율을 적용합니다. 별표3의 「제1종 시설로서 공기조화 설비 등 특수설비를 요하는 시설은 제2종을 적용」, 「제2종 시설로서 특수구조 또는 공기조화 설비 등 특수설비를 요하는 시설은 제3종을 적용」에 따른 것입니다. 제3종은 더 올라가지 않습니다.</li>
+<li>공사감리를 고르면 도서작성 구분과 추가 업무 할증은 쓰이지 않습니다.</li>
+</ul>
+<h3 id="s3-5">3-5. 추가 업무 할증</h3>
+<figure class="shot" id="fig-s07_surcharge"><div class="frame"><img src="images/s07_surcharge.webp" width="618" height="398" loading="lazy" alt="추가 업무 할증 카드 — 건축설계일 때만 적용"><span class="pin" style="left:3.15%;top:18.63%">1</span><span class="pin" style="left:3.15%;top:34.60%">2</span><span class="pin" style="left:5.25%;top:66.39%">3</span><span class="pin" style="left:51.13%;top:66.39%">4</span><span class="pin" style="left:5.25%;top:84.22%">5</span></div><figcaption><span class="fno">S07</span>추가 업무 할증 카드 — 건축설계일 때만 적용</figcaption><ol class="legend"><li><b>1</b><span>리모델링 / 인테리어 설계 +50% — 제11조제4항제1호(기본 대가의 1.5배)</span></li><li><b>2</b><span>BF 인증 — 대가에 더하지 않고 안내 문구만 표시</span></li><li><b>3</b><span>녹색건축 인증 — 최우수 9.5 · 우수 9.0 · 우량 8.5 · 일반 8.0%</span></li><li><b>4</b><span>지능형건축물(IBS) — 1등급 7.0 ~ 5등급 5.0%</span></li><li><b>5</b><span>제로에너지 인증 — 1등급 10.0 ~ 5등급 8.0%</span></li></ol></figure>
+<ul>
+<li>인증을 2개 이상 고르면 요율이 큰 순서로 A + B/2 + C/3 으로 합산합니다(제11조제4항제6호). 예는 <a href="#s3-8">3-8</a>.</li>
+<li>BF(장애물 없는 생활환경) 인증 관련 설계는 별도 계상하지 않으며, 인증 심의 대응 비용만 실비정액가산식으로 따로 산정합니다(제11조제4항제7호). 그래서 체크해도 금액은 바뀌지 않습니다.</li>
+<li>에너지효율등급 인증 가산(제11조제4항제5호 가목)은 선택 항목에 없습니다. 해당하면 <a href="#s4-6">4-6</a> 표의 비율로 따로 계산해 더합니다.</li>
+</ul>
+<h3 id="s3-6">3-6. 산출 결과</h3>
+<figure class="shot" id="fig-s08_result"><div class="frame"><img src="images/s08_result.webp" width="614" height="266" loading="lazy" alt="산출 결과 카드"><span class="pin" style="left:1.50%;top:3.38%">1</span><span class="pin" style="left:2.84%;top:63.90%">2</span><span class="pin" style="left:35.03%;top:63.90%">3</span><span class="pin" style="left:67.23%;top:63.90%">4</span></div><figcaption><span class="fno">S08</span>산출 결과 카드</figcaption><ol class="legend"><li><b>1</b><span>최종 산출금액(VAT 별도)</span></li><li><b>2</b><span>적용 요율(%) — 소수점 셋째 자리까지</span></li><li><b>3</b><span>공사비(억원)</span></li><li><b>4</b><span>종별</span></li></ol></figure>
+<p>대가 = 공사비 × 요율이며 천원 미만은 버립니다. 할증이 있으면 금액 아래에 「기본 ○원 + 조정 ○원」이 함께 표시됩니다.</p>
+<h3 id="s3-7">3-7. 산출 근거 상세</h3>
+<figure class="shot" id="fig-s09_detail"><div class="frame"><img src="images/s09_detail.webp" width="614" height="499" loading="lazy" alt="산출 근거 상세 · 적용 근거 카드"><span class="pin" style="left:1.50%;top:19.03%">1</span><span class="pin" style="left:1.50%;top:26.34%">2</span><span class="pin" style="left:1.50%;top:33.55%">3</span><span class="pin" style="left:1.50%;top:41.37%">4</span><span class="pin" style="left:1.50%;top:51.68%">5</span><span class="pin" style="left:1.50%;top:67.50%">6</span></div><figcaption><span class="fno">S09</span>산출 근거 상세 · 적용 근거 카드</figcaption><ol class="legend"><li><b>1</b><span>예정 공사비</span></li><li><b>2</b><span>적용 난이도 — 종별과 도서작성 구분</span></li><li><b>3</b><span>Y(당해 공사비요율)</span></li><li><b>4</b><span>보간 산출식 — 아래 구간과 위 구간의 요율로 계산</span></li><li><b>5</b><span>최종 산출 대가(VAT 별도)</span></li><li><b>6</b><span>적용 근거 — 근거 고시·종별·산출 방식</span></li></ol></figure>
+<div class="eq">Y = y1 − (x − x2) × (y1 − y2) ÷ (x1 − x2)          <span class="c">직선보간(제16조제1항)</span>
+  = 5.32 − (16억 − 10억) × (5.32 − 4.72) ÷ (20억 − 10억)
+  = 5.32 − 0.36 = 4.960 %
+대가 = 1,600,000,000 × 4.960 % = 79,360,000 원     <span class="c">VAT 별도</span></div>
+<p>x는 당해 공사비, x2·y1은 아래 구간의 공사비와 요율, x1·y2는 위 구간의 공사비와 요율입니다. 공사비가 표의 구간 금액과 같으면 보간 없이 그 요율을 그대로 씁니다.</p>
+<h3 id="s3-8">3-8. 인증 할증 예</h3>
+<figure class="shot" id="fig-s10_cert"><div class="frame"><img src="images/s10_cert.webp" width="614" height="841" loading="lazy" alt="녹색건축 최우수 + 제로에너지 1등급을 함께 고른 경우"><span class="pin" style="left:1.50%;top:3.12%">1</span><span class="pin" style="left:3.17%;top:96.00%">2</span></div><figcaption><span class="fno">S10</span>녹색건축 최우수 + 제로에너지 1등급을 함께 고른 경우</figcaption><ol class="legend"><li><b>1</b><span>최종 산출금액 91,065,000원 — 기본 79,360,000원 + 조정 11,705,000원</span></li><li><b>2</b><span>세부 조정(+14.75%)과 적용 근거의 할증 내역</span></li></ol></figure>
+<div class="eq">추가 요율 = A + B/2 = 10.0 + 9.5/2 = 14.75 %      <span class="c">A 제로에너지 1등급 · B 녹색건축 최우수</span>
+조정 금액 = 79,360,000 × 14.75 % = 11,705,600 → 11,705,000 원   <span class="c">천원 미만 절사</span>
+최종 대가 = 79,360,000 + 11,705,000 = 91,065,000 원</div>
+<h3 id="s3-9">3-9. 공사감리 대가</h3>
+<figure class="shot" id="fig-s11_sup"><div class="frame"><img src="images/s11_sup.webp" width="1440" height="900" loading="lazy" alt="업무 유형을 공사감리로 바꾼 화면"><span class="pin" style="left:1.50%;top:18.82%">1</span><span class="pin" style="left:50.96%;top:27.58%">2</span><span class="pin" style="left:50.96%;top:58.69%">3</span></div><figcaption><span class="fno">S11</span>업무 유형을 공사감리로 바꾼 화면</figcaption><ol class="legend"><li><b>1</b><span>요약 스트립 — 요율 1.170%</span></li><li><b>2</b><span>감리 용역비 18,720,000원(VAT 별도)</span></li><li><b>3</b><span>별표5 보간 산출식 — 10억원 1.23%와 20억원 1.13% 사이</span></li></ol></figure>
+<p>별표5 요율은 건축법 시행령 제19조제5항에 따라 수시 또는 필요한 때 공사현장에서 수행하는 감리업무(제5조제2호 가목)의 대가입니다(제14조제1항). 건축사보를 공사기간 동안 현장에 두는 감리 등(제5조제2호 나목~라목)은 실비정액가산식으로 따로 산정합니다(제14조제2항).</p>
+<div class="eq">대가 = 1,600,000,000 × 1.170 % = 18,720,000 원     <span class="c">VAT 별도 · 합계 20,592,000원</span></div>
+<h3 id="s3-10">3-10. A4 산출서 출력</h3>
+<figure class="shot" id="fig-s12_a4"><div class="frame"><img src="images/s12_a4.webp" width="1440" height="900" loading="lazy" alt="A4 산출서 탭"><span class="pin" style="left:77.35%;top:27.04%">1</span><span class="pin" style="left:86.98%;top:27.04%">2</span><span class="pin" style="left:22.83%;top:38.24%">3</span></div><figcaption><span class="fno">S12</span>A4 산출서 탭</figcaption><ol class="legend"><li><b>1</b><span>「인쇄 / PDF 저장」 — 브라우저 인쇄 창. 대상 프린터를 「PDF로 저장」으로 바꾸면 PDF</span></li><li><b>2</b><span>「JPG 저장」 — 산출서를 JPG 이미지로 저장</span></li><li><b>3</b><span>A4 산출서 미리보기 — 화면·인쇄·JPG가 같은 내용</span></li></ol></figure>
+<ul>
+<li>공사비를 넣지 않은 상태에서는 「먼저 공사비를 입력하세요」 안내가 나오고 입력 탭으로 돌아갑니다.</li>
+<li>JPG 파일 이름은 <code>건축사_업무대가_산출서_MANMIN-Ver5.0_날짜_시각.jpg</code> 형식입니다.</li>
+<li>PDF에 색이 빠지면 인쇄 창 「설정 더보기」의 「배경 그래픽」을 켭니다.</li>
+</ul>
+<h3 id="s3-11">3-11. A4 산출서 구성</h3>
+<figure class="shot" id="fig-s13_a4page"><div class="frame"><img src="images/s13_a4page.webp" width="794" height="1123" loading="lazy" alt="건축설계 용역비 산출서"><span class="pin" style="left:7.08%;top:11.57%">1</span><span class="pin" style="left:7.08%;top:26.24%">2</span><span class="pin" style="left:7.08%;top:48.50%">3</span><span class="pin" style="left:7.08%;top:84.07%">4</span><span class="pin" style="left:91.78%;top:88.91%">5</span></div><figcaption><span class="fno">S13</span>건축설계 용역비 산출서</figcaption><ol class="legend"><li><b>1</b><span>용역 개요 — 용역명·발주처·작성자·예정공사비·종별·도서·적용기준</span></li><li><b>2</b><span>산출 내역 — ① 기본 용역비 ② 세부 할증, 공급가액 소계, 부가가치세, 합계금액(VAT 포함)</span></li><li><b>3</b><span>산출 근거 — 아래·위 구간의 금액·요율과 보간 산출식</span></li><li><b>4</b><span>법적 근거</span></li><li><b>5</b><span>작성일 · 작성자 서명란</span></li></ol></figure>
+<p>입력 화면의 금액은 부가가치세 별도이고, 산출서에는 공급가액의 10%를 부가가치세로 더한 합계금액이 나옵니다(예제 79,360,000 + 7,936,000 = 87,296,000원). 제목은 업무에 따라 「건축설계 용역비 산출서」 또는 「공사감리 용역비 산출서」로 바뀝니다.</p>
+<h3 id="s3-12">3-12. 엔지니어링 대가 입력</h3>
+<figure class="shot" id="fig-s14_eng_input"><div class="frame"><img src="images/s14_eng_input.webp" width="618" height="564" loading="lazy" alt="엔지니어링 대가를 고른 입력 카드"><span class="pin" style="left:3.15%;top:17.66%">1</span><span class="pin" style="left:3.15%;top:49.95%">2</span><span class="pin" style="left:35.08%;top:62.90%">3</span><span class="pin" style="left:3.15%;top:75.50%">4</span></div><figcaption><span class="fno">S14</span>엔지니어링 대가를 고른 입력 카드</figcaption><ol class="legend"><li><b>1</b><span>예정 공사비(원, VAT 별도)</span></li><li><b>2</b><span>부문 선택 — 건설부문(별표1) · 통신부문(별표2) · 산업플랜트부문(별표3) · 시공상세도작성비(별표4)</span></li><li><b>3</b><span>업무 단계 — 기본설계 · 실시설계 · 공사감리(비상주)</span></li><li><b>4</b><span>분야 — 부문·업무에 따라 선택 항목이 바뀜</span></li></ol></figure>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">부문</th><th class="">업무 단계</th><th class="">분야·선택 항목</th></tr></thead><tbody><tr><td class="">건설부문 (별표1)</td><td class="">기본설계 · 실시설계 · 공사감리</td><td class="">기본설계: 도로·철도·항만·상수도 / 실시설계: 도로·철도·항만·상수도·하천</td></tr><tr><td class="">통신부문 (별표2)</td><td class="">기본설계 · 실시설계 · 공사감리</td><td class="">그룹1 · 그룹2 · 그룹3 · 그룹4</td></tr><tr><td class="">산업플랜트부문 (별표3)</td><td class="">기본설계 · 실시설계 · 공사감리</td><td class="">화학·가스 플랜트(요율 × 1.250) · 부대시설(요율 × 0.813) 선택</td></tr><tr><td class="">시공상세도작성비 (별표4)</td><td class="">작성비</td><td class="">시설물 난이도 단순 · 보통 · 복잡</td></tr></tbody></table></div></div>
+<p>이 화면의 공사감리는 요율로 산정하는 비상주 감리입니다. 상주감리는 실비정액가산방식으로 따로 산정하므로 프로그램의 계산 대상이 아닙니다. 건축물 설계는 「건축사 대가」로 돌아가 계산합니다.</p>
+<h3 id="s3-13">3-13. 엔지니어링 결과·산출서</h3>
+<figure class="shot" id="fig-s15_eng_result"><div class="frame"><img src="images/s15_eng_result.webp" width="1440" height="900" loading="lazy" alt="엔지니어링 대가 — 건설부문 · 실시설계 · 도로 · 16억원"><span class="pin" style="left:28.73%;top:59.27%">1</span><span class="pin" style="left:1.50%;top:18.82%">2</span><span class="pin" style="left:50.96%;top:27.58%">3</span><span class="pin" style="left:50.96%;top:58.69%">4</span></div><figcaption><span class="fno">S15</span>엔지니어링 대가 — 건설부문 · 실시설계 · 도로 · 16억원</figcaption><ol class="legend"><li><b>1</b><span>대가기준 선택 — 엔지니어링 대가</span></li><li><b>2</b><span>요약 스트립 — 실시설계 · 도로부문, 요율 5.746%</span></li><li><b>3</b><span>산출 결과 91,936,000원(VAT 별도)</span></li><li><b>4</b><span>산출 근거 — 10억원 6.16%와 20억원 5.47% 사이 보간</span></li></ol></figure>
+<div class="eq">Y = 6.16 − (16억 − 10억) × (6.16 − 5.47) ÷ (20억 − 10억) = 6.16 − 0.414 = 5.746 %
+대가 = 1,600,000,000 × 5.746 % = 91,936,000 원     <span class="c">VAT 별도 · 합계 101,129,600원</span></div>
+<div class="pair">
+<figure class="shot" id="fig-s16_eng_a4page"><div class="frame"><img src="images/s16_eng_a4page.webp" width="794" height="1123" loading="lazy" alt="엔지니어링 용역비 산출서"></div><figcaption><span class="fno">S16</span>엔지니어링 용역비 산출서</figcaption></figure>
+<div><p>엔지니어링 대가를 고르면 A4 산출서 제목이 「엔지니어링 용역비 산출서」로, 적용기준이 「엔지니어링사업대가의 기준」 해당 별표로 바뀝니다.</p>
+<p>공사비가 5,000억원을 넘으면 별표 비고의 공식으로 요율을 계산하고, 표의 가장 작은 공사비 이하이면 첫 구간 요율을 그대로 씁니다.</p>
+<p>입력 화면의 「적용 근거」 카드에도 엔지니어링사업대가의 기준 고시 번호와 부문·업무가 표시됩니다.</p></div>
+</div>
+<h3 id="s3-14">3-14. 이용안내·초기화</h3>
+<div class="pair">
+<figure class="shot" id="fig-s17_help_interp"><div class="frame"><img src="images/s17_help_interp.webp" width="1440" height="900" loading="lazy" alt="이용안내 창 — 보간법"></div><figcaption><span class="fno">S17</span>이용안내 창 — 보간법</figcaption></figure>
+<figure class="shot" id="fig-s18_help_type"><div class="frame"><img src="images/s18_help_type.webp" width="1440" height="900" loading="lazy" alt="이용안내 창 — 건물종별"></div><figcaption><span class="fno">S18</span>이용안내 창 — 건물종별</figcaption></figure>
+</div>
+<figure class="shot" id="fig-s19_help_eng"><div class="frame"><img src="images/s19_help_eng.webp" width="1440" height="900" loading="lazy" alt="이용안내 창 — 엔지니어링(별표1~4 요율표)"></div><figcaption><span class="fno">S19</span>이용안내 창 — 엔지니어링(별표1~4 요율표)</figcaption></figure>
+<p>오른쪽 아래 「이용안내」를 누르면 이용방법·개요·설계대가·감리대가·보간법·인증할증·건물종별·엔지니어링 8개 탭으로 나뉜 안내 창이 열립니다. 「초기화」는 모든 입력을 비웁니다. 되돌린 뒤에는 복구할 수 없으므로 필요한 산출서는 먼저 저장하십시오. 초기화 후에는 공사비가 비어 있어 결과가 표시되지 않습니다.</p>
+<h3 id="s3-15">3-15. 모바일</h3>
+<div class="pair">
+<figure class="shot narrow" id="fig-s20_mobile_main"><div class="frame"><img src="images/s20_mobile_main.webp" width="390" height="844" loading="lazy" alt="모바일 — 입력"></div><figcaption><span class="fno">S20</span>모바일 — 입력</figcaption></figure>
+<figure class="shot narrow" id="fig-s21_mobile_result"><div class="frame"><img src="images/s21_mobile_result.webp" width="390" height="844" loading="lazy" alt="모바일 — 산출 결과와 산출 근거"></div><figcaption><span class="fno">S21</span>모바일 — 산출 결과와 산출 근거</figcaption></figure>
+</div>
+<p>휴대폰에서는 카드가 한 줄로 쌓입니다. 회의 자리에서 공사비만 바꿔 대가를 바로 확인할 때 씁니다.</p>
+</section>
+<section class="ch" id="ch4"><h2><span class="n">04</span>기술기준 해설</h2>
+<p class="lead">「공공발주사업에 대한 건축사의 업무범위와 대가기준」 국토교통부고시 제2020-635호(2020.9.14. 시행)과 「엔지니어링사업대가의 기준」 산업통상자원부고시 제2024-217호(2024.12.31. 시행) 원문에서 대가 산출에 직접 쓰이는 조문과 별표를 정리했습니다.</p>
+<h3 id="s4-1">4-1. 적용 범위와 산출 원칙</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">조항</th><th class="">내용(요지)</th></tr></thead><tbody><tr><td class="">제1조</td><td class="">건축사법 제19조의3에 따라 건축사의 업무범위와 대가기준을 정함</td></tr><tr><td class="">제2조</td><td class="">건축사법 제19조의3제1항 각 호의 자(발주자)가 제5조에 따른 건축사의 업무를 발주하는 경우에 적용</td></tr><tr><td class="">제8조제1항제1호</td><td class="">대가는 발주자가 사업의 특성 및 업무범위를 고려하여 공사비요율 또는 실비정액가산식을 적용</td></tr><tr><td class="">제8조제1항제2호</td><td class="">공사비요율을 적용할 경우 추가업무비용은 별도의 실비로 계상</td></tr><tr><td class="">제8조제1항제3호</td><td class="">부가가치세는 부가가치세법에서 정하는 바에 따라 계상</td></tr><tr><td class="">제11조제2항</td><td class="">건축설계업무(계획·중간·실시설계)의 대가는 별표4를 적용하여 산정</td></tr><tr><td class="">제14조제1항</td><td class="">제5조제2호 가목의 건축공사감리업무 대가는 별표5를 적용하여 산정</td></tr></tbody></table></div></div>
+<div class="note"><b>이 프로그램이 하는 일</b>공사비요율 방식(별표4·별표5)의 대가와 제11조제4항의 리모델링·인테리어, 녹색건축·지능형건축물·제로에너지건축물 인증 가산을 계산합니다. 실비정액가산식 대상 업무는 <a href="#s4-7">4-7</a>을 보십시오.</div>
+<h3 id="s4-2">4-2. 종별·도서작성 구분</h3>
+<p>제10조제1항 — 대가요율을 산정하는 데 필요한 건축물의 종별은 별표3과 같이 건축물의 난이도에 따라 구분합니다. 프로그램의 「건축물 용도」 목록은 별표3과 같습니다.</p>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">종별</th><th class="">건축물의 종류 (별표3)</th><th class="">비고</th></tr></thead><tbody><tr><td class="">제1종(단순)</td><td class="">가설건축물 · 창고시설(하역장) · 자동차관련시설(정비공장,운전학원·정비학원 제외) · 동물 및 식물관련시설(가축용 창고,관리사,가축시장,버섯재배사) · 기타 제1종 용도와 유사한 것</td><td class="">제1종 시설로서 공기조화 설비 등 특수설비를 요하는 시설은 제2종을 적용</td></tr><tr><td class="">제2종(보통)</td><td class="">공작물(굴뚝·옹벽·고가수조 등) · 단독주택 · 공동주택 · 제1종 근린생활시설 · 제2종 근린생활시설 · 판매시설 · 장례식장 · 교육연구시설(도서관 제외) · 노유자시설 · 수련시설 · 업무시설 · 숙박시설(관광숙박시설 제외) · 위락시설 · 공장 · 창고시설(냉장·냉동창고 포함) · 위험물저장 및 처리시설 · 자동차 관련시설(정비공장,운전학원,정비학원) · 동물 및 식물관련시설 · 분뇨 및 쓰레기처리시설 · 교정 및 군사시설 · 묘지관련시설(화장장 제외) · 관광휴게시설(관망탑 제외) · 기타 제2종 용도와 유사한 것</td><td class="">제2종 시설로서 특수구조 또는 공기조화 설비 등 특수설비를 요하는 시설은 제3종을 적용</td></tr><tr><td class="">제3종(복잡)</td><td class="">문화 및 집회시설 · 운수시설(철도시설,공항시설,항만시설,종합여객시설 등) · 의료시설 · 교육연구시설 중 도서관 · 운동시설 · 숙박시설 중 관광숙박시설 · 발전시설(발전소,집단에너지 공급시설 포함) · 방송통신시설(방송·통신시설,촬영시설) · 묘지관련시설 중 화장장 · 관광휴게시설 중 관망탑 · 기타 제3종 용도와 유사한 것</td><td class="">—</td></tr></tbody></table></div></div>
+<p>제10조제2항 — 별표4를 적용할 때의 도서작성 구분은 기본·중급·상급이며(<a href="#s3-4">3-4</a> 표), 구분별 설계도서의 세부 내용은 별표2에 따릅니다.</p>
+<h3 id="s4-3">4-3. 별표4 건축설계 대가요율</h3>
+<p>단위 %. 프로그램의 건축설계 요율은 이 표에서 나옵니다.</p>
+<div class="wide"><div class="tbl"><table><thead><tr><th class="">공사비</th><th class="num">3종 상급</th><th class="num">3종 중급</th><th class="num">3종 기본</th><th class="num">2종 상급</th><th class="num">2종 중급</th><th class="num">2종 기본</th><th class="num">1종 상급</th><th class="num">1종 중급</th><th class="num">1종 기본</th></tr></thead><tbody><tr><td class="">5,000만원 이하</td><td class="num">12.55</td><td class="num">10.46</td><td class="num">8.36</td><td class="num">11.41</td><td class="num">9.51</td><td class="num">7.61</td><td class="num">10.22</td><td class="num">8.51</td><td class="num">6.81</td></tr><tr><td class="">1억원</td><td class="num">11.48</td><td class="num">9.56</td><td class="num">7.65</td><td class="num">10.43</td><td class="num">8.69</td><td class="num">6.95</td><td class="num">9.38</td><td class="num">7.82</td><td class="num">6.25</td></tr><tr><td class="">2억원</td><td class="num">9.99</td><td class="num">8.33</td><td class="num">6.66</td><td class="num">9.08</td><td class="num">7.57</td><td class="num">6.05</td><td class="num">8.16</td><td class="num">6.80</td><td class="num">5.44</td></tr><tr><td class="">3억원</td><td class="num">8.68</td><td class="num">7.23</td><td class="num">5.78</td><td class="num">7.88</td><td class="num">6.57</td><td class="num">5.26</td><td class="num">7.08</td><td class="num">5.90</td><td class="num">4.72</td></tr><tr><td class="">5억원</td><td class="num">7.90</td><td class="num">6.58</td><td class="num">5.26</td><td class="num">7.18</td><td class="num">5.98</td><td class="num">4.79</td><td class="num">6.46</td><td class="num">5.38</td><td class="num">4.30</td></tr><tr><td class="">10억원</td><td class="num">7.03</td><td class="num">5.86</td><td class="num">4.68</td><td class="num">6.39</td><td class="num">5.32</td><td class="num">4.26</td><td class="num">5.75</td><td class="num">4.79</td><td class="num">3.83</td></tr><tr><td class="">20억원</td><td class="num">6.22</td><td class="num">5.19</td><td class="num">4.15</td><td class="num">5.66</td><td class="num">4.72</td><td class="num">3.77</td><td class="num">5.09</td><td class="num">4.24</td><td class="num">3.40</td></tr><tr><td class="">30억원</td><td class="num">5.91</td><td class="num">4.93</td><td class="num">3.94</td><td class="num">5.38</td><td class="num">4.48</td><td class="num">3.58</td><td class="num">4.84</td><td class="num">4.03</td><td class="num">3.23</td></tr><tr><td class="">50억원</td><td class="num">5.72</td><td class="num">4.76</td><td class="num">3.81</td><td class="num">5.20</td><td class="num">4.33</td><td class="num">3.46</td><td class="num">4.68</td><td class="num">3.90</td><td class="num">3.12</td></tr><tr><td class="">100억원</td><td class="num">5.58</td><td class="num">4.65</td><td class="num">3.72</td><td class="num">5.07</td><td class="num">4.22</td><td class="num">3.38</td><td class="num">4.56</td><td class="num">3.80</td><td class="num">3.04</td></tr><tr><td class="">200억원</td><td class="num">5.42</td><td class="num">4.51</td><td class="num">3.61</td><td class="num">4.92</td><td class="num">4.10</td><td class="num">3.28</td><td class="num">4.43</td><td class="num">3.69</td><td class="num">2.96</td></tr><tr><td class="">300억원</td><td class="num">5.32</td><td class="num">4.44</td><td class="num">3.55</td><td class="num">4.84</td><td class="num">4.03</td><td class="num">3.23</td><td class="num">4.36</td><td class="num">3.63</td><td class="num">2.91</td></tr><tr><td class="">500억원</td><td class="num">5.25</td><td class="num">4.38</td><td class="num">3.50</td><td class="num">4.77</td><td class="num">3.98</td><td class="num">3.18</td><td class="num">4.30</td><td class="num">3.58</td><td class="num">2.87</td></tr><tr><td class="">1,000억원</td><td class="num">5.14</td><td class="num">4.29</td><td class="num">3.43</td><td class="num">4.68</td><td class="num">3.90</td><td class="num">3.12</td><td class="num">4.21</td><td class="num">3.50</td><td class="num">2.80</td></tr><tr><td class="">2,000억원</td><td class="num">5.06</td><td class="num">4.22</td><td class="num">3.38</td><td class="num">4.60</td><td class="num">3.84</td><td class="num">3.07</td><td class="num">4.14</td><td class="num">3.45</td><td class="num">2.76</td></tr><tr><td class="">3,000억원</td><td class="num">5.01</td><td class="num">4.17</td><td class="num">3.34</td><td class="num">4.55</td><td class="num">3.79</td><td class="num">3.03</td><td class="num">4.10</td><td class="num">3.42</td><td class="num">2.73</td></tr><tr><td class="">5,000억원</td><td class="num">4.93</td><td class="num">4.11</td><td class="num">3.28</td><td class="num">4.48</td><td class="num">3.73</td><td class="num">2.99</td><td class="num">4.03</td><td class="num">3.36</td><td class="num">2.69</td></tr></tbody></table></div></div>
+<h3 id="s4-4">4-4. 별표5 건축공사감리 대가요율</h3>
+<p>단위 %. 프로그램의 공사감리 요율은 이 표에서 나옵니다.</p>
+<div class="tbl"><table><thead><tr><th class="">공사비</th><th class="num">제3종(복잡)</th><th class="num">제2종(보통)</th><th class="num">제1종(단순)</th></tr></thead><tbody><tr><td class="">5천만원 이하</td><td class="num">2.46</td><td class="num">2.24</td><td class="num">2.02</td></tr><tr><td class="">1억원</td><td class="num">2.32</td><td class="num">2.11</td><td class="num">1.90</td></tr><tr><td class="">2억원</td><td class="num">1.85</td><td class="num">1.68</td><td class="num">1.51</td></tr><tr><td class="">3억원</td><td class="num">1.70</td><td class="num">1.54</td><td class="num">1.39</td></tr><tr><td class="">5억원</td><td class="num">1.57</td><td class="num">1.43</td><td class="num">1.29</td></tr><tr><td class="">10억원</td><td class="num">1.35</td><td class="num">1.23</td><td class="num">1.11</td></tr><tr><td class="">20억원</td><td class="num">1.24</td><td class="num">1.13</td><td class="num">1.02</td></tr><tr><td class="">30억원</td><td class="num">1.20</td><td class="num">1.09</td><td class="num">0.98</td></tr><tr><td class="">50억원</td><td class="num">1.18</td><td class="num">1.07</td><td class="num">0.96</td></tr><tr><td class="">100억원</td><td class="num">1.14</td><td class="num">1.04</td><td class="num">0.94</td></tr><tr><td class="">200억원</td><td class="num">1.11</td><td class="num">1.01</td><td class="num">0.91</td></tr><tr><td class="">300억원</td><td class="num">1.10</td><td class="num">1.00</td><td class="num">0.90</td></tr><tr><td class="">500억원</td><td class="num">1.08</td><td class="num">0.98</td><td class="num">0.88</td></tr><tr><td class="">1,000억원</td><td class="num">1.07</td><td class="num">0.97</td><td class="num">0.87</td></tr><tr><td class="">2,000억원</td><td class="num">1.05</td><td class="num">0.95</td><td class="num">0.86</td></tr><tr><td class="">3,000억원</td><td class="num">1.03</td><td class="num">0.94</td><td class="num">0.85</td></tr><tr><td class="">5,000억원</td><td class="num">1.02</td><td class="num">0.93</td><td class="num">0.84</td></tr></tbody></table></div>
+<h3 id="s4-5">4-5. 직선보간과 공사비 범위</h3>
+<div class="svgbox"><svg viewBox="0 0 900 260" role="img" aria-label="직선보간 예: 공사비 10억원 요율 5.32퍼센트와 20억원 요율 4.72퍼센트 사이에서 16억원의 요율은 4.960퍼센트">
+<style>.t{font:600 13px 'Noto Sans KR','Noto Sans KR Local',sans-serif;fill:#1A1A2E}.s{font:12px 'Noto Sans KR','Noto Sans KR Local',sans-serif;fill:#4A4F66}.m{font:600 13px 'JetBrains Mono',monospace;fill:#1F2A6B}.a{stroke:#4A4F66;stroke-width:1.2;fill:none}</style>
+<line class="a" x1="110" y1="30" x2="110" y2="210"/><line class="a" x1="110" y1="210" x2="860" y2="210"/>
+<text class="s" x="20" y="28">요율(%)</text><text class="s" x="800" y="238">공사비</text>
+<line x1="200" y1="70" x2="760" y2="170" stroke="#2D3A8C" stroke-width="2.5"/>
+<line x1="200" y1="70" x2="200" y2="210" stroke="#9AA6D6" stroke-dasharray="5 4"/><line x1="760" y1="170" x2="760" y2="210" stroke="#9AA6D6" stroke-dasharray="5 4"/>
+<line x1="536" y1="130" x2="536" y2="210" stroke="#C97A3A" stroke-dasharray="5 4"/><line x1="110" y1="130" x2="536" y2="130" stroke="#C97A3A" stroke-dasharray="5 4"/>
+<circle cx="200" cy="70" r="6" fill="#2D3A8C"/><circle cx="760" cy="170" r="6" fill="#2D3A8C"/><circle cx="536" cy="130" r="8" fill="#F4A261" stroke="#C97A3A" stroke-width="2"/>
+<text class="m" x="212" y="62">(x2, y1) = 10억원, 5.32</text><text class="m" x="590" y="160">(x1, y2) = 20억원, 4.72</text>
+<text class="m" x="548" y="120" style="fill:#C97A3A">(x, Y) = 16억원, 4.960</text>
+<text class="s" x="182" y="228">10억원</text><text class="s" x="518" y="228">16억원</text><text class="s" x="742" y="228">20억원</text>
+<text class="s" x="62" y="74">5.32</text><text class="s" x="62" y="134">4.96</text><text class="s" x="62" y="174">4.72</text>
+<text class="s" x="110" y="254">별표4 제2종(보통) · 중급 — 두 구간 요율을 직선으로 이어 그 사이 공사비의 요율을 구합니다.</text>
+</svg></div>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">근거</th><th class="">내용</th><th class="">프로그램 처리</th></tr></thead><tbody><tr><td class="">제16조제1항</td><td class="">별표4 및 별표5의 기준에 따라 대가를 산정할 때 공사비가 중간부분에 있는 경우의 요율은 직선보간법에 따라 산정</td><td class="">구간 사이 공사비는 자동 보간 — 요율은 소수점 셋째 자리까지</td></tr><tr><td class="">제16조제2항</td><td class="">대가요율 산정 시 공사비가 5,000만원 미만인 경우 5,000만원으로 간주하여 산출</td><td class="">5,000만원 이하는 표의 첫 구간 요율을 적용</td></tr><tr><td class="">제16조제3항</td><td class="">공사비가 5,000억원을 초과하는 경우의 요율은 별도 공식(평균급여액·제비율 사용)으로 산출</td><td class="">공식 미탑재 — 5,000억원 요율을 적용한 참고값과 함께 붉은 안내 문구를 화면·산출서에 표시</td></tr><tr><td class="">별표4·별표5 주</td><td class="">「공사비」라 함은 발주자의 공사비 총예정금액(자재대 포함) 중 용지비, 보상비, 법률수속비 및 부가가치세를 제외한 일체의 금액</td><td class="">입력란에 이 금액을 넣음</td></tr></tbody></table></div></div>
+<div class="warn"><b>5,000억원 초과</b>제16조제3항의 공식은 평균급여액과 제비율을 넣어 계산하는 식으로, 프로그램에는 들어 있지 않습니다. 공사비가 5,000억원을 넘으면 「적용 근거」 카드와 A4 산출서 법적 근거 아래에 「제16조제3항의 공식으로 요율을 별도 산정」 안내가 붉게 표시됩니다. 이때의 금액은 참고값이므로 원문 고시의 공식으로 요율을 따로 구하십시오.</div>
+<h3 id="s4-6">4-6. 추가 업무 대가</h3>
+<p>제11조제4항 — 발주자의 요청이 있을 경우의 설계업무(제5조제1호 라목) 대가입니다. 「대가」는 제11조제2항에 따라 산출된 건축설계 대가를 말합니다.</p>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">제11조제4항</th><th class="">업무</th><th class="">대가</th><th class="">프로그램</th></tr></thead><tbody><tr><td class="">제1호</td><td class="">리모델링 설계 · 인테리어 설계</td><td class="">대가의 1.5배</td><td class="">「리모델링 / 인테리어 설계 +50%」</td></tr><tr><td class="">제2호</td><td class="">음향·차음·방음·방진설계, 3D 모델링, 모형제작, VE 설계, Fast track, 흙막이 상세도(굴토깊이 10m 이상), 상세시공도서, 각종 심의 대응, BIM 설계</td><td class="">실비정액가산식</td><td class="">계산하지 않음</td></tr><tr><td class="">제3호</td><td class="">녹색건축 인증 관련 설계</td><td class="">최우수 9.5% · 우수 9% · 우량 8.5% · 일반 8%</td><td class="">「녹색건축 인증」</td></tr><tr><td class="">제4호</td><td class="">지능형건축물 인증 관련 설계</td><td class="">1등급 7% · 2등급 6.5% · 3등급 6% · 4등급 5.5% · 5등급 5%</td><td class="">「지능형건축물(IBS)」</td></tr><tr><td class="">제5호 가목</td><td class="">에너지효율등급 인증 관련 설계</td><td class="">1+++~1++등급 7.5% · 1+~1등급 7% · 2~3등급 6.5% · 4~5등급 6% · 6~7등급 5.5% (제로에너지건축물 인증을 적용하면 가목은 적용하지 않음)</td><td class="">선택 항목 없음 — 따로 계산</td></tr><tr><td class="">제5호 나목</td><td class="">제로에너지건축물 인증 관련 설계</td><td class="">1등급 10% · 2등급 9.5% · 3등급 9% · 4등급 8.5% · 5등급 8%</td><td class="">「제로에너지 인증」</td></tr><tr><td class="">제6호</td><td class="">인증 2개 이상을 설계에 반영</td><td class="">추가설계대가 요율 = A + 1/2 B + 1/3 C (A 최상위값 · B 차상위값 · C 최하위값)</td><td class="">자동 합산</td></tr><tr><td class="">제7호</td><td class="">장애물 없는 생활환경(BF) 인증 관련 설계</td><td class="">별도 계상하지 아니하고, 인증을 받기 위한 심의 대응 비용은 실비정액가산식</td><td class="">「BF 인증」 — 안내만 표시</td></tr></tbody></table></div></div>
+<h3 id="s4-7">4-7. 프로그램이 계산하지 않는 대가</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">조항</th><th class="">내용(요지)</th></tr></thead><tbody><tr><td class="">제11조제1항</td><td class="">기획업무 — 별표1의 업무 내용에 따라 설계대가의 3% 이상 8% 이하 범위에서 별도 산정</td></tr><tr><td class="">제11조제2항제1호</td><td class="">하나의 대지에 규모·구조가 다른 2동 이상 신축 — 동마다 산출한 대가를 합산(동별로 따로 계산해 더함)</td></tr><tr><td class="">제11조제2항제2호</td><td class="">하나의 대지에 동일한 설계로 2동 이상 신축 — 대가 = A(1 + 1/2 + 1/3 + … + 1/n), A는 1동의 건축설계 대가, n은 동수</td></tr><tr><td class="">제11조제2항제4호</td><td class="">전통양식설계 — 산출된 대가의 1.5배, 종별구분은 제3종 중급 적용</td></tr><tr><td class="">제11조제2항제5호</td><td class="">공사비 200억원 이상 사업 중 상징성 등이 있는 건축사업 — 총 설계비의 10% 이내에서 계획설계비 추가 반영 가능</td></tr><tr><td class="">제11조제3항</td><td class="">사후설계관리업무 — 실비정액가산식</td></tr><tr><td class="">제11조제5항</td><td class="">건축허가를 득한 건축물의 설계변경 — 실비정액가산식</td></tr><tr><td class="">제13조제1호</td><td class="">구조·토목·기계·전기·소방·조경 등을 분리수행하도록 위탁하고 건축사에게 전체를 종합 조정하게 하는 경우 — 분리 위탁한 설계대가의 20% 증액</td></tr><tr><td class="">제14조제2항</td><td class="">제5조제2호 나목~라목의 공사감리업무(건축사보 현장 배치 감리 등) — 실비정액가산식</td></tr><tr><td class="">제15조</td><td class="">건설사업관리(CM)업무 등 — 실비정액가산식</td></tr></tbody></table></div></div>
+<div class="eq">대가 = 직접비(직접인건비 + 직접경비) + 제경비 + 창작 및 기술료       <span class="c">실비정액가산식(제17조)</span>
+  제경비          : 직접인건비의 110% ~ 120%
+  창작 및 기술료  : (직접인건비 + 제경비)의 20% ~ 40%</div>
+<p>제6조제5항의 단계별 업무비율(계획·중간·실시설계)과 제12조의 단계별 지급은 원문 고시의 표로 확인합니다. 프로그램은 설계 전체 대가를 한 금액으로 산출합니다.</p>
+<h3 id="s4-8">4-8. 엔지니어링사업대가의 기준</h3>
+<p>「엔지니어링사업대가의 기준」 산업통상자원부고시 제2024-217호(2024.12.31. 시행) 제19조 — 공사비가 요율표의 각 단위 중간에 있을 때의 요율은 직선보간법에 따라 산정합니다. 아래는 별표1 건설부문 설계 요율(단위 %)입니다.</p>
+<p><b>별표1 건설부문 — 실시설계</b></p>
+<div class="tbl"><table><thead><tr><th class="">공사비</th><th class="num">도로</th><th class="num">철도</th><th class="num">항만</th><th class="num">상수도</th><th class="num">하천</th></tr></thead><tbody><tr><td class="">10억원</td><td class="num">6.16</td><td class="num">4.10</td><td class="num">7.65</td><td class="num">8.27</td><td class="num">5.37</td></tr><tr><td class="">20억원</td><td class="num">5.47</td><td class="num">3.88</td><td class="num">6.74</td><td class="num">7.28</td><td class="num">4.71</td></tr><tr><td class="">30억원</td><td class="num">5.10</td><td class="num">3.76</td><td class="num">6.25</td><td class="num">6.75</td><td class="num">4.36</td></tr><tr><td class="">50억원</td><td class="num">4.67</td><td class="num">3.62</td><td class="num">5.69</td><td class="num">6.15</td><td class="num">3.96</td></tr><tr><td class="">100억원</td><td class="num">4.15</td><td class="num">3.43</td><td class="num">5.01</td><td class="num">5.41</td><td class="num">3.47</td></tr><tr><td class="">200억원</td><td class="num">3.68</td><td class="num">3.25</td><td class="num">4.41</td><td class="num">4.76</td><td class="num">3.04</td></tr><tr><td class="">300억원</td><td class="num">3.43</td><td class="num">3.15</td><td class="num">4.09</td><td class="num">4.42</td><td class="num">2.81</td></tr><tr><td class="">500억원</td><td class="num">3.15</td><td class="num">3.03</td><td class="num">3.73</td><td class="num">4.03</td><td class="num">2.55</td></tr><tr><td class="">1,000억원</td><td class="num">2.79</td><td class="num">2.87</td><td class="num">3.28</td><td class="num">3.54</td><td class="num">2.24</td></tr><tr><td class="">2,000억원</td><td class="num">2.48</td><td class="num">2.72</td><td class="num">2.89</td><td class="num">3.12</td><td class="num">1.96</td></tr><tr><td class="">3,000억원</td><td class="num">2.31</td><td class="num">2.64</td><td class="num">2.68</td><td class="num">2.89</td><td class="num">1.82</td></tr><tr><td class="">5,000억원</td><td class="num">2.12</td><td class="num">2.54</td><td class="num">2.44</td><td class="num">2.64</td><td class="num">1.65</td></tr></tbody></table></div>
+<p><b>별표1 건설부문 — 기본설계</b></p>
+<div class="tbl"><table><thead><tr><th class="">공사비</th><th class="num">도로</th><th class="num">철도</th><th class="num">항만</th><th class="num">상수도</th></tr></thead><tbody><tr><td class="">10억원</td><td class="num">3.78</td><td class="num">2.93</td><td class="num">4.15</td><td class="num">3.45</td></tr><tr><td class="">20억원</td><td class="num">3.33</td><td class="num">2.69</td><td class="num">3.64</td><td class="num">3.07</td></tr><tr><td class="">30억원</td><td class="num">3.10</td><td class="num">2.55</td><td class="num">3.37</td><td class="num">2.86</td></tr><tr><td class="">50억원</td><td class="num">2.82</td><td class="num">2.39</td><td class="num">3.06</td><td class="num">2.63</td></tr><tr><td class="">100억원</td><td class="num">2.49</td><td class="num">2.19</td><td class="num">2.68</td><td class="num">2.34</td></tr><tr><td class="">200억원</td><td class="num">2.20</td><td class="num">2.01</td><td class="num">2.35</td><td class="num">2.08</td></tr><tr><td class="">300억원</td><td class="num">2.04</td><td class="num">1.90</td><td class="num">2.18</td><td class="num">1.94</td></tr><tr><td class="">500억원</td><td class="num">1.86</td><td class="num">1.78</td><td class="num">1.98</td><td class="num">1.78</td></tr><tr><td class="">1,000억원</td><td class="num">1.64</td><td class="num">1.63</td><td class="num">1.74</td><td class="num">1.58</td></tr><tr><td class="">2,000억원</td><td class="num">1.45</td><td class="num">1.50</td><td class="num">1.52</td><td class="num">1.41</td></tr><tr><td class="">3,000억원</td><td class="num">1.35</td><td class="num">1.42</td><td class="num">1.41</td><td class="num">1.32</td></tr><tr><td class="">5,000억원</td><td class="num">1.23</td><td class="num">1.33</td><td class="num">1.28</td><td class="num">1.21</td></tr></tbody></table></div>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">별표</th><th class="">프로그램에 들어 있는 요율</th></tr></thead><tbody><tr><td class="">별표1 건설부문</td><td class="">기본설계 · 실시설계(10억원~5,000억원 12구간) · 공사감리(5,000만원~5,000억원 17구간)</td></tr><tr><td class="">별표2 통신부문</td><td class="">기본설계 · 실시설계 · 공사감리 — 그룹1~4, 5,000만원~5,000억원 17구간</td></tr><tr><td class="">별표3 산업플랜트부문</td><td class="">기본설계 · 실시설계 · 공사감리 — 17구간. 화학·가스 플랜트는 요율 × 1.250, 부대시설은 요율 × 0.813</td></tr><tr><td class="">별표4 시공상세도작성비</td><td class="">시설물 난이도 단순 · 보통 · 복잡 — 1억원~5,000억원 16구간</td></tr></tbody></table></div></div>
+<p>통신·산업플랜트·시공상세도 요율표 전체는 「이용안내」 창의 엔지니어링 탭(<a href="#s3-14">3-14</a>)과 원문 고시에서 확인합니다. 프로그램에 든 별표1~4 요율과 5,000억원 초과 공식의 계수는 원문과 대조했습니다.</p>
+<h3 id="s4-9">4-9. 적용 시점</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">구분</th><th class="">내용</th></tr></thead><tbody><tr><td class="">건축사 대가기준</td><td class="">국토교통부고시 제2020-635호 — 2020.9.14. 발령·시행(부칙: 발령한 날부터 시행)</td></tr><tr><td class="">엔지니어링사업대가의 기준</td><td class="">산업통상자원부고시 제2024-217호 — 2024.12.31. 시행(소관부처 현재 산업통상부)</td></tr><tr><td class="">재검토기한</td><td class="">건축사 대가기준 제18조 — 2021년 1월 1일을 기준으로 매 3년이 되는 시점마다 타당성을 검토</td></tr></tbody></table></div></div>
+<div class="warn"><b>확인</b>고시는 개정될 수 있습니다. 예산 요구나 발주 전에 국가법령정보센터에서 현행 고시 번호와 별표를 다시 확인하십시오.</div>
+</section>
+<section class="ch" id="ch5"><h2><span class="n">05</span>실무 작업 방법</h2>
+<p class="lead">발주 단계에 따라 이 도구를 쓰는 순서와, 산출서를 문서에 넣기 전에 확인할 사항입니다.</p>
+<h3 id="s5-1">5-1. 발주 단계별 절차</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">단계</th><th class="">작업</th><th class="">쓰는 화면</th></tr></thead><tbody><tr><td class="">사업 구상·예산 요구</td><td class="">추정 공사비로 설계·감리 대가를 개략 산출. 도서작성 구분과 인증 목표에 따른 대가 차이를 비교</td><td class="">입력·산출</td></tr><tr><td class="">과업지시서 작성</td><td class="">성과품 목록을 별표2와 대조해 도서작성 구분 확정. 추가 업무(인증·리모델링 등) 범위 확정</td><td class="">세부 조건 · 추가 업무 할증</td></tr><tr><td class="">설계용역 발주</td><td class="">확정 공사비로 산출서 출력. 실비정액가산식 대상 업무는 따로 산정해 합산</td><td class="">A4 산출서</td></tr><tr><td class="">감리용역 발주</td><td class="">업무 유형을 공사감리로 바꿔 별표5 대가 산출. 건축사보 현장 배치 감리는 실비정액가산식으로 별도 산정</td><td class="">입력·산출 · A4 산출서</td></tr><tr><td class="">토목·통신·플랜트 용역</td><td class="">대가기준을 엔지니어링 대가로 바꿔 부문·업무·분야별 대가 산출</td><td class="">대가기준 선택</td></tr><tr><td class="">계약 변경</td><td class="">공사비가 바뀌면 바뀐 공사비로 다시 산출해 대가 조정 근거로 사용(제9조)</td><td class="">입력·산출</td></tr></tbody></table></div></div>
+<h3 id="s5-2">5-2. 제출 전 확인</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">확인 항목</th><th class="">내용</th></tr></thead><tbody><tr><td class="">공사비 범위</td><td class="">자재대(관급자재 포함)를 넣고 용지비·보상비·법률수속비·부가가치세를 뺐는지(별표4·별표5 주)</td></tr><tr><td class="">용도·종별</td><td class="">복합 용도이면 바닥면적이 가장 넓은 용도의 종별인지(제11조제2항제3호). 특수설비 상향 적용이 맞는지(별표3)</td></tr><tr><td class="">도서작성 구분</td><td class="">과업지시서 성과품이 별표2의 기본·중급·상급 어디에 해당하는지</td></tr><tr><td class="">동수</td><td class="">2동 이상이면 동별 합산 또는 동일 설계 체감식(제11조제2항제1호·제2호)으로 따로 계산했는지</td></tr><tr><td class="">인증 가산</td><td class="">인증 종류·등급이 과업 내용과 같은지. 에너지효율등급 인증은 따로 계산했는지(4-6)</td></tr><tr><td class="">별도 산정 업무</td><td class="">기획업무, 사후설계관리, BIM·VE·심의 대응, 상주감리 등 실비정액가산식 업무를 빠뜨리지 않았는지(4-7)</td></tr><tr><td class="">검산</td><td class="">산출서의 공급가액이 공사비 × 요율(천원 미만 절사)과 같은지, 부가가치세·합계가 맞는지</td></tr><tr><td class="">5,000억원 초과</td><td class="">해당하면 제16조제3항 공식으로 요율을 따로 구했는지</td></tr><tr><td class="">고시 번호</td><td class="">산출서의 적용기준 고시가 현행인지(4-9)</td></tr></tbody></table></div></div>
+<h3 id="s5-3">5-3. 예제 결과</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">구분</th><th class="">조건</th><th class="">요율</th><th class="">대가(VAT 별도)</th><th class="">VAT 포함</th></tr></thead><tbody><tr><td class="">건축설계</td><td class="">16억원 · 공동주택(제2종) · 중급</td><td class=""><span class="nw">4.960%</span></td><td class=""><b>79,360,000원</b></td><td class=""><span class="nw">87,296,000원</span></td></tr><tr><td class="">건축설계 + 인증</td><td class="">위 조건 + 녹색건축 최우수 · 제로에너지 1등급(+14.75%)</td><td class=""><span class="nw">4.960%</span></td><td class=""><b>91,065,000원</b></td><td class=""><span class="nw">100,171,500원</span></td></tr><tr><td class="">공사감리</td><td class="">16억원 · 공동주택(제2종)</td><td class=""><span class="nw">1.170%</span></td><td class=""><b>18,720,000원</b></td><td class=""><span class="nw">20,592,000원</span></td></tr><tr><td class="">엔지니어링</td><td class="">16억원 · 건설부문 · 실시설계 · 도로</td><td class=""><span class="nw">5.746%</span></td><td class=""><b>91,936,000원</b></td><td class=""><span class="nw">101,129,600원</span></td></tr></tbody></table></div></div>
+</section>
+<section class="ch" id="ch6"><h2><span class="n">06</span>문제 해결 · FAQ</h2>
+<div class="tbl"><table><thead><tr><th class="">증상·질문</th><th class="">해결</th></tr></thead><tbody><tr><td class="">결과가 표시되지 않습니다</td><td class="">예정 공사비가 비어 있거나 0입니다. 숫자를 넣으면 바로 계산됩니다.</td></tr><tr><td class="">할증 카드를 골랐는데 금액이 그대로입니다</td><td class="">업무 유형이 공사감리이면 할증은 적용되지 않습니다. BF 인증은 대가에 더하지 않고 안내만 표시합니다(3-5).</td></tr><tr><td class="">인증 두 개의 합이 단순 합계와 다릅니다</td><td class="">2개 이상이면 큰 순서로 A + B/2 + C/3 으로 합산합니다(제11조제4항제6호).</td></tr><tr><td class="">요율이 표에 없는 값입니다</td><td class="">공사비가 구간 사이에 있어 직선보간한 값입니다. 「산출 근거 상세」의 보간 산출식으로 확인합니다(3-7).</td></tr><tr><td class="">이전에 뽑은 산출서와 1,000원 다릅니다</td><td class="">v5.0.4에서 천원 미만 절사 계산을 정정했습니다. 이전 버전은 일부 입력에서 1,000원 적게 표시했습니다. 지금 표시되는 금액이 공사비 × 요율(천원 미만 절사)과 같습니다.</td></tr><tr><td class="">공사비가 5,000억원을 넘습니다</td><td class="">건축사 대가는 5,000억원 요율을 적용한 참고값과 안내 문구가 표시됩니다. 제16조제3항 공식으로 따로 산정하십시오(4-5).</td></tr><tr><td class="">새로고침하니 입력이 사라졌습니다</td><td class="">입력값 파일 저장 기능이 없습니다. 산출서를 PDF·JPG로 저장해 두십시오(1-3).</td></tr><tr><td class="">PDF에 배경색이 없습니다</td><td class="">인쇄 창 「설정 더보기」에서 「배경 그래픽」을 켭니다.</td></tr><tr><td class="">상주감리·건설사업관리 대가는 어디서 계산합니까</td><td class="">이 프로그램의 대상이 아닙니다. 실비정액가산식(제17조)으로 산정합니다(4-7).</td></tr><tr><td class="">매뉴얼 버튼이 열리지 않습니다</td><td class="">매뉴얼은 인터넷 연결이 필요합니다. 오프라인이면 안내 문구만 표시됩니다.</td></tr></tbody></table></div>
+</section>
+<section class="ch" id="ch7"><h2><span class="n">부록</span>참고 자료</h2>
+<h3 id="a1">A1. 예제 입력값</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">구분</th><th class="">값</th></tr></thead><tbody><tr><td class="">공사 정보</td><td class="">용역명 만민 건축사 신사옥 신축공사 설계용역 · 발주처 비움 · 작성자 ㈜대성건축사사무소</td></tr><tr><td class="">대가기준</td><td class="">건축사 대가</td></tr><tr><td class="">예정 공사비</td><td class="">1,600,000,000원 (VAT 별도)</td></tr><tr><td class="">건축물 용도</td><td class="">공동주택 → 제2종 보통</td></tr><tr><td class="">업무 유형 · 도서작성 구분</td><td class="">건축설계 · 중급 · 특수 설비 요구 끔</td></tr><tr><td class="">추가 업무 할증</td><td class="">모두 끔</td></tr><tr><td class="">결과</td><td class="">요율 4.960% · 79,360,000원 (VAT 포함 87,296,000원)</td></tr><tr><td class="">인증 할증 비교(3-8)</td><td class="">녹색건축 최우수 + 제로에너지 1등급 → +14.75% · 91,065,000원</td></tr><tr><td class="">공사감리 비교(3-9)</td><td class="">업무 유형만 공사감리로 변경 → 요율 1.170% · 18,720,000원</td></tr><tr><td class="">엔지니어링 비교(3-13)</td><td class="">엔지니어링 대가 · 건설부문 · 실시설계 · 도로 → 요율 5.746% · 91,936,000원</td></tr></tbody></table></div></div>
+<h3 id="a2">A2. 버전 변경 내역</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">판</th><th class="">변경 내용</th></tr></thead><tbody><tr><td class="">Ver-5.0 · v5.0.4 (2026-10-11)</td><td class="">사용자 매뉴얼 연결 — 탭 막대 「📘 매뉴얼」, 매뉴얼 웹·PDF 공개 · 천원 미만 절사 계산 정정(일부 입력에서 1,000원 적게 표시되던 문제) · 엔지니어링 대가일 때 「적용 근거」 카드 고시 표시 정정 · 공사비 5,000억원 초과 안내 문구 추가</td></tr><tr><td class="">v5.0 (2026-09-04)</td><td class="">MANMIN v5.0 디자인 통일 · A4 산출서 단일 서식(화면·인쇄·JPG 동일) · JPG 저장 방식 교체</td></tr><tr><td class="">Ver4.0 (2026-07-16)</td><td class="">엔지니어링사업대가의 기준 병행 — 건설·통신·산업플랜트·시공상세도작성비(별표1~4), 5,000억원 초과 공식</td></tr><tr><td class="">Ver3.0</td><td class="">건축사 대가 단일 기준(별표4·별표5 직선보간)</td></tr></tbody></table></div></div>
+<h3 id="a3">A3. 용어</h3>
+<div class="k1"><div class="tbl"><table><thead><tr><th class="">용어</th><th class="">뜻</th></tr></thead><tbody><tr><td class="">공사비요율 방식</td><td class="">공사비에 일정 요율을 곱해 대가를 산출하는 방식(별표4·별표5)</td></tr><tr><td class="">실비정액가산식</td><td class="">직접비 + 제경비 + 창작 및 기술료로 대가를 산출하는 방식(제17조)</td></tr><tr><td class="">종별</td><td class="">건축물의 난이도에 따른 구분 — 제1종 단순 · 제2종 보통 · 제3종 복잡(별표3)</td></tr><tr><td class="">도서작성 구분</td><td class="">요구하는 설계도서의 수준 — 기본 · 중급 · 상급(제10조제2항, 별표2)</td></tr><tr><td class="">직선보간법</td><td class="">요율표의 두 구간 값을 직선으로 이어 그 사이 공사비의 요율을 구하는 방법(제16조제1항)</td></tr><tr><td class="">공사비</td><td class="">발주자의 공사비 총예정금액(자재대 포함) 중 용지비, 보상비, 법률수속비 및 부가가치세를 제외한 일체의 금액(별표4·별표5 주)</td></tr><tr><td class="">발주자</td><td class="">건축사법 제19조의3제1항 각 호의 자(제2조)</td></tr><tr><td class="">사후설계관리업무</td><td class="">건축설계가 완료된 후 시공 과정에서 설계의도가 반영되도록 설계도서의 해석·자문, 자재·장비 선정 및 변경 검토·보완 등을 수행하는 설계업무(제6조제4항)</td></tr></tbody></table></div></div>
+</section></main></div>
+<footer class="foot">© 2026 김만민 건축사 · ㈜대성건축사사무소 · 공공기관 건축사 업무대가 산출기 사용자 매뉴얼 Ver-5.0 · 그림은 Ver-5.0 화면(부록 A1 예제)으로 캡처</footer>
+<div class="pfoot"><span>공공기관 건축사 업무대가 산출기 사용자 매뉴얼 Ver-5.0</span><span>2026-10-11</span></div>
+<div id="lb" role="dialog" aria-label="그림 확대"><img alt=""></div>
+<button class="totop" aria-label="맨 위로">↑</button>
+<script>
+(function(){
+  var lb=document.getElementById('lb'),li=lb.querySelector('img');
+  document.querySelectorAll('figure.shot .frame').forEach(function(f){f.addEventListener('click',function(){li.src=f.querySelector('img').src;li.alt=f.querySelector('img').alt;lb.classList.add('open');});});
+  lb.addEventListener('click',function(){lb.classList.remove('open');li.removeAttribute('src');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')lb.classList.remove('open');});
+  document.querySelector('.totop').addEventListener('click',function(){window.scrollTo(0,0);});
+  var links=[].slice.call(document.querySelectorAll('nav.toc a'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id);});}});},{rootMargin:'0px 0px -70% 0px'});
+    document.querySelectorAll('section.ch,h3[id]').forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+</body></html>

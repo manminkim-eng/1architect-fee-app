@@ -95,6 +95,7 @@ input[type="number"]{-moz-appearance:textfield;}
   white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .tb:hover{color:#fff;background:rgba(255,255,255,.09);}
 .tb.active{color:#fff;background:#15803d;border-bottom-color:#86efac;}
+.tb.tb-manual{margin-left:auto;text-decoration:none;}   /* v5.0.4 — 사용자 매뉴얼(탭 막대 오른쪽 끝 · 헤더 버튼 0개 규격 유지) */
 .tab-panel{display:none;width:100%;}
 .tab-panel.active{display:block;}
 /* v5.0-HDR — 요약 스트립 (헤더 3층) */
@@ -497,6 +498,7 @@ table td,table th{vertical-align:middle;}
     <div class="tab-bar-inner">
       <button class="tb active" onclick="goTab('main',this)">⌨️ 입력·산출</button>
       <button class="tb" onclick="goTab('print',this)">📄 A4 산출서</button>
+      <a class="tb tb-manual" href="https://manminkim-eng.github.io/1architect-fee-app/manual/" target="_blank" rel="noopener" title="사용자 매뉴얼 (새 창)" onclick="if(navigator.onLine===false){event.preventDefault();mmToast('매뉴얼은 인터넷 연결 시 열립니다');}">📘 매뉴얼</a>
     </div>
   </nav>
 </header>
@@ -664,6 +666,9 @@ function engRate(sector,task,field,cost,opts){
   if(sector==="산업플랜트"&&opts){if(opts.chem){o.rate=Math.round(o.rate*1.25*1000)/1000;}if(opts.aux){o.rate=Math.round(o.rate*0.813*1000)/1000;}}
   return o;
 }
+/* v5.0.4 — 금액은 정수 연산(공사비 × 요율 천분위 ÷ 10^8)으로 천원 미만 절사: 부동소수 오차로 1,000원이 빠지는 문제 정정 */
+const mmFee=(cost,ratePct)=>Math.floor(Math.round(cost)*Math.round(ratePct*1000)/1e8)*1000;
+const mmAdj=(base,adjPct)=>Math.floor(Math.round(base)*Math.round(adjPct*100)/1e7)*1000;
 const fmt=n=>n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
 
 /* ══════════ MODAL ══════════ */
@@ -1158,7 +1163,7 @@ function App(){
       const fs=engFieldsOf(engSector,engTask);
       const field=fs.length>1?engField:fs[0];
       const er=engRate(engSector,engTask,field,c,{chem:engChem,aux:engAux});
-      const base=Math.floor(c*(er.rate/100)/1000)*1000;
+      const base=mmFee(c,er.rate);
       let lvl;
       if(engSector==="건설"){lvl=engTaskLabel(engTask)+(fs.length>1?(" · "+field+"부문"):"");}
       else if(engSector==="통신"){lvl="통신 · "+engTaskLabel(engTask)+(fs.length>1?(" · "+field):"");}
@@ -1223,12 +1228,12 @@ function App(){
       if(isBF)bfNote='장애물 없는 생활환경(BF) 인증비용은 실비정액가산식으로 별도 산정(본 대가에 미포함)';
     }
     totalAdj=Math.round(totalAdj*100)/100;
-    const rawBase=targetCost*(finalRate/100);
-    const baseFee=Math.floor(rawBase/1000)*1000;
-    const adjAmt=Math.floor((baseFee*(totalAdj/100))/1000)*1000;
+    const baseFee=mmFee(targetCost,finalRate);
+    const adjAmt=mmAdj(baseFee,totalAdj);
+    const overNote=targetCost>tbl[tbl.length-1].cost?'공사비 5,000억원 초과 — 제16조제3항의 공식으로 요율을 별도 산정해야 합니다. 표시 금액은 5,000억원 요율을 적용한 참고값입니다.':'';
     const finalFee=baseFee+adjAmt;
     const basisSrc=`건축사의 업무범위와 대가기준 [별표${taskType==='design'?'4':'5'}]`;
-    return{targetCost,finalRate:finalRate.toFixed(3),rx2,rx1,ry1,ry2,interpolated,baseFee,adjustmentRate:totalAdj,adjustmentAmount:adjAmt,adjNames,bfNote,finalFee,basisSrc,selectedLevelName};
+    return{targetCost,finalRate:finalRate.toFixed(3),rx2,rx1,ry1,ry2,interpolated,baseFee,adjustmentRate:totalAdj,adjustmentAmount:adjAmt,adjNames,bfNote,overNote,finalFee,basisSrc,selectedLevelName};
   },[standard,engSector,engTask,engField,engChem,engAux,costInput,taskType,buildingUsage,docLevel,isSpecialEquip,isRemodel,isBF,certGreen,certIBS,certZero]);
 
   useEffect(()=>{if(taskType==='supervision'){setIsRemodel(false);setIsBF(false);setCertGreen(0);setCertIBS(0);setCertZero(0);}}, [taskType]);
@@ -1306,6 +1311,7 @@ function App(){
         <div className="a4-sign-legal">
           <div className="lbl">법적 근거</div>
           <p>{isEng?'엔지니어링산업 진흥법 제31조 · 엔지니어링사업대가의 기준(산업통상부고시 2024. 12. 31.) 공사비요율 방식 · 건축물 설계·감리는 건축사 대가기준(국토부고시 별표 4·5)이 원칙이며 복합용역은 건축분·토목/설비분 분리 산정':'건축사법 제19조의3 · 공공발주사업에 대한 건축사의 업무범위와 대가기준(국토교통부고시 제2020-635호 · 2020. 9. 14. 시행) [별표 4] 설계 · [별표 5] 감리 공사비요율 직선보간 · 리모델링 +50% · 녹색건축·지능형·제로에너지 인증 체감 합산 · BF 인증 실비정액가산식 별도 · 부가가치세 별도'}</p>
+          {result&&result.overNote&&<p style={{color:'#be123c',fontWeight:700}}>※ {result.overNote}</p>}
         </div>
         <div className="a4-sign-supervisor"><span className="hint">작성자</span><span className="name">{author||'○○건축사사무소'}</span><span className="hint">(인)</span></div>
       </div>
@@ -1604,11 +1610,12 @@ function App(){
                 <div className="card-body">
                   <div style={{fontSize:'12px',color:'#374151',lineHeight:1.9}}>
                     <strong>근거 고시:</strong> {result.basisSrc}<br/>
-                    <strong>적용 기준:</strong> 국토교통부고시 제2020-635호 (2020.09.14 시행)<br/>
-                    <strong>건물 종별:</strong> {result.selectedLevelName} — {buildingUsage}<br/>
-                    <strong>산출 방식:</strong> {result.interpolated?'직선보간법 적용 [ Y = y1 - (x-x2)×(y1-y2)÷(x1-x2) ]':'해당 구간 요율 직접 적용'}<br/>
+                    <strong>적용 기준:</strong> {result.isEng?'산업통상자원부고시 제2024-217호 (2024.12.31 시행)':'국토교통부고시 제2020-635호 (2020.09.14 시행)'}<br/>
+                    {result.isEng?<><strong>부문 · 업무:</strong> {result.selectedLevelName}<br/></>:<><strong>건물 종별:</strong> {result.selectedLevelName} — {buildingUsage}<br/></>}
+                    <strong>산출 방식:</strong> {result.interpolated?'직선보간법 적용 [ Y = y1 - (x-x2)×(y1-y2)÷(x1-x2) ]':(result.isEng&&result.engMode?result.engMode:'해당 구간 요율 직접 적용')}<br/>
                     {result.adjNames.length>0&&<><strong>세부 할증:</strong> {result.adjNames.join(' / ')} (합계 +{result.adjustmentRate}%)<br/></>}
                     {result.bfNote&&<span style={{color:'#be123c',fontWeight:700,display:'block',marginTop:'4px'}}>※ {result.bfNote}</span>}
+                    {result.overNote&&<span style={{color:'#be123c',fontWeight:700,display:'block',marginTop:'4px'}}>※ {result.overNote}</span>}
                   </div>
                 </div>
               </div>

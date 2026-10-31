@@ -419,7 +419,7 @@ table td,table th{vertical-align:middle;}
 .a4-title{text-align:center;margin-bottom:14px;flex-shrink:0;} .a4-title h2{font-size:22px;font-weight:900;color:#785a28;letter-spacing:-.01em;}
 /* 표 공통 — R24: separate + 셀 자체 선 (우·하 + 첫 열 좌 + 첫 행 상) */
 .a4-tbl{width:100%;border-collapse:separate;border-spacing:0;border:0;table-layout:fixed;flex-shrink:0;}
-.a4-tbl th,.a4-tbl td{border:0;border-right:1px solid #3a4a5e;border-bottom:1px solid #3a4a5e;height:32px;padding:0 10px;vertical-align:middle;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.a4-tbl th,.a4-tbl td{border:0;border-right:1px solid #3a4a5e;border-bottom:1px solid #3a4a5e;height:32px;padding:4px 10px;vertical-align:middle;font-size:12px;overflow-wrap:anywhere;word-break:keep-all;line-height:1.35;}  /* 2026-10-31 v5.0.11 — 말줄임 삭제(금액 · 공사비가 「…」로 잘림) → 줄바꿈 */
 .a4-tbl th:first-child,.a4-tbl td:first-child{border-left:1px solid #3a4a5e;}
 .a4-tbl thead th,.a4-tbl tbody:first-child tr:first-child td{border-top:1px solid #3a4a5e;}
 .a4-page tr:last-child td{border-bottom:1px solid #3a4a5e;}   /* §20-17 ③ */

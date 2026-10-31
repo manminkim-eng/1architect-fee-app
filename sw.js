@@ -20,7 +20,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'fee-v5.0.11';   /* 2026-10-31 v5.0.9 — 하단 설치 배너 z-index 60 → 1250(휴대전화 폭에서 초기화 · 이용안내 단추가 「설치」를 덮던 문제) */
+const CACHE  = 'fee-v5.0.12';   /* 2026-10-31 v5.0.9 — 하단 설치 배너 z-index 60 → 1250(휴대전화 폭에서 초기화 · 이용안내 단추가 「설치」를 덮던 문제) */
 const ORPHAN = ['manmin-cost-v3.1'];
 const ASSETS = [
   './', './index.html', './manifest.json',

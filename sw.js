@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════════════
+   v6.1.0 (2026-11-12) — 건물개요 공통 원본 MM-PROJECT v1.2 새로 넣음(사업명(용역명) · 발주처 · 작성자 · 정밀검토 B6 · 작업지시서 §25-6-77) · 판 6.1 · 캐시명 v6.1.0 (종전 fee-v5.0.16)
    S3-0 회차 2026-09-04 — R27 html2canvas 클론 정화 동반 캐시명 v5.0.3
    S2 회차 2026-09-04 — index 소급(R1·R21·R26 등) 동반 캐시명 v5.0.2
    R25 회차 2026-09-04 — 자기 접두어 캐시 조회 · cors 프리캐시 · opaque 가드 · 캐시명 v5.0.1 (S10)
-   공공기관 건축사 업무대가 산출기  MANMIN Ver-5.0
+   공공기관 건축사 업무대가 산출기  MANMIN Ver-6.1
    Service Worker — 오프라인 캐시 + 버전 업데이트  ·  ARCHITECT KIM MANMIN
    v5.0.0 (2026-09-04) — §11-3 navigate Network-first · §17-1 PREFIX · §18-7 ORPHAN · allSettled · R19 폴백
 ═══════════════════════════════════════════════════ */
@@ -20,7 +21,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'fee-v5.0.16';   /* 2026-10-31 v5.0.9 — 하단 설치 배너 z-index 60 → 1250(휴대전화 폭에서 초기화 · 이용안내 단추가 「설치」를 덮던 문제) */
+const CACHE  = 'fee-v6.1.0';   /* 2026-10-31 v5.0.9 — 하단 설치 배너 z-index 60 → 1250(휴대전화 폭에서 초기화 · 이용안내 단추가 「설치」를 덮던 문제) */
 const ORPHAN = ['manmin-cost-v3.1'];
 const ASSETS = [
   './', './index.html', './manifest.json',

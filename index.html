@@ -505,8 +505,8 @@ footer.mm-foot{position:relative;z-index:1;border-top:1px solid #e4e9f0;backgrou
       </div>
     </div>
     <div class="hdr-right-wrap">
-      <!-- v5.0-HDR — 4줄 · LawMCP 2026-09-04 확인(행정규칙 「공공발주사업에 대한 건축사의 업무범위와 대가기준」 국토부고시 제2020-635호 2020-09-14 현행 · 「엔지니어링사업대가의 기준」 산업통상부고시 2024-12-31 현행) -->
-      <div class="hdr-right"><strong>건축사법 제19조의3 · 업무범위와 대가기준</strong><br/>국토교통부고시 제2020-635호 [별표 4·5]<br/>엔지니어링사업대가의 기준 (산업통상부 2024. 12. 31.)<br/><em>[고시 시행 2020. 9. 14.]</em></div>
+      <!-- v5.0-HDR — 4줄 · LawMCP 2026-09-04 확인(행정규칙 「공공발주사업에 대한 건축사의 업무범위와 대가기준」 국토부고시 제2020-635호 2020-09-14 현행 · 「엔지니어링사업대가의 기준」 산업통상부고시 2024-12-31 현행) · v6.1.5 2026-11-24 lawmcp 재확인 — 엔지니어링 고시는 산업통상부 고시 제2026-124호(2026-11-20 시행, 행정규칙일련번호 2100000288506 · 별표1~6 불변) -->
+      <div class="hdr-right"><strong>건축사법 제19조의3 · 업무범위와 대가기준</strong><br/>국토교통부고시 제2020-635호 [별표 4·5]<br/>엔지니어링사업대가의 기준 (산업통상부 고시 제2026-124호)<br/><em>[고시 시행 2020. 9. 14.]</em></div>
     </div>
   </div>
   <nav class="tab-bar">
@@ -543,7 +543,7 @@ footer.mm-foot{position:relative;z-index:1;border-top:1px solid #e4e9f0;backgrou
 
 <script type="text/babel">
 const {useState,useEffect,useRef,useMemo}=React;
-const VER="5.0";
+const VER="6.1";  /* v6.1.5 (2026-11-24) — 화면 판 표기 Ver-6.1(머리와 같게 · 종전 5.0 잔존 정정 · 건축 3차 교차검증 F10) */
 
 /* ══════════ DATA (unchanged logic) ══════════ */
 const USAGES=[
@@ -670,15 +670,17 @@ const ENG_SECTORS={
 function engTasksOf(sector){return Object.keys(ENG_SECTORS[sector].tasks);}
 function engFieldsOf(sector,task){return ENG_SECTORS[sector].tasks[task].fields;}
 function engTaskLabel(tk){return tk==="공사감리"?"공사감리(비상주)":tk;}
+/* v6.1.5 — 5,000억원 초과 공식 요율 · 산업플랜트 ×1.25 · ×0.813 은 고시 비고대로 「소수점 셋째자리에서 반올림」(= 둘째 자리까지). 부동소수 오차 막으려 12자리로 정리 뒤 반올림. 직선보간(제19조)은 반올림 규정 없음 — 종전 셋째 자리 그대로 */
+const engR2=v=>Math.round(Number((v*100).toPrecision(12)))/100;
 function engRate(sector,task,field,cost,opts){
   const S=ENG_SECTORS[sector].tasks[task];const ci=S.fields.indexOf(field)+1;
   const tbl=S.table.map(r=>[r[0]*ENG_UNIT].concat(r.slice(1)));
   const rate=row=>row[ci];const last=tbl[tbl.length-1];
   let o={rate:0,rx2:0,rx1:0,ry1:0,ry2:0,interpolated:false,mode:"직접적용"};
   if(cost<=tbl[0][0]){const r=rate(tbl[0]);o={rate:r,rx2:tbl[0][0],rx1:tbl[0][0],ry1:r,ry2:r,interpolated:false,mode:"하한구간 직접적용"};}
-  else if(cost>last[0]){const f=S.formula[field];let r=f[0]*Math.pow(cost,f[1])+(f[2]||0);r=Math.round(r*1000)/1000;o={rate:r,rx2:last[0],rx1:last[0],ry1:r,ry2:r,interpolated:false,mode:"5,000억 초과 지수공식"};}
+  else if(cost>last[0]){const f=S.formula[field];let r=f[0]*Math.pow(cost,f[1])+(f[2]||0);r=engR2(r);o={rate:r,rx2:last[0],rx1:last[0],ry1:r,ry2:r,interpolated:false,mode:"5,000억 초과 지수공식"};}
   else{for(let i=0;i<tbl.length-1;i++){const c1=tbl[i][0],c2=tbl[i+1][0];if(cost>c1&&cost<=c2){const r1=rate(tbl[i]),r2=rate(tbl[i+1]);if(cost===c2){o={rate:r2,rx2:c1,rx1:c2,ry1:r1,ry2:r2,interpolated:false,mode:"구간경계 직접적용"};}else{o={rate:Math.round((r1-((cost-c1)*(r1-r2))/(c2-c1))*1000)/1000,rx2:c1,rx1:c2,ry1:r1,ry2:r2,interpolated:true,mode:"직선보간"};}break;}}}
-  if(sector==="산업플랜트"&&opts){if(opts.chem){o.rate=Math.round(o.rate*1.25*1000)/1000;}if(opts.aux){o.rate=Math.round(o.rate*0.813*1000)/1000;}}
+  if(sector==="산업플랜트"&&opts){if(opts.chem){o.rate=engR2(o.rate*1.25);}if(opts.aux){o.rate=engR2(o.rate*0.813);}}
   return o;
 }
 /* v5.0.4 — 금액은 정수 연산(공사비 × 요율 천분위 ÷ 10^8)으로 천원 미만 절사: 부동소수 오차로 1,000원이 빠지는 문제 정정 */
@@ -1014,7 +1016,7 @@ const InfoModal=({onClose})=>{
               <div style={{background:'#ecfeff',border:'1px solid #a5f3fc',borderRadius:'8px',padding:'12px 14px',marginBottom:'12px'}}>
                 <div style={{fontSize:'12px',fontWeight:800,color:'#0f766e',marginBottom:'6px'}}>대가 = 공사비 × 요율(%)</div>
                 <div style={{fontSize:'11px',color:'#475569',lineHeight:1.75}}>
-                  · 근거: <strong>엔지니어링산업 진흥법 제31조</strong> · 산업통상자원부 고시(2024.12.31)<br/>
+                  · 근거: <strong>엔지니어링산업 진흥법 제31조</strong> · 산업통상부 고시 제2026-124호(2026. 11. 20. 시행)<br/>
                   · 대상: 건설부문(<strong>도로·철도·항만·상수도·하천</strong>)·설비부문 — 건축물 설계는 대상 아님<br/>
                   · 업무: 기본설계 · 실시설계 · 공사감리(비상주)<br/>
                   · 공사비 구간 사이 → <strong>직선보간법</strong>, 5,000억 초과 → <strong>지수공식</strong> 적용
@@ -1079,11 +1081,12 @@ const InfoModal=({onClose})=>{
               <div style={{fontSize:'11px',color:'#475569',lineHeight:1.9,background:'#f8fafc',border:'1px solid #e4e9f0',borderRadius:'8px',padding:'12px 14px'}}>
                 <div style={{fontWeight:800,color:'#0f766e',marginBottom:'3px'}}>■ 엔지니어링 대가</div>
                 · <a href="https://www.law.go.kr/법령/엔지니어링산업진흥법/제31조" target="_blank" rel="noopener" style={{color:'#0d9488',fontWeight:700,textDecoration:'underline'}}>엔지니어링산업 진흥법 제31조</a> — 공포 2025.12.02 / 시행 2026.06.03<br/>
-                · <a href="https://www.law.go.kr/행정규칙/엔지니어링사업대가의기준" target="_blank" rel="noopener" style={{color:'#0d9488',fontWeight:700,textDecoration:'underline'}}>엔지니어링사업대가의 기준</a> — 산업부 고시, 2024.12.31 (별표1~6)<br/>
+                · <a href="https://www.law.go.kr/행정규칙/엔지니어링사업대가의기준" target="_blank" rel="noopener" style={{color:'#0d9488',fontWeight:700,textDecoration:'underline'}}>엔지니어링사업대가의 기준</a> — 산업통상부 고시 제2026-124호, 2026. 11. 20. 시행 (별표1~6)<br/>
                 <div style={{fontWeight:800,color:'#1d4ed8',margin:'8px 0 3px'}}>■ 건축사 대가</div>
-                · <a href="https://www.law.go.kr/법령/건축사법/제19조의3" target="_blank" rel="noopener" style={{color:'#1d4ed8',fontWeight:700,textDecoration:'underline'}}>건축사법 제19조의3</a> — 공포·시행 2025.10.01<br/>
+                · <a href="https://www.law.go.kr/법령/건축사법/제19조의3" target="_blank" rel="noopener" style={{color:'#1d4ed8',fontWeight:700,textDecoration:'underline'}}>건축사법 제19조의3</a> — 시행 2026. 9. 18.(현행)<br/>
                 · <a href="https://www.law.go.kr/행정규칙/공공발주사업에대한건축사의업무범위와대가기준" target="_blank" rel="noopener" style={{color:'#1d4ed8',fontWeight:700,textDecoration:'underline'}}>공공발주사업에 대한 건축사의 업무범위와 대가기준</a> — 국토부 고시 제2020-635호, 2020.09.14 (별표3·4·5)
-                <div style={{marginTop:'8px',fontSize:'11px',color:'#94a3b8'}}>※ 출처: 국가법령정보센터(law.go.kr) · 현행 확인 2026-07-16</div>
+                <div className="mm-law-memo" style={{marginTop:'8px',background:'#fffbeb',border:'1px solid #fde68a',borderRadius:'8px',padding:'8px 10px',color:'#92400e',lineHeight:1.65}}><b>📝 개정 메모 (2026. 11. 24. 확인)</b><br/>엔지니어링사업대가의 기준 일부개정 — 산업통상부 고시 제2026-124호(2026. 11. 20. 발령 · 시행, 행정규칙일련번호 2100000288506). 별표1~6 요율 · 공식 변경 없음 · 제32조(발주청의 대가 산출 내역서 작성 — 별지 제1 · 2호 서식) · 제33조(입찰공고 때 과업내용서에 포함해 공개) 신설 · 재검토기한 제34조로 이동. 직전 판 제2024-217호(2024. 12. 31. 시행).</div>
+                <div style={{marginTop:'8px',fontSize:'11px',color:'#94a3b8'}}>※ 출처: 국가법령정보센터(law.go.kr) · 현행 확인 2026-11-24</div>
               </div>
             </div>
           )}
@@ -1166,6 +1169,7 @@ function App(){
   },[tab]);
 
   const handleCostChange=e=>setCostInput(e.target.value.replace(/[^0-9]/g,''));
+  const costBad=costInput!==''&&!(parseInt(costInput,10)>0);   /* v6.1.5 — 공사비 0 → 빨간 칸 · 계산 불가(결과 · A4 · 인쇄 · JPG 막힘은 종전대로 result=null) */
 
   const currentUsageObj=USAGES.find(u=>u.name===buildingUsage);
   const currentType=currentUsageObj?currentUsageObj.type:'type2';
@@ -1272,11 +1276,10 @@ function App(){
   const engLabelTxt=isEng?engTaskLabel(engTask):'';
   const a4Grad=isEng?'linear-gradient(135deg,#0f5e54,#0d9488)':'linear-gradient(135deg,#0c3472,#1d4ed8)';
   const a4Eyebrow=isEng?('엔지니어링사업대가의 기준 · '+engLabelTxt+' 용역비 산출서'):('공공발주사업에 대한 건축사의 업무범위와 대가기준 · '+(isDesign?'설계 용역비 산출서':'감리 용역비 산출서'));
-  const a4Law1=isEng?'산업통상자원부 고시(2024.12.31)':'국토교통부고시 제2020-635호';
+  const a4Law1=isEng?'산업통상부 고시 제2026-124호':'국토교통부고시 제2020-635호';
   const a4Law2=isEng?'엔지니어링산업 진흥법 제31조':'건축사법 제19조의3';
   const a4OverLabel=isEng?'업무·부문':'건물 종별·도서';
-  const a4Note=isEng?(<div style={{background:'#ecfeff',border:'1px solid #a5f3fc',borderRadius:'8px',padding:'10px 14px',marginBottom:'16px',fontSize:'11px',color:'#0f766e',lineHeight:1.55}}><b>기준 관계</b> — 본 산출은 엔지니어링사업대가의 기준(건설부문, 산업부 고시)입니다. 건축물 설계·감리는 건축사 대가기준(국토부 고시 별표4·5)이 원칙이며, 복합용역은 건축분(건축사)·토목/설비분(엔지니어링)을 분리 산정합니다.</div>):null;
-  const typeLabel=currentType==='type1'?'단순':'currentType'==='type3'?'복잡':'보통';
+  const a4Note=isEng?(<div style={{background:'#ecfeff',border:'1px solid #a5f3fc',borderRadius:'8px',padding:'10px 14px',marginBottom:'16px',fontSize:'11px',color:'#0f766e',lineHeight:1.55}}><b>기준 관계</b> — 본 산출은 엔지니어링사업대가의 기준(산업통상부 고시 제2026-124호)입니다. 건축물 설계·감리는 건축사 대가기준(국토부 고시 별표4·5)이 원칙이며, 복합용역은 건축분(건축사)·토목/설비분(엔지니어링)을 분리 산정합니다.</div>):null;
 
   /* ══ v5.0 A4 산출서 — 32 해체감리·33 건축상주 대가 산출서 양식 준용 (§3-4 · 동일 DOM — 화면 = 인쇄 = JPG) ══ */
   const dateKo=(()=>{ if(!docDate) return '—'; const p=docDate.split('-'); return p.length===3?`${p[0]}. ${p[1]}. ${p[2]}`:docDate; })();
@@ -1290,7 +1293,7 @@ function App(){
         <tr><td className="a4-th" style={{width:'90px'}}>용 역 명</td><td className="a4-td" colSpan={3}>{projectName||'—'}</td></tr>
         <tr><td className="a4-th">발 주 처</td><td className="a4-td">{client||'—'}</td><td className="a4-th" style={{width:'90px'}}>작 성 자</td><td className="a4-td">{author||'—'}</td></tr>
         <tr><td className="a4-th">예정공사비</td><td className="a4-td mono">{result?fmt(result.targetCost)+' 원 (VAT 별도)':'—'}</td><td className="a4-th">{isEng?'업무·부문':'종별·도서'}</td><td className="a4-td a4-td-c" style={{fontSize:'11px'}}>{result?result.selectedLevelName:'—'}</td></tr>
-        <tr><td className="a4-th">적용기준</td><td className="a4-td" colSpan={3} style={{fontSize:'11px'}}>{result?result.basisSrc:(isEng?'엔지니어링사업대가의 기준':'건축사의 업무범위와 대가기준')}{isEng?' · 산업통상부고시 2024. 12. 31.':' · 국토교통부고시 제2020-635호'}</td></tr>
+        <tr><td className="a4-th">적용기준</td><td className="a4-td" colSpan={3} style={{fontSize:'11px'}}>{result?result.basisSrc:(isEng?'엔지니어링사업대가의 기준':'건축사의 업무범위와 대가기준')}{isEng?' · 산업통상부 고시 제2026-124호(2026. 11. 20. 시행)':' · 국토교통부고시 제2020-635호'}</td></tr>
       </tbody></table>
       <table className="a4-tbl a4-calc-tbl">
         <thead><tr><th style={{width:'36%',textAlign:'left',paddingLeft:'13px'}}>비 목</th><th style={{width:'34%'}}>산 출 내 역</th><th style={{width:'30%',textAlign:'right',paddingRight:'13px'}}>금 액 (원)</th></tr></thead>
@@ -1302,15 +1305,15 @@ function App(){
           <tr className="a4-row-sub"><td className="a4-item" style={{background:'#f6ecd6'}}>공급가액 소계 (용역비)</td><td className="a4-desc" style={{color:'#785a28'}}>① + ②</td><td className="a4-amt">{result?fmt(result.finalFee):'0'}</td></tr>
           <tr className="a4-row-vat"><td className="a4-item" style={{background:'#fbf6ea'}}>부가가치세(VAT)</td><td className="a4-desc" style={{color:'#1d4ed8'}}>공급가액의 10%</td><td className="a4-amt">{result?fmt(vat):'0'}</td></tr>
         </tbody>
-        <tfoot><tr className="a4-tfoot-row"><td colSpan={2} style={{textAlign:'center',letterSpacing:'.1em'}}>합 계 금 액 (VAT 포함)</td><td className="a4-amt">{result?fmt(result.finalFee+vat):'0'}</td></tr></tfoot>
+        <tfoot><tr className="a4-tfoot-row"><td colSpan={2} style={{textAlign:'center',letterSpacing:'.1em'}}>합 계 금 액 (VAT 포함){result&&result.overNote?' (참고값)':''}</td><td className="a4-amt">{result?fmt(result.finalFee+vat):'0'}</td></tr></tfoot>
       </table>
       <table className="a4-tbl a4-basis-tbl" style={{marginBottom:'13px'}}>
         <thead><tr><th style={{width:'26%',textAlign:'left',paddingLeft:'13px'}}>산출 근거</th><th style={{width:'24%'}}>값</th><th>비 고</th></tr></thead>
         <tbody>
           {result&&result.interpolated?(
             <>
-            <tr><td style={{paddingLeft:'13px',fontWeight:700}}>x2 · y2 (작은 금액·요율)</td><td className="a4-td-c mono">{fmt(result.rx2)} 원 · {result.ry1} %</td><td style={{fontSize:'10.5px',color:'#5a6a80'}}>하위 구간</td></tr>
-            <tr><td style={{paddingLeft:'13px',fontWeight:700}}>x1 · y1 (큰 금액·요율)</td><td className="a4-td-c mono">{fmt(result.rx1)} 원 · {result.ry2} %</td><td style={{fontSize:'10.5px',color:'#5a6a80'}}>상위 구간</td></tr>
+            <tr><td style={{paddingLeft:'13px',fontWeight:700}}>x2 · y1 (작은 금액·요율)</td><td className="a4-td-c mono">{fmt(result.rx2)} 원 · {result.ry1} %</td><td style={{fontSize:'10.5px',color:'#5a6a80'}}>하위 구간</td></tr>
+            <tr><td style={{paddingLeft:'13px',fontWeight:700}}>x1 · y2 (큰 금액·요율)</td><td className="a4-td-c mono">{fmt(result.rx1)} 원 · {result.ry2} %</td><td style={{fontSize:'10.5px',color:'#5a6a80'}}>상위 구간</td></tr>
             <tr><td style={{paddingLeft:'13px',fontWeight:700}}>X (당해 공사비) → Y</td><td className="a4-td-c mono">{fmt(result.targetCost)} 원 → {result.finalRate} %</td><td className="mono" style={{fontSize:'9.5px',color:'#334155'}}>Y = {result.ry1} − ({fmt(result.targetCost)} − {fmt(result.rx2)}) × ({result.ry1} − {result.ry2}) ÷ ({fmt(result.rx1)} − {fmt(result.rx2)})</td></tr>
             </>
           ):(
@@ -1325,12 +1328,12 @@ function App(){
         <div className="a4-sign-date">{dateKo}</div>
         <div className="a4-sign-legal">
           <div className="lbl">법적 근거</div>
-          <p>{isEng?'엔지니어링산업 진흥법 제31조 · 엔지니어링사업대가의 기준(산업통상부고시 2024. 12. 31.) 공사비요율 방식 · 건축물 설계·감리는 건축사 대가기준(국토부고시 별표 4·5)이 원칙이며 복합용역은 건축분·토목/설비분 분리 산정':'건축사법 제19조의3 · 공공발주사업에 대한 건축사의 업무범위와 대가기준(국토교통부고시 제2020-635호 · 2020. 9. 14. 시행) [별표 4] 설계 · [별표 5] 감리 공사비요율 직선보간 · 리모델링 +50% · 녹색건축·지능형·제로에너지 인증 체감 합산 · BF 인증 실비정액가산식 별도 · 부가가치세 별도'}</p>
+          <p>{isEng?'엔지니어링산업 진흥법 제31조 · 엔지니어링사업대가의 기준(산업통상부 고시 제2026-124호 · 2026. 11. 20. 시행) 공사비요율 방식 · 건축물 설계·감리는 건축사 대가기준(국토부고시 별표 4·5)이 원칙이며 복합용역은 건축분·토목/설비분 분리 산정 · 발주청은 별지 제1 · 2호 서식의 대가 산출 내역서를 작성하고 입찰공고 때 과업내용서에 포함해 공개(제32조 · 제33조)':'건축사법 제19조의3 · 공공발주사업에 대한 건축사의 업무범위와 대가기준(국토교통부고시 제2020-635호 · 2020. 9. 14. 시행) [별표 4] 설계 · [별표 5] 감리 공사비요율 직선보간 · 리모델링 +50% · 녹색건축·지능형·제로에너지 인증 체감 합산 · BF 인증 실비정액가산식 별도 · 부가가치세 별도'}</p>
           {result&&result.overNote&&<p style={{color:'#be123c',fontWeight:700}}>※ {result.overNote}</p>}
         </div>
         <div className="a4-sign-supervisor"><span className="hint">작성자</span><span className="name">{author||'○○건축사사무소'}</span><span className="hint">(인)</span></div>
       </div>
-      <div className="a4-footer"><div className="a4-bot-bar"></div><div className="a4-footer-ver">공공기관 건축사 업무대가 산출기 [MANMIN-Ver6.1] · {isEng?'엔지니어링사업대가의 기준':'국토교통부고시 제2020-635호'} · 2026년 기준</div></div>
+      <div className="a4-footer"><div className="a4-bot-bar"></div><div className="a4-footer-ver">공공기관 건축사 업무대가 산출기 [MANMIN-Ver6.1] · {isEng?'엔지니어링사업대가의 기준 제2026-124호':'국토교통부고시 제2020-635호'} · 2026년 기준</div></div>
     </div>
   );
 
@@ -1368,7 +1371,7 @@ function App(){
                   <button className={`task-btn${standard==='eng'?' active':''}`} onClick={()=>setStandard('eng')}>
                     <svg viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 20V8l4-3 4 3"/><path d="M12 20V4l8 5v11"/></svg>
                     <span>엔지니어링 대가</span>
-                    <small>산업부고시 · 별표1</small>
+                    <small>산업통상부고시 · 별표1~4</small>
                   </button>
                 </div>
               </div>
@@ -1383,7 +1386,7 @@ function App(){
             ):(
             <div className="info-strip" style={{background:'#ecfeff',borderColor:'#a5f3fc'}}>
               <svg viewBox="0 0 24 24" style={{stroke:'#0d9488'}}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <p><strong>엔지니어링사업대가의 기준 (산업통상자원부 고시, 2024.12.31)</strong> — 엔지니어링산업 진흥법 제31조. 건설부문(도로·철도·항만·상수도·하천)·설비부문 대가. <b>건축물 설계는 대상 아님</b>(건축사 대가 적용). 공사비요율, VAT 별도.</p>
+              <p><strong>엔지니어링사업대가의 기준 (산업통상부 고시 제2026-124호 · 2026. 11. 20. 시행)</strong> — 엔지니어링산업 진흥법 제31조. 건설부문(도로·철도·항만·상수도·하천)·설비부문 대가. <b>건축물 설계는 대상 아님</b>(건축사 대가 적용). 공사비요율, VAT 별도.</p>
             </div>
             )}
 
@@ -1394,10 +1397,12 @@ function App(){
                 <div>
                   <label className="flbl">예정 공사비 (원, VAT 별도)</label>
                   <div style={{position:'relative'}}>
-                    <input type="text" value={costInput?fmt(parseInt(costInput)):''} onChange={handleCostChange} className="finput mono" style={{paddingRight:'40px'}} placeholder="숫자만 입력"/>
+                    <input type="text" value={costInput?fmt(parseInt(costInput)):''} onChange={handleCostChange} className="finput mono" style={costBad?{paddingRight:'40px',borderColor:'#e11d48',background:'#fff1f2'}:{paddingRight:'40px'}} placeholder="숫자만 입력" aria-invalid={costBad?'true':'false'}/>
                     <span style={{position:'absolute',right:'12px',top:'50%',transform:'translateY(-50%)',fontSize:'11px',color:'#94a3b8',fontWeight:700}}>원</span>
                   </div>
-                  {costInput&&<div style={{marginTop:'5px',fontSize:'11px',color:'#3b82f6',fontWeight:700}}>= {parseInt(costInput)>=100000000?`${(parseInt(costInput)/100000000).toFixed(2)}억원`:`${(parseInt(costInput)/10000).toFixed(0)}만원`}</div>}
+                  {costBad&&<div className="mm-bad-msg" style={{marginTop:'5px',fontSize:'11px',color:'#e11d48',fontWeight:700}}>⚠ 공사비는 0보다 큰 값을 입력하세요 — 계산 불가</div>}
+                  {!costInput&&<div style={{marginTop:'5px',fontSize:'11px',color:'#b45309',fontWeight:700}}>공사비 미입력 — 산출 대기</div>}
+                  {costInput&&!costBad&&<div style={{marginTop:'5px',fontSize:'11px',color:'#3b82f6',fontWeight:700}}>= {parseInt(costInput)>=100000000?`${(parseInt(costInput)/100000000).toFixed(2)}억원`:`${(parseInt(costInput)/10000).toFixed(0)}만원`}</div>}
                 </div>
                 {standard==='arch'&&(
                 <div>
@@ -1407,7 +1412,7 @@ function App(){
                     <optgroup label="▶ 제2종 (보통)">{USAGES.filter(u=>u.type==='type2').map(u=><option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
                     <optgroup label="▶ 제3종 (복잡)">{USAGES.filter(u=>u.type==='type3').map(u=><option key={u.name} value={u.name}>{u.name}</option>)}</optgroup>
                   </select>
-                  <div style={{marginTop:'5px',fontSize:'11px',fontWeight:700,color:currentType==='type1'?'#6b7a99':currentType==='type3'?'#e11d48':'#059669'}}>→ 자동 판정: {currentType==='type1'?'제1종 단순 (특수설비 없음)':currentType==='type2'?'제2종 보통':'제3종 복잡'}{isSpecialEquip?' + 특수설비 상향':''}</div>
+                  <div style={{marginTop:'5px',fontSize:'11px',fontWeight:700,color:currentType==='type1'?'#6b7a99':currentType==='type3'?'#e11d48':'#059669'}}>→ 자동 판정: {currentType==='type1'?('제1종 단순'+(isSpecialEquip?'':' (특수설비 없음)')):currentType==='type2'?'제2종 보통':'제3종 복잡'}{isSpecialEquip?(currentType==='type1'?' + 특수설비 상향 → 제2종':currentType==='type2'?' + 특수설비 상향 → 제3종':' (최고 종별 — 상향 없음)'):''}</div>
                 </div>
                 )}
               </div>
@@ -1443,22 +1448,30 @@ function App(){
                     {engFieldsOf(engSector,engTask).map(f=><option key={f} value={f}>{f}</option>)}
                   </select>
                   {engSector==='건설'&&<div style={{marginTop:'5px',fontSize:'11px',fontWeight:700,color:'#0d9488'}}>요율표 없는 분야는 도로분야 준용 (별표1 비고5)</div>}
+                  {engSector==='통신'&&<div style={{marginTop:'5px',fontSize:'11px',fontWeight:700,color:'#0d9488'}}>산업부문의 소방·방재 분야는 그룹 2 적용 (별표2 비고5)</div>}
                 </div>
                 )}
                 {engSector==='산업플랜트'&&(
                 <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-                  <label className="chk-item" onClick={()=>setEngChem(!engChem)}>
-                    <input type="checkbox" checked={engChem} readOnly style={{accentColor:'#0d9488',width:'16px',height:'16px',flexShrink:0}}/>
+                  <label className="chk-item">
+                    <input type="checkbox" checked={engChem} onChange={()=>setEngChem(v=>!v)} style={{accentColor:'#0d9488',width:'16px',height:'16px',flexShrink:0}}/>
                     <div><div className="chk-item-label">화학·가스플랜트 (×1.25)</div><div className="chk-item-sub">별표3 비고2 — 화학·가스플랜트 할증</div></div>
                   </label>
-                  <label className="chk-item" onClick={()=>setEngAux(!engAux)}>
-                    <input type="checkbox" checked={engAux} readOnly style={{accentColor:'#0d9488',width:'16px',height:'16px',flexShrink:0}}/>
+                  <label className="chk-item">
+                    <input type="checkbox" checked={engAux} onChange={()=>setEngAux(v=>!v)} style={{accentColor:'#0d9488',width:'16px',height:'16px',flexShrink:0}}/>
                     <div><div className="chk-item-label">부대시설 (×0.813)</div><div className="chk-item-sub">별표3 비고3 — 부대시설요율</div></div>
                   </label>
+                  <div style={{fontSize:'11px',color:'#64748b',fontWeight:600,lineHeight:1.55}}>배수 적용 요율은 각각 소수점 셋째자리에서 반올림(별표3 비고2 · 3)</div>
+                  {engChem&&engAux&&<div className="mm-eng-both" style={{fontSize:'11px',fontWeight:700,color:'#b45309',background:'#fffbeb',border:'1px solid #fde68a',borderRadius:'8px',padding:'7px 10px',lineHeight:1.55}}>⚠ 화학·가스(×1.25)와 부대시설(×0.813)을 함께 적용 중 — 고시에 병용 규정 없음 · 발주처 확인</div>}
                 </div>
                 )}
                 <div style={{background:'#ecfeff',border:'1.5px solid #a5f3fc',borderRadius:'10px',padding:'11px',fontSize:'11px',color:'#0f766e',lineHeight:1.65}}>
                   <b>상주감리</b>는 실비정액가산방식으로 별도 산정되어 자동요율 대상이 아닙니다(본 도구는 비상주 감리만). 순수 건축설계는 <b>건축사 대가</b>로 전환하세요.
+                </div>
+                <div className="mm-eng-guide" style={{background:'#f8fafc',border:'1.5px solid #e2e8f0',borderRadius:'10px',padding:'11px',fontSize:'11px',color:'#475569',lineHeight:1.7}}>
+                  {engSector!=='시공상세도'&&(()=>{const m={'건설':['1.45','1.35','1.35','1.24'],'통신':['1.27','1.18','1.18','1.09'],'산업플랜트':['1.31','1.22','1.22','1.12']}[engSector];return(<div>· <b>단계를 나누지 않고 발주</b>(제13조②, {engSector==='산업플랜트'?'산업플랜트':engSector}부문): 기본+실시설계 동시 = 실시설계 요율 ×{m[0]} · 타당성조사+기본설계 동시 = 기본설계 요율 ×{m[1]} · 기본설계 없이 실시설계 = 실시설계 요율 ×{m[2]} · 타당성조사 없이 기본설계 = 기본설계 요율 ×{m[3]} — 본 도구는 단계별 요율만 산출(배수는 따로 곱함)</div>);})()}
+                  <div>· 요율은 난이도 · 비교설계 · 도면 복잡성 · 제출 자료 수량 등을 참고해 <b>10% 범위에서 증감</b> 가능(제15조)</div>
+                  <div>· 여러 부문의 기술이 복합된 사업은 <b>실비정액가산방식</b>으로 산출(제18조)</div>
                 </div>
               </div>
             </div>
@@ -1501,11 +1514,11 @@ function App(){
                     </div>
                   </div>
                 )}
-                <label className="chk-item" onClick={()=>setIsSpecialEquip(!isSpecialEquip)}>
-                  <input type="checkbox" checked={isSpecialEquip} readOnly style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
+                <label className="chk-item">
+                  <input type="checkbox" checked={isSpecialEquip} onChange={()=>setIsSpecialEquip(v=>!v)} style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
                   <div>
                     <div className="chk-item-label">특수 설비 요구 (종별 상향 적용)</div>
-                    <div className="chk-item-sub">공기조화 등 특수설비 → 제1종→2종, 제2종→3종 상향</div>
+                    <div className="chk-item-sub">특수구조 · 공기조화 등 특수설비 → 제1종→2종, 제2종→3종 상향</div>
                   </div>
                 </label>
               </div>
@@ -1516,12 +1529,12 @@ function App(){
               <div className="card">
                 <div className="card-head"><div className="card-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span className="card-title">추가 업무 할증 (선택)</span><span className="card-badge" style={{marginLeft:'auto'}}>설계만 적용</span></div>
                 <div className="card-body" style={{display:'flex',flexDirection:'column',gap:'10px'}}>
-                  <label className="chk-item" onClick={()=>setIsRemodel(!isRemodel)}>
-                    <input type="checkbox" checked={isRemodel} readOnly style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
+                  <label className="chk-item">
+                    <input type="checkbox" checked={isRemodel} onChange={()=>setIsRemodel(v=>!v)} style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
                     <div><div className="chk-item-label">리모델링 / 인테리어 설계 +50%</div><div className="chk-item-sub">제11조 제4항 1호 — 기본 대가의 1.5배 적용</div></div>
                   </label>
-                  <label className="chk-item" onClick={()=>setIsBF(!isBF)}>
-                    <input type="checkbox" checked={isBF} readOnly style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
+                  <label className="chk-item">
+                    <input type="checkbox" checked={isBF} onChange={()=>setIsBF(v=>!v)} style={{accentColor:'#1d4ed8',width:'16px',height:'16px',flexShrink:0}}/>
                     <div><div className="chk-item-label">BF 인증 (장애물 없는 생활환경)</div><div className="chk-item-sub">실비정액가산식 별도 산정 — 본 대가에 미포함</div></div>
                   </label>
                   <div style={{background:'#f8fafd',border:'1.5px solid #e2e8f0',borderRadius:'10px',padding:'12px',display:'flex',flexDirection:'column',gap:'9px'}}>
@@ -1554,7 +1567,7 @@ function App(){
               <div className="result-card">
                 <div className="result-amount-box">
                   <div style={{fontSize:'11px',fontWeight:700,color:'rgba(255,255,255,.55)',letterSpacing:'.14em',textTransform:'uppercase',marginBottom:'8px'}}>{result.isEng?engTaskLabel(engTask):(isDesign?'설계':'감리')} 용역비 산출 결과</div>
-                  <div style={{fontSize:'11px',color:'rgba(255,255,255,.6)',marginBottom:'4px',fontWeight:600}}>최종 산출금액 (VAT 별도)</div>
+                  <div style={{fontSize:'11px',color:'rgba(255,255,255,.6)',marginBottom:'4px',fontWeight:600}}>최종 산출금액 (VAT 별도){result.overNote?' · 참고값':''}</div>
                   <div style={{fontSize:'36px',fontWeight:900,color:'#fde047',letterSpacing:'-.02em',lineHeight:1}} className="mono">{fmt(result.finalFee)}</div>
                   <div style={{fontSize:'16px',fontWeight:700,color:'rgba(255,255,255,.7)',marginTop:'4px'}}>원</div>
                   {result.adjustmentRate>0&&(
@@ -1573,7 +1586,7 @@ function App(){
                   </div>
                   <div className="vc vc-a">
                     <div style={{fontSize:'11px',fontWeight:800,letterSpacing:'.1em',textTransform:'uppercase',color:'#854d0e',marginBottom:'5px'}}>공사비</div>
-                    <div style={{fontSize:'12px',fontWeight:900,color:'#854d0e'}} className="mono">{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}억`:'-'}</div>
+                    <div style={{fontSize:'12px',fontWeight:900,color:'#854d0e'}} className="mono">{costInput?`${(parseInt(costInput)/100000000).toFixed(2)}`:'-'}</div>
                     <div style={{fontSize:'11px',color:'#b45309',marginTop:'3px',fontWeight:600}}>억 원</div>
                   </div>
                   <div className="vc vc-p">
@@ -1625,7 +1638,7 @@ function App(){
                 <div className="card-body">
                   <div style={{fontSize:'12px',color:'#374151',lineHeight:1.9}}>
                     <strong>근거 고시:</strong> {result.basisSrc}<br/>
-                    <strong>적용 기준:</strong> {result.isEng?'산업통상자원부고시 제2024-217호 (2024.12.31 시행)':'국토교통부고시 제2020-635호 (2020.09.14 시행)'}<br/>
+                    <strong>적용 기준:</strong> {result.isEng?'산업통상부 고시 제2026-124호(2026. 11. 20. 시행)':'국토교통부고시 제2020-635호 (2020.09.14 시행)'}<br/>
                     {result.isEng?<><strong>부문 · 업무:</strong> {result.selectedLevelName}<br/></>:<><strong>건물 종별:</strong> {result.selectedLevelName} — {buildingUsage}<br/></>}
                     <strong>산출 방식:</strong> {result.interpolated?'직선보간법 적용 [ Y = y1 - (x-x2)×(y1-y2)÷(x1-x2) ]':(result.isEng&&result.engMode?result.engMode:'해당 구간 요율 직접 적용')}<br/>
                     {result.adjNames.length>0&&<><strong>세부 할증:</strong> {result.adjNames.join(' / ')} (합계 +{result.adjustmentRate}%)<br/></>}
@@ -1636,13 +1649,13 @@ function App(){
               </div>
 
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',opacity:.35,fontSize:'11px',fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase',color:'#6b7a99',padding:'0 4px'}}>
-                <span>공공발주사업에 대한 건축사의 업무범위와 대가기준 · 제2020-635호</span>
+                <span>{result.isEng?'엔지니어링사업대가의 기준 · 산업통상부 고시 제2026-124호':'공공발주사업에 대한 건축사의 업무범위와 대가기준 · 제2020-635호'}</span>
                 <span className="mono">MANMIN Ver-{VER}</span>
               </div>
               </>
             ):(
               <div className="card" style={{padding:'40px 20px',textAlign:'center'}}>
-                <div style={{fontSize:'14px',color:'#94a3b8',lineHeight:2}}>공사비를 입력하면<br/>산출 결과가 실시간으로 표시됩니다.</div>
+                {costBad?<div style={{fontSize:'14px',color:'#e11d48',fontWeight:700,lineHeight:2}}>계산 불가<br/>공사비는 0보다 큰 값을 입력하세요.</div>:<div style={{fontSize:'14px',color:'#94a3b8',lineHeight:2}}>공사비를 입력하면<br/>산출 결과가 실시간으로 표시됩니다.</div>}
               </div>
             )}
           </div>

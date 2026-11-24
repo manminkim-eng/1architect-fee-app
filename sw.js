@@ -1,4 +1,5 @@
 /* ═══════════════════════════════════════════════════
+   v6.1.5 (2026-11-24) — 건축 3차 교차검증 반영: 엔지니어링 고시 표기 산업통상부 고시 제2026-124호(2026. 11. 20. 시행 · 별표 불변) · 5,000억 초과 공식 · 플랜트 배수 요율 소수 둘째 자리 반올림(별표 비고) · 체크 항목 글자 클릭 · A4 보간 첨자 · 건축사법 시행일 · 하단 기준 표기 분기 · 제13조② · 제15조 · 제18조 · 별표2 비고5 · 제32 · 33조 안내 · 화학+부대 병용 안내 · 공사비 0 경고 · 캐시명 v6.1.5 (종전 v6.1.4)
    v6.1.4 (2026-11-12) — html2canvas 1.4.1 머리 태그 SRI(integrity sha384 · crossorigin) · 공통 인쇄 원본 MM-PRINT v1.0 → v1.1(지연 로더도 SRI)(정밀검토 B8 · html2canvas SRI) — 화면 · 계산 · 인쇄 불변 · 작업지시서 §25-6-87 · 캐시명 v6.1.4 (종전 v6.1.3)
    v6.1.3 (2026-11-12) — React 18.3.1 · Babel 7.29.7 주소 unpkg → cdnjs(같은 파일 · 해시 일치) · SRI(integrity) · Pretendard CSS SRI(정밀검토 C2) — 화면 · 계산 · 인쇄 불변 · 작업지시서 §25-6-82 · 캐시명 v6.1.3 (종전 v6.1.2)
    v6.1.2 (2026-11-12) — 건물개요 공통 원본 MM-PROJECT v1.2 → v1.3(불러오기 창 표 칸 모양 고정 — 도구 CSS 가 새지 않음 · 저장값 같음, 정밀검토 C10) · 작업지시서 §25-6-80 · 판 6.1 · 캐시명 v6.1.2 (종전 v6.1.1)
@@ -25,7 +26,7 @@ const mmMatch = (req, opt) => caches.keys()
   .then((ks) => ks.reduce((p, k) => p.then((r) => r || caches.open(k).then((c) => c.match(req, opt))), Promise.resolve(undefined)))
   .then((r) => (r && r.type === 'opaque' && req && req.mode === 'cors') ? undefined : r);
 
-const CACHE  = 'fee-v6.1.4';   /* 2026-10-31 v5.0.9 — 하단 설치 배너 z-index 60 → 1250(휴대전화 폭에서 초기화 · 이용안내 단추가 「설치」를 덮던 문제) */
+const CACHE  = 'fee-v6.1.5';   /* 2026-10-31 v5.0.9 — 하단 설치 배너 z-index 60 → 1250(휴대전화 폭에서 초기화 · 이용안내 단추가 「설치」를 덮던 문제) */
 const ORPHAN = ['manmin-cost-v3.1'];
 const ASSETS = [
   './', './index.html', './manifest.json',

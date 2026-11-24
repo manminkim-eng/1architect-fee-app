@@ -14,7 +14,7 @@ const c2=['매뉴얼 4-4 표 = 원문 별표5 '+n+'개',bad===0];bad=0;n=0;
 const c3=['매뉴얼 4-8 표 = 원문 엔지니어링 별표1(기본·실시설계) '+n+'개',bad===0];
 const ex=JSON.parse(fs.readFileSync(repo+'/manual/_tools/_example.json','utf8'));const mk=JSON.parse(fs.readFileSync(repo+'/manual/images/_marks.json','utf8'));
 let out=0,tot=0;Object.values(mk).forEach(v=>v.marks.forEach(m=>{tot++;if(m.miss||m.x<0||m.y<0||m.x>100||m.y>100||m.x+m.w>100.5||m.y+m.h>100.5)out++;}));
-const figs=[...h.matchAll(/id="fig-(s\d+_[a-z_0-9]+)"[\s\S]*?<\/figure>/g)];let legBad=0;figs.forEach(f=>{const pins=(f[0].match(/class="pin"/g)||[]).length;const li=(f[0].match(/<li>/g)||[]).length;if(li&&pins!==li){legBad++;console.log('legend≠pins',f[1],pins,li);}});
+const figs=[...h.matchAll(/id="fig-(s\d+[a-z]?_[a-z_0-9]+)"[\s\S]*?<\/figure>/g)];let legBad=0;figs.forEach(f=>{const pins=(f[0].match(/class="pin"/g)||[]).length;const li=(f[0].match(/<li>/g)||[]).length;if(li&&pins!==li){legBad++;console.log('legend≠pins',f[1],pins,li);}});
 const imgs=[...h.matchAll(/src="images\/([^"]+)"/g)].map(m=>m[1]);const miss=imgs.filter(f=>!fs.existsSync(repo+'/manual/images/'+f));
 const ids=new Set([...h.matchAll(/ id="([^"]+)"/g)].map(m=>m[1]));const dead=[...h.matchAll(/href="#([^"]+)"/g)].map(m=>m[1]).filter(a=>!ids.has(a));
 const C=R.concat([c1,c2,c3,
@@ -25,7 +25,11 @@ const C=R.concat([c1,c2,c3,
 ['VAT 포함 합계 87,296,000 · 100,171,500 · 20,592,000 · 101,129,600',79360000*1.1===87296000&&Math.round(91065000*1.1)===100171500&&Math.round(18720000*1.1)===20592000&&Math.round(91936000*1.1)===101129600],
 ['캡처 전후 예제 값 동일(복원)',JSON.stringify(ex.example)===JSON.stringify(ex.after)],
 ['표시점 '+tot+'개 모두 이미지 안',out===0],['그림 '+figs.length+'개 — 범례 수 = 번호 수',legBad===0],['그림 파일 '+imgs.length+'개 모두 존재',miss.length===0],['문서 안 링크 끊김 없음',dead.length===0],
-['고시번호·시행일 표기',h.includes('국토교통부고시 제2020-635호(2020.9.14. 시행)')&&h.includes('산업통상자원부고시 제2024-217호(2024.12.31. 시행)')]]);
+['엔지니어링 1조 도로 기본설계 1.090% · 10,900,000,000원 (앱 캡처값 = 매뉴얼, v6.1.5 둘째 자리 반올림)',ex.engOver.sum.includes('1.090')&&ex.engOver.sum.includes('10,900,000,000')&&h.includes('10,900,000,000')],
+['산업플랜트 실시 화학+부대 5.800% · 92,800,000원 (앱 캡처값 = 매뉴얼)',ex.plant.sum.includes('5.800')&&ex.plant.sum.includes('92,800,000')&&h.includes('92,800,000')],
+['건축사 6,000억 A4 「(참고값)」 · 24,618,000,000 · 제16조제3항 안내',ex.archOverA4.includes('(참고값)')&&ex.archOverA4.includes('24,618,000,000')&&ex.archOverA4.includes('제16조제3항')&&h.includes('24,618,000,000')],
+['공사비 0 → 「계산 불가」 · 결과 카드 없음',ex.zero.msg.includes('계산 불가')&&ex.zero.result===false],
+['고시번호·시행일 표기',h.includes('국토교통부고시 제2020-635호(2020.9.14. 시행)')&&h.includes('산업통상부 고시 제2026-124호(2026. 11. 20. 시행)')&&!h.includes('MANMIN-Ver5.0')]]);
 if(dead.length)console.log('dead',dead);if(miss.length)console.log('miss',miss);
 console.log('| # | 항목 | 결과 |\n|---|---|---|');C.forEach((c,i)=>console.log(`| ${i+1} | ${c[0]} | ${c[1]?'✓':'✗'} |`));
 process.exit(C.every(c=>c[1])?0:1);

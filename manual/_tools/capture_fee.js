@@ -1,15 +1,19 @@
 // 건축사 업무대가 산출기 매뉴얼 화면 캡처 — usage: node capture_fee.js <repoDir> <outDir>
 // RTS·EPI·열관류율 매뉴얼과 같은 규격: 1440×900 · DSF 1.25 · _marks.json(번호 배지 % 좌표) · _example.json(예제 검증값)
+// Ver-6.1(웹 v6.1.5, 2026-11-24): 날짜 고정 2026-11-24 · 포트 MM_PORT · 공사비 0/빈 값 · 5,000억 초과(건축사 A4 · 엔지니어링 1조) · 산업플랜트 배수 · 통신 · 개정 메모 장면 추가
 const {chromium}=require(process.env.MM_PW||'playwright');const fs=require('fs');const path=require('path');const {setup,server}=require('./serve');
 const repo=path.resolve(process.argv[2]),out=path.resolve(process.argv[3]);fs.mkdirSync(out,{recursive:true});
-const VW=1440,VH=900,DSF=1.25,PORT=8893;
+const VW=1440,VH=900,DSF=1.25,PORT=+(process.env.MM_PORT||8893);
 /* 예제 = 앱 초기값: 공사비 16억 · 공동주택(제2종) · 건축설계 · 중급 → 요율 4.960% · 79,360,000원(VAT 별도) */
-const FREEZE=`(()=>{const T=new Date(2026,9,11,10,0,0).getTime();const D=Date;class F extends D{constructor(...a){if(a.length)super(...a);else super(T);}static now(){return T;}}window.Date=F;window.alert=()=>{};window.confirm=()=>true;try{localStorage.clear()}catch(e){}})()`;
+const FREEZE=`(()=>{const T=new Date(2026,10,24,10,0,0).getTime();const D=Date;class F extends D{constructor(...a){if(a.length)super(...a);else super(T);}static now(){return T;}}window.Date=F;window.alert=()=>{};window.confirm=()=>true;try{localStorage.clear()}catch(e){}})()`;
 const HELP=`window.__vis=e=>e&&e.getClientRects().length>0;
 window.__btn=(t)=>{const b=[...document.querySelectorAll('#root button')].find(b=>__vis(b)&&b.textContent.includes(t));if(b)b.click();return !!b;};
 window.__sel=(labelText,val)=>{const lab=[...document.querySelectorAll('#root label,#root .flabel,#root div')].filter(e=>__vis(e)&&e.children.length===0&&e.textContent.trim().startsWith(labelText))[0];let el=lab;while(el&&!(el.parentElement.querySelector('select')))el=el.parentElement;const s=el.parentElement.querySelector('select');const st=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set;st.call(s,String(val));s.dispatchEvent(new Event('change',{bubbles:true}));return s.value;};
 window.__card=(t)=>{const h=[...document.querySelectorAll('.card-head')].find(e=>__vis(e)&&e.textContent.includes(t));return h?h.parentElement:null;};
 window.__modalTab=(t)=>{const ov=document.querySelector('.modal-bg');const b=[...ov.querySelectorAll('button')].find(b=>b.textContent.includes(t));b&&b.click();};
+window.__setCost=(v)=>{const el=[...document.querySelectorAll('.card-head')].find(e=>e.textContent.includes('기본 정보 입력')).parentElement.querySelector('input');const st=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;st.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};
+window.__setEngSector=(v)=>{const s=__card('엔지니어링 부문').querySelector('select');const st=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set;st.call(s,v);s.dispatchEvent(new Event('change',{bubbles:true}));};
+window.__w=(ms)=>new Promise(r=>setTimeout(r,ms));
 window.__modalClose=()=>{const ov=document.querySelector('.modal-bg');if(!ov)return;const b=[...ov.querySelectorAll('button')].find(b=>b.textContent.trim()==='✕');b&&b.click();};
 window.__find=(sel)=>{const vis=__vis;
  if(sel.startsWith('card:'))return __card(sel.slice(5));
@@ -35,14 +39,22 @@ const SHOTS=[
  {id:'s09_detail',tab:'main',clip:'card:산출 근거 상세',union:'card:적용 근거',m:[['row:산출 근거 상세|1','예정 공사비'],['row:산출 근거 상세|2','적용 난이도'],['row:산출 근거 상세|3','공사비요율 Y'],['row:산출 근거 상세|4','보간 산출식'],['row:산출 근거 상세|5','최종 산출 대가'],['card:적용 근거','적용 근거']]},
  {id:'s10_cert',tab:'main',pre:"__sel('녹색건축 인증',9.5);__sel('제로에너지 인증',10)",post:"__sel('녹색건축 인증',0);__sel('제로에너지 인증',0)",clip:'.result-card',union:'card:적용 근거',m:[['.result-amount-box','할증 포함 금액'],['text~세부 할증','할증 내역']]},
  {id:'s11_sup',tab:'main',pre:"__btn('공사감리')",post:"__btn('건축설계')",clip:'viewport',m:[['.sum-bar-wrap','요약 스트립'],['.result-card','감리 대가'],['card:산출 근거 상세','별표5 보간']]},
+ /* Ver-6.1 — 공사비 0 「계산 불가」 · 빈 값 「산출 대기」 */
+ {id:'s22_cost_zero',tab:'main',pre:"__setCost('0');window.scrollTo(0,0)",clip:'viewport',m:[['cardin:기본 정보 입력|0','공사비 0 — 빨간 칸'],['.mm-bad-msg','경고 「계산 불가」'],['text~계산 불가공사비는','결과 자리 「계산 불가」']]},
+ {id:'s23_cost_empty',tab:'main',pre:"__setCost('')",clip:'card:기본 정보 입력',post:"__setCost('1600000000')",m:[['cardin:기본 정보 입력|0','빈 칸'],['text~산출 대기','「공사비 미입력 — 산출 대기」']]},
  {id:'s12_a4',tab:'print',clip:'viewport',m:[['.mm-btn-print','인쇄 / PDF 저장'],['#btn-jpg','JPG 저장'],['#a4Page','A4 산출서']]},
  {id:'s13_a4page',tab:'print',clip:'#a4Page',m:[['a4tbl:0','용역 개요'],['a4tbl:1','산출 내역'],['a4tbl:2','산출 근거'],['text~법적 근거','법적 근거'],['text~(인)','작성자 서명란']]},
- {id:'s14_eng_input',tab:'main',pre:"__btn('엔지니어링 대가')",wait:900,clip:'card:기본 정보 입력',union:'card:엔지니어링 부문',m:[['cardin:기본 정보 입력|0','예정 공사비'],['cardsel:엔지니어링 부문|0','부문 선택'],['cardbtn:엔지니어링 부문|1','업무 단계'],['cardsel:엔지니어링 부문|1','분야']]},
+ {id:'s26_arch_over_a4',tab:'print',pre:"__setCost('600000000000')",wait:1200,clip:'#a4Page',post:"__setCost('1600000000')",m:[['a4tbl:1','합계 금액 「(참고값)」'],['text~제16조제3항의 공식으로','붉은 안내 — 제16조제3항 공식으로 별도 산정']]},
+ {id:'s14_eng_input',tab:'main',pre:"__btn('엔지니어링 대가')",wait:900,clip:'card:기본 정보 입력',union:'card:엔지니어링 부문',m:[['cardin:기본 정보 입력|0','예정 공사비'],['cardsel:엔지니어링 부문|0','부문 선택'],['cardbtn:엔지니어링 부문|1','업무 단계'],['cardsel:엔지니어링 부문|1','분야'],['.mm-eng-guide','제13조② · 제15조 · 제18조 안내']]},
  {id:'s15_eng_result',tab:'main',clip:'viewport',m:[['cardbtn:대가기준 선택|1','엔지니어링 대가'],['.sum-bar-wrap','요약 스트립'],['.result-card','산출 결과'],['card:산출 근거 상세','산출 근거']]},
  {id:'s16_eng_a4page',tab:'print',clip:'#a4Page',m:[]},
+ {id:'s25_eng_over',tab:'main',pre:"(async()=>{__btn('기본설계');await __w(300);__setCost('1000000000000');window.scrollTo(0,0);})()",wait:1200,clip:'.result-card',union:'card:적용 근거',post:"(async()=>{__setCost('1600000000');await __w(300);__btn('실시설계');})()",m:[['.result-amount-box','기본설계 · 도로 1조원 대가'],['.vc-n','요율 1.090 % — 공식 요율 둘째 자리 반올림'],['text~5,000억 초과 지수공식','산출 방식 — 5,000억 초과 지수공식']]},
+ {id:'s24_plant',tab:'main',pre:"(async()=>{__setEngSector('산업플랜트');await __w(400);__btn('실시설계');await __w(300);__find('cardchk:엔지니어링 부문|0').querySelector('.chk-item-label').click();await __w(200);__find('cardchk:엔지니어링 부문|1').querySelector('.chk-item-label').click();await __w(300);const c=__card('엔지니어링 부문');window.scrollTo(0,c.getBoundingClientRect().top+scrollY-120);})()",wait:1200,clip:'card:엔지니어링 부문',m:[['cardchk:엔지니어링 부문|0','화학·가스플랜트 ×1.25 — 글자를 눌러도 켜짐'],['cardchk:엔지니어링 부문|1','부대시설 ×0.813'],['text~소수점 셋째자리에서 반올림','배수 요율 반올림 안내'],['.mm-eng-both','함께 적용 경고 — 발주처 확인'],['.mm-eng-guide','제13조② 배수(산업플랜트) · 제15조 · 제18조']]},
+ {id:'s24b_telecom',tab:'main',pre:"(async()=>{const c=__card('엔지니어링 부문');c.querySelectorAll('input[type=checkbox]').forEach(i=>{if(i.checked)i.click();});await __w(300);__setEngSector('통신');await __w(400);__btn('실시설계');await __w(300);window.scrollTo(0,c.getBoundingClientRect().top+scrollY-120);})()",wait:1200,clip:'card:엔지니어링 부문',post:"(async()=>{__setEngSector('건설');await __w(400);__btn('실시설계');await __w(300);window.scrollTo(0,0);})()",m:[['cardsel:엔지니어링 부문|1','그룹 1~4'],['text~소방·방재 분야는 그룹 2','소방·방재는 그룹 2(별표2 비고5)']]},
  {id:'s17_help_interp',tab:'main',pre:"__btn('건축사 대가');setTimeout(()=>{window.__feeModal();setTimeout(()=>__modalTab('보간법'),350)},500)",wait:1700,clip:'viewport',m:[]},
  {id:'s18_help_type',tab:null,pre:"__modalTab('건물종별')",clip:'viewport',m:[]},
- {id:'s19_help_eng',tab:null,pre:"__modalTab('엔지니어링')",post:"__modalClose()",clip:'viewport',m:[]},
+ {id:'s19_help_eng',tab:null,pre:"__modalTab('엔지니어링')",clip:'viewport',m:[]},
+ {id:'s19b_help_law',tab:null,pre:"(()=>{const m=document.querySelector('.modal-box .mbd');m.scrollTop=m.scrollHeight;})()",post:"__modalClose()",clip:'viewport',m:[]},
 ];
 (async()=>{
  const s=await server(repo,PORT);const b=await chromium.launch();
@@ -57,7 +69,9 @@ const SHOTS=[
   if(S.tab){await pg.evaluate(t=>{goTab(t);window.scrollTo(0,0);},S.tab);await pg.waitForTimeout(700);}
   if(S.pre){try{await pg.evaluate(S.pre);}catch(e){errs.push(S.id+' pre '+e.message);}}
   await pg.waitForTimeout(S.wait||700);
-  if(S.id==='s10_cert')ex.cert=await readEx(); if(S.id==='s11_sup')ex.sup=await readEx(); if(S.id==='s15_eng_result')ex.eng=await readEx();
+  if(S.id==='s10_cert')ex.cert=await readEx(); if(S.id==='s25_eng_over')ex.engOver=await readEx(); if(S.id==='s24_plant')ex.plant=await readEx();
+  if(S.id==='s26_arch_over_a4')ex.archOverA4=await pg.evaluate(()=>((document.querySelector('#a4Page .a4-calc-tbl tfoot')||{}).innerText||'').replace(/\s+/g,' ').trim()+' | '+[...document.querySelectorAll('#a4Page p')].map(p=>p.innerText).filter(t=>t.includes('제16조제3항')).join(' ').replace(/\s+/g,' '));
+  if(S.id==='s22_cost_zero')ex.zero=await pg.evaluate(()=>({msg:((document.querySelector('.mm-bad-msg')||{}).innerText||''),result:!!document.querySelector('.result-card')})); if(S.id==='s11_sup')ex.sup=await readEx(); if(S.id==='s15_eng_result')ex.eng=await readEx();
   const info=await pg.evaluate(({S,VW,VH})=>{
    const abs=e=>{const r=e.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};};
    let clip;
